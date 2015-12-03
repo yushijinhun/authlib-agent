@@ -33,5 +33,6 @@
 	</developers>
 	<modules>
 		<module>authlib-javaagent</module>
+		<module>yggdrasil-backend</module>
 	</modules>
 </project>
