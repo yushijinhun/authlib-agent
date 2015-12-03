@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>yushijinhun.authlibagent</groupId>
+	<artifactId>authlib-agent-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>Yggdrasil JavaAgent and Backend</description>
+	<url>https://github.com/yushijinhun/authlib-agent</url>
+	<packaging>pom</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<issueManagement>
+		<url>https://github.com/yushijinhun/authlib-agent/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>Unlicense</name>
+			<url>http://unlicense.org/UNLICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/yushijinhun/authlib-agent</url>
+		<connection>scm:git:git://github.com/yushijinhun/authlib-agent.git</connection>
+		<developerConnection>scm:git:git@github.com:yushijinhun/authlib-agent.git</developerConnection>
+		<tag>master</tag>
+	</scm>
+	<developers>
+		<developer>
+			<email>yushijinhun@gmail.com</email>
+			<name>Haowei Wen</name>
+			<url>https://github.com/yushijinhun</url>
+			<id>yushijinhun</id>
+		</developer>
+	</developers>
+</project>
