@@ -31,4 +31,7 @@
 			<id>yushijinhun</id>
 		</developer>
 	</developers>
+	<modules>
+		<module>authlib-javaagent</module>
+	</modules>
 </project>
