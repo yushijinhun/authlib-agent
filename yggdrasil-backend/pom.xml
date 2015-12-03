@@ -28,5 +28,6 @@
 	</build>
 	<modules>
 		<module>yggdrasil-backend-api</module>
+		<module>yggdrasil-backend-web</module>
 	</modules>
 </project>
