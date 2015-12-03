@@ -6,9 +6,6 @@
 	<description>Yggdrasil JavaAgent and Backend</description>
 	<url>https://github.com/yushijinhun/authlib-agent</url>
 	<packaging>pom</packaging>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 	<issueManagement>
 		<url>https://github.com/yushijinhun/authlib-agent/issues</url>
 		<system>GitHub Issues</system>
