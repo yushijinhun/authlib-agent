@@ -38,6 +38,7 @@ public class Transformer implements ClassFileTransformer {
 	protected void addTransformUnit(String className, TransformUnit unit) {
 		Objects.requireNonNull(className);
 		Objects.requireNonNull(unit);
+		className = className.replace('.', '/');
 		synchronized (units) {
 			Collection<TransformUnit> classUnits = units.get(className);
 			if (classUnits == null) {
@@ -54,17 +55,22 @@ public class Transformer implements ClassFileTransformer {
 
 	@Override
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-		Collection<TransformUnit> classunits = units.get(className);
-		if (classunits != null) {
-			LOGGER.info("try to transform " + className);
-			byte[] output = transformClass(classunits, classfileBuffer);
-			if (output != null) {
-				LOGGER.info("transform " + className);
-				if (debugMode) {
-					debugSaveModifiedClass(output, className);
+		try {
+			Collection<TransformUnit> classunits = units.get(className);
+			if (classunits != null) {
+				LOGGER.info("try to transform " + className);
+				byte[] output = transformClass(classunits, classfileBuffer);
+				if (output != null) {
+					LOGGER.info("transform " + className);
+					if (debugMode) {
+						debugSaveModifiedClass(output, className);
+					}
+					return output;
 				}
-				return output;
 			}
+		} catch (Throwable e) {
+			LOGGER.info("failed to transform " + className);
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -94,6 +100,7 @@ public class Transformer implements ClassFileTransformer {
 				classreader.accept(checker, ClassReader.SKIP_DEBUG);
 			}
 			if (callback.isAllowed) {
+				LOGGER.info("transform unit " + unit);
 				ClassWriter classwriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 				ClassVisitor modifier = unit.transform(classwriter);
 				classreader.accept(modifier, ClassReader.SKIP_DEBUG);
