@@ -49,8 +49,8 @@ public class Transformer implements ClassFileTransformer {
 		}
 	}
 
-	public boolean setDebugMode() {
-		return debugMode;
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
 	}
 
 	@Override
