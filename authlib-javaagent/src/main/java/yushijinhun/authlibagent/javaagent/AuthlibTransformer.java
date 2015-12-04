@@ -329,7 +329,7 @@ public class AuthlibTransformer extends Transformer {
 
 		});
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilGameProfileRepository", new LdcTransformUnit("profiles_lookup_transformer", "findProfilesByNames", "https://api.mojang.com/profiles/", apiProfilesLookup));
-		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_authenticate_transformer", "<clinit>", "https://authserver.mojang.com/", apiYggdrasilAuthenticate));
+		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_authenticate_transformer", "<clinit>", "https://authserver.mojang.com/authenticate", apiYggdrasilAuthenticate));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_refresh_transformer", "<clinit>", "https://authserver.mojang.com/refresh", apiYggdrasilRefresh));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_validate_transformer", "<clinit>", "https://authserver.mojang.com/validate", apiYggdrasilValidate));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_invalidate_transformer", "<clinit>", "https://authserver.mojang.com/invalidate", apiYgggdrasilInvalidate));
