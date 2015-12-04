@@ -55,22 +55,24 @@ public class Transformer implements ClassFileTransformer {
 
 	@Override
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-		try {
-			Collection<TransformUnit> classunits = units.get(className);
-			if (classunits != null) {
-				LOGGER.info("try to transform " + className);
-				byte[] output = transformClass(classunits, classfileBuffer);
-				if (output != null) {
-					LOGGER.info("transform " + className);
-					if (debugMode) {
-						debugSaveModifiedClass(output, className);
+		if (className != null) {
+			try {
+				Collection<TransformUnit> classunits = units.get(className);
+				if (classunits != null) {
+					LOGGER.info("try to transform " + className);
+					byte[] output = transformClass(classunits, classfileBuffer);
+					if (output != null) {
+						LOGGER.info("transform " + className);
+						if (debugMode) {
+							debugSaveModifiedClass(output, className);
+						}
+						return output;
 					}
-					return output;
 				}
+			} catch (Throwable e) {
+				LOGGER.info("failed to transform " + className);
+				e.printStackTrace();
 			}
-		} catch (Throwable e) {
-			LOGGER.info("failed to transform " + className);
-			e.printStackTrace();
 		}
 		return null;
 	}
