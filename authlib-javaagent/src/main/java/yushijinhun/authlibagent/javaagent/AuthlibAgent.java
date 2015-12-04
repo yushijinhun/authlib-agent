@@ -46,7 +46,7 @@ public class AuthlibAgent {
 		AuthlibTransformer transformer = new AuthlibTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
 		transformer.setDebugMode(debugMode);
 
-		instrumentation.addTransformer(transformer, true);
+		instrumentation.addTransformer(transformer);
 	}
 
 	private static Properties readProperties() {
