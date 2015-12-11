@@ -213,6 +213,7 @@ public class AuthlibTransformer extends Transformer {
 
 		});
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new LdcTransformUnit("fill_game_profile_transformer", "fillGameProfile", "https://sessionserver.mojang.com/session/minecraft/profile/", apiFillGameProfile));
+		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new LdcTransformUnit("fill_profile_properties_transformer", "fillProfileProperties", "https://sessionserver.mojang.com/session/minecraft/profile/", apiFillGameProfile));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new LdcTransformUnit("join_server_transformer", "<clinit>", "https://sessionserver.mojang.com/session/minecraft/join", apiJoinServer));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new LdcTransformUnit("has_joined_server_transformer", "<clinit>", "https://sessionserver.mojang.com/session/minecraft/hasJoined", apiHasJoinServer));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new NamedTransformUnit("skin_whitelist_domain_transformer") {
