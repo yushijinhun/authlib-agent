@@ -8,8 +8,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import yushijinhun.authlibagent.api.GameProfile;
+import javax.persistence.OneToOne;
 
 @Entity
 public class AccountDao implements Serializable {
@@ -21,7 +22,8 @@ public class AccountDao implements Serializable {
 	private boolean banned;
 	private String clientToken;
 	private String accessToken;
-	private Set<GameProfile> profiles;
+	private Set<GameProfileDao> profiles;
+	private GameProfileDao selectedProfile;
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -68,12 +70,22 @@ public class AccountDao implements Serializable {
 	}
 
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public Set<GameProfile> getProfiles() {
+	public Set<GameProfileDao> getProfiles() {
 		return profiles;
 	}
 
-	public void setProfiles(Set<GameProfile> profiles) {
+	public void setProfiles(Set<GameProfileDao> profiles) {
 		this.profiles = profiles;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn
+	public GameProfileDao getSelectedProfile() {
+		return selectedProfile;
+	}
+
+	public void setSelectedProfile(GameProfileDao selectedProfile) {
+		this.selectedProfile = selectedProfile;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import yushijinhun.authlibagent.api.AlreadyDeletedException;
 import yushijinhun.authlibagent.api.GameProfile;
 import yushijinhun.authlibagent.api.IDCollisionException;
 import yushijinhun.authlibagent.api.PlayerTexture;
-import yushijinhun.authlibagent.api.YggdrasilAccount;
 
 public interface GameProfileLocal extends GameProfile {
 
@@ -19,7 +18,7 @@ public interface GameProfileLocal extends GameProfile {
 	void setName(String name) throws AlreadyDeletedException, IDCollisionException;
 
 	@Override
-	YggdrasilAccount getOwner() throws AlreadyDeletedException;
+	AccountLocal getOwner() throws AlreadyDeletedException;
 
 	@Override
 	boolean isBanned() throws AlreadyDeletedException;
@@ -32,6 +31,9 @@ public interface GameProfileLocal extends GameProfile {
 
 	@Override
 	void setTexture(PlayerTexture texture) throws AlreadyDeletedException;
+
+	@Override
+	public void setToDefault() throws AlreadyDeletedException;
 
 	@Override
 	void delete() throws AlreadyDeletedException;

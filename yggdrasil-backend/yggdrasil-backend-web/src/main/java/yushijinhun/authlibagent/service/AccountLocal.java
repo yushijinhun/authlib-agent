@@ -13,7 +13,10 @@ public interface AccountLocal extends YggdrasilAccount {
 	String getId() throws AlreadyDeletedException;
 
 	@Override
-	Set<GameProfile> getProfiles() throws AlreadyDeletedException;
+	Set<GameProfileLocal> getProfiles() throws AlreadyDeletedException;
+
+	@Override
+	public GameProfile getSelectedProfile() throws AlreadyDeletedException;
 
 	@Override
 	void revokeToken() throws AlreadyDeletedException;
@@ -37,7 +40,7 @@ public interface AccountLocal extends YggdrasilAccount {
 	void setBanned(boolean banned) throws AlreadyDeletedException;
 
 	@Override
-	GameProfile createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException;
+	GameProfileLocal createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException;
 
 	@Override
 	void delete() throws AlreadyDeletedException;

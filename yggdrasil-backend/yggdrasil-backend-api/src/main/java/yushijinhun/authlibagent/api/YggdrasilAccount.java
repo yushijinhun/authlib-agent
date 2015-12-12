@@ -34,7 +34,18 @@ public interface YggdrasilAccount extends Remote {
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	Set<GameProfile> getProfiles() throws AlreadyDeletedException, RemoteException;
+	Set<? extends GameProfile> getProfiles() throws AlreadyDeletedException, RemoteException;
+
+	/**
+	 * 获取此账户的默认角色。
+	 * <p>
+	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 
+	 * @return 此账户的默认角色，没有则为null
+	 * @throws AlreadyDeletedException 如果账号已被删除
+	 * @throws RemoteException 如果RMI调用期间出现异常
+	 */
+	GameProfile getSelectedProfile() throws AlreadyDeletedException, RemoteException;
 
 	/**
 	 * 吊销该账户的token。

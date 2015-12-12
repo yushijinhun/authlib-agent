@@ -109,6 +109,16 @@ public interface GameProfile extends Remote {
 	void setTexture(PlayerTexture texture) throws AlreadyDeletedException, RemoteException;
 
 	/**
+	 * 将该角色设置为其所属账户默认。
+	 * <p>
+	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 
+	 * @throws AlreadyDeletedException 如果角色已被删除
+	 * @throws RemoteException 如果RMI调用期间出现异常
+	 */
+	void setToDefault() throws AlreadyDeletedException, RemoteException;
+
+	/**
 	 * 删除该角色。
 	 * <p>
 	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
