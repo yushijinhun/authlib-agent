@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.service;
+package yushijinhun.authlibagent.service.rmi;
 
 import java.util.UUID;
 import yushijinhun.authlibagent.api.AccountManager;

@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.service;
+package yushijinhun.authlibagent.service.rmi;
 
 import yushijinhun.authlibagent.api.AccessPolicy;
 import yushijinhun.authlibagent.api.HostAccessManager;
