@@ -3,7 +3,6 @@ package yushijinhun.authlibagent.service;
 import java.util.Set;
 import java.util.UUID;
 import yushijinhun.authlibagent.api.AlreadyDeletedException;
-import yushijinhun.authlibagent.api.GameProfile;
 import yushijinhun.authlibagent.api.IDCollisionException;
 import yushijinhun.authlibagent.api.YggdrasilAccount;
 
@@ -16,7 +15,7 @@ public interface AccountLocal extends YggdrasilAccount {
 	Set<GameProfileLocal> getProfiles() throws AlreadyDeletedException;
 
 	@Override
-	public GameProfile getSelectedProfile() throws AlreadyDeletedException;
+	public GameProfileLocal getSelectedProfile() throws AlreadyDeletedException;
 
 	@Override
 	void revokeToken() throws AlreadyDeletedException;
