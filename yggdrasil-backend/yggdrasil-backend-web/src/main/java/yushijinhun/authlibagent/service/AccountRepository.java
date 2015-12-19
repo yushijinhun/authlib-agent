@@ -7,7 +7,7 @@ import yushijinhun.authlibagent.api.IDCollisionException;
 import yushijinhun.authlibagent.api.PlayerTexture;
 import yushijinhun.authlibagent.util.TokenPair;
 
-public interface AccountService {
+public interface AccountRepository {
 
 	// account methods
 

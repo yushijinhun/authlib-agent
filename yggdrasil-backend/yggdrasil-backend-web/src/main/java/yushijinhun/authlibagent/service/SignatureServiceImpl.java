@@ -12,7 +12,9 @@ import javax.management.openmbean.InvalidKeyException;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component("signature_service")
 public class SignatureServiceImpl implements SignatureService {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
