@@ -8,6 +8,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import javax.management.openmbean.InvalidKeyException;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,21 +24,17 @@ public class SignatureServiceImpl implements SignatureService {
 	}
 
 	@Override
-	public byte[] sign(byte[] data) throws SignatureException {
+	public byte[] sign(byte[] data) throws GeneralSecurityException {
 		RSAPrivateKey key = signKey;
 		if (key == null) {
-			throw new SignatureException("invalid signature key");
+			throw new InvalidKeyException("no key to sign with");
 		}
 
 		Signature signature = null;
-		try {
-			signature = Signature.getInstance("SHA1withRSA");
-			signature.initSign(signKey);
-			signature.update(data);
-			return signature.sign();
-		} catch (GeneralSecurityException e) {
-			throw new SignatureException("failed to sign" + (signature == null ? "" : ", provider=" + signature.getProvider().getName()), e);
-		}
+		signature = Signature.getInstance("SHA1withRSA");
+		signature.initSign(signKey);
+		signature.update(data);
+		return signature.sign();
 	}
 
 	@Override

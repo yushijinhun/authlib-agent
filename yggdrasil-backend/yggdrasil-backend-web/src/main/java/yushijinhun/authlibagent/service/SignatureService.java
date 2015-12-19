@@ -1,5 +1,6 @@
 package yushijinhun.authlibagent.service;
 
+import java.security.GeneralSecurityException;
 import java.security.interfaces.RSAPrivateKey;
 
 public interface SignatureService {
@@ -9,9 +10,9 @@ public interface SignatureService {
 	 * 
 	 * @param data 要签名的数据
 	 * @return 签名值
-	 * @throws SignatureException 如果出现签名时出现异常
+	 * @throws GeneralSecurityException 如果出现签名时出现异常
 	 */
-	byte[] sign(byte[] data) throws SignatureException;
+	byte[] sign(byte[] data) throws GeneralSecurityException;
 
 	/**
 	 * 更换签名所用的密钥。
