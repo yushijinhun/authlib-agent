@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.dao;
+package yushijinhun.authlibagent.dao.pojo;
 
 import java.io.Serializable;
 import java.util.Objects;
