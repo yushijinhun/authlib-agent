@@ -14,8 +14,6 @@ public class AccessPolicyDao implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String DEFAULT_POLICY_KEY = "default_policy";
-
 	private String host;
 	private AccessPolicy policy;
 

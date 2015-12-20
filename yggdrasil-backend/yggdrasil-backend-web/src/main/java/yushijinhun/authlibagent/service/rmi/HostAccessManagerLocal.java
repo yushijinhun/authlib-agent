@@ -5,6 +5,9 @@ import yushijinhun.authlibagent.api.HostAccessManager;
 
 public interface HostAccessManagerLocal extends HostAccessManager {
 
+	public static final String DEFAULT_POLICY_KEY = "default_policy";
+	public static final AccessPolicy DEFAULT_POLICY = AccessPolicy.ALLOW;
+
 	@Override
 	AccessPolicy getHostPolicy(String host);
 
