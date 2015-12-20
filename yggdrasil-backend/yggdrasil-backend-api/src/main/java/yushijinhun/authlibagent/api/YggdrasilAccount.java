@@ -16,8 +16,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 获取此账号的id。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @return 账号的id
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -27,8 +25,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 获取此账户所拥有的角色。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @return 一个无序的，不可修改的角色集合
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -38,8 +34,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 获取此账户的默认角色。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @return 此账户的默认角色，没有则为null
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -49,8 +43,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 吊销该账户的token。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
@@ -60,8 +52,7 @@ public interface YggdrasilAccount extends Remote {
 	/**
 	 * 为该账户重新分配一个token。
 	 * <p>
-	 * 该token可能随时会失效。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 该token可能随时会失效。
 	 * 
 	 * @param clientToken 客户端token，不能为null
 	 * @return 一个新的accessToken（访问token）
@@ -72,8 +63,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 验证token是否有效。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @param clientToken 客户端token
 	 * @param accessToken 访问token
@@ -87,8 +76,7 @@ public interface YggdrasilAccount extends Remote {
 	 * 更改改账户的密码。
 	 * <p>
 	 * password可以为null，在这种情况下，用户将不能登录。<br>
-	 * 安全保证：密码将使用sha512+salt的方法存储。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 安全保证：密码将使用sha512+salt的方法存储。
 	 * 
 	 * @param password 密码
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -99,8 +87,7 @@ public interface YggdrasilAccount extends Remote {
 	/**
 	 * 验证密码是否有效。
 	 * <p>
-	 * 如果password为null，该方法将始终返回false。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 如果password为null，该方法将始终返回false。
 	 * 
 	 * @param password 密码
 	 * @return 密码有效则true，无效则false
@@ -112,8 +99,7 @@ public interface YggdrasilAccount extends Remote {
 	/**
 	 * 获取该账户是否被封禁。
 	 * <p>
-	 * 如果一个账户被封禁，该账户将无法登录，其角色将无法加入服务器。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 如果一个账户被封禁，该账户将无法登录，其角色将无法加入服务器。
 	 * 
 	 * @return 如果账户被封禁返回true，否则false
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -123,8 +109,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 将该账户封禁/解封。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @param banned true则封禁，false则解封
 	 * @throws AlreadyDeletedException 如果账号已被删除
@@ -134,9 +118,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 为该账户添加一个角色。
-	 * <p>
-	 * 注意：捕获 {@link IDCollisionException} 和 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了
-	 * {@link IDCollisionException} 和 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @param uuid 角色uuid，不能为null，要求保证唯一
 	 * @param name 角色名，须满足 {@link YggdrasilValidate#isValidId(String)}，要求保证唯一
@@ -149,8 +130,6 @@ public interface YggdrasilAccount extends Remote {
 
 	/**
 	 * 删除该账户。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常

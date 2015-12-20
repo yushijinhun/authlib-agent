@@ -42,8 +42,6 @@ public interface AccountManager extends Remote {
 
 	/**
 	 * 创建一个账户。
-	 * <p>
-	 * 注意：捕获 {@link IDCollisionException} 时，同时要注意处理ServerException里包装了 {@link IDCollisionException} 的情况。
 	 * 
 	 * @param id 账户id，须满足 {@link YggdrasilValidate#isValidId(String)}，必须保证唯一
 	 * @return 创建的账户

@@ -16,8 +16,7 @@ public interface GameProfile extends Remote {
 	/**
 	 * 获取该角色的uuid。uuid为角色的唯一标识符。
 	 * <p>
-	 * 此uuid与角色在游戏中的uuid相同。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 此uuid与角色在游戏中的uuid相同。
 	 * 
 	 * @return 角色的uuid
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -28,8 +27,7 @@ public interface GameProfile extends Remote {
 	/**
 	 * 获取角色名。
 	 * <p>
-	 * 该角色名将在游戏中显示。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 该角色名将在游戏中显示。
 	 * 
 	 * @return 角色名
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -40,9 +38,7 @@ public interface GameProfile extends Remote {
 	/**
 	 * 设置角色名。
 	 * <p>
-	 * 该方法相当于正版换名机制，必须确保角色名唯一。<br>
-	 * 注意：捕获 {@link IDCollisionException} 和 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了
-	 * {@link IDCollisionException} 和 {@link AlreadyDeletedException} 的情况。
+	 * 该方法相当于正版换名机制，必须确保角色名唯一。
 	 * 
 	 * @param name 角色名，必须满足 {@link YggdrasilValidate#isValidId(String)}，必须保证唯一
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -53,8 +49,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 获取该角色所属账号。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @return 该角色所属账号
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -66,8 +60,7 @@ public interface GameProfile extends Remote {
 	 * 获取该角色是否被封禁。
 	 * <p>
 	 * 如果一个角色被封禁，将无法加入服务器。<br>
-	 * 注意：这里的封禁不代表在服务器上被ban，而是对其验证请求不予处理。<br>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
+	 * 注意：这里的封禁不代表在服务器上被ban，而是对其验证请求不予处理。
 	 * 
 	 * @return 如果角色被封禁返回true，否则false
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -77,8 +70,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 将该角色封禁/解封。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @param banned true则封禁，false则解封
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -88,8 +79,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 获取角色的皮肤和披风，没有则返回一个skin和cape都为null的PlayerTexture。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @return 角色的皮肤和披风
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -99,8 +88,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 设置角色的皮肤和披风。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @param texture 角色的皮肤和披风，不能为null
 	 * @throws AlreadyDeletedException 如果角色已被删除
@@ -110,8 +97,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 将该角色设置为其所属账户默认。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @throws AlreadyDeletedException 如果角色已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
@@ -120,8 +105,6 @@ public interface GameProfile extends Remote {
 
 	/**
 	 * 删除该角色。
-	 * <p>
-	 * 注意：捕获 {@link AlreadyDeletedException} 时，同时要注意处理ServerException里包装了 {@link AlreadyDeletedException} 的情况。
 	 * 
 	 * @throws AlreadyDeletedException 如果角色已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
