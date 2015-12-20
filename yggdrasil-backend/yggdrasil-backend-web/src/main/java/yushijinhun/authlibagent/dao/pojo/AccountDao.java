@@ -1,6 +1,7 @@
 package yushijinhun.authlibagent.dao.pojo;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -22,7 +23,7 @@ public class AccountDao implements Serializable {
 	private boolean banned;
 	private String clientToken;
 	private String accessToken;
-	private Set<GameProfileDao> profiles;
+	private Set<GameProfileDao> profiles = new HashSet<>();
 	private GameProfileDao selectedProfile;
 
 	@Id
