@@ -15,6 +15,8 @@ public interface AccountRepository {
 
 	void deleteAccount(String id) throws AlreadyDeletedException;
 
+	boolean doesAccountExist(String id);
+
 	String getEncryptedPassword(String id) throws AlreadyDeletedException;
 
 	void setEncryptedPassword(String id, String password) throws AlreadyDeletedException;
@@ -38,6 +40,8 @@ public interface AccountRepository {
 	void deleteProfile(UUID uuid) throws AlreadyDeletedException;
 
 	void renameProfile(UUID uuid, String newName) throws IDCollisionException, AlreadyDeletedException;
+
+	boolean doesProfileExist(UUID uuid);
 
 	UUID getProfileByName(String name);
 

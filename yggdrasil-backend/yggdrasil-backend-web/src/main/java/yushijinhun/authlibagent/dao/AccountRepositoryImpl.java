@@ -266,4 +266,18 @@ public class AccountRepositoryImpl implements AccountRepository {
 		return profile;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public boolean doesAccountExist(String id) {
+		Session session = database.getCurrentSession();
+		return session.get(AccountDao.class, id) != null;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean doesProfileExist(UUID uuid) {
+		Session session = database.getCurrentSession();
+		return session.get(GameProfileDao.class, uuid) != null;
+	}
+
 }
