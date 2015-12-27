@@ -68,6 +68,9 @@ public class AccountRepositoryImpl implements AccountRepository {
 	public TokenPair getTokenByAccount(String id) throws AlreadyDeletedException {
 		Session session = database.getCurrentSession();
 		AccountDao account = lookupAccount(id, session);
+		if (account.getClientToken() == null || account.getAccessToken() == null) {
+			return null;
+		}
 		return new TokenPair(toUUID(account.getClientToken()), toUUID(account.getAccessToken()));
 	}
 
@@ -93,8 +96,13 @@ public class AccountRepositoryImpl implements AccountRepository {
 	public void setToken(String id, TokenPair token) throws AlreadyDeletedException {
 		Session session = database.getCurrentSession();
 		AccountDao account = lookupAccount(id, session);
-		account.setClientToken(unsign(token.getClientToken()));
-		account.setAccessToken(unsign(token.getAccessToken()));
+		if (token == null) {
+			account.setClientToken(null);
+			account.setAccessToken(null);
+		} else {
+			account.setClientToken(unsign(token.getClientToken()));
+			account.setAccessToken(unsign(token.getAccessToken()));
+		}
 		session.update(account);
 	}
 

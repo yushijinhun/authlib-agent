@@ -18,10 +18,9 @@ public interface YggdrasilAccount extends Remote {
 	 * 获取此账号的id。
 	 * 
 	 * @return 账号的id
-	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	String getId() throws AlreadyDeletedException, RemoteException;
+	String getId() throws RemoteException;
 
 	/**
 	 * 获取此账户所拥有的角色。

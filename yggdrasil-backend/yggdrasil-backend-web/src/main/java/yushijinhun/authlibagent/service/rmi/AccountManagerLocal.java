@@ -2,22 +2,20 @@ package yushijinhun.authlibagent.service.rmi;
 
 import java.util.UUID;
 import yushijinhun.authlibagent.api.AccountManager;
-import yushijinhun.authlibagent.api.GameProfile;
 import yushijinhun.authlibagent.api.IDCollisionException;
-import yushijinhun.authlibagent.api.YggdrasilAccount;
 
 public interface AccountManagerLocal extends AccountManager {
 
 	@Override
-	GameProfile lookupGameProfile(UUID uuid);
+	GameProfileLocal lookupGameProfile(UUID uuid);
 
 	@Override
-	GameProfile lookupGameProfile(String name);
+	GameProfileLocal lookupGameProfile(String name);
 
 	@Override
-	YggdrasilAccount lookupAccount(String id);
+	AccountLocal lookupAccount(String id);
 
 	@Override
-	YggdrasilAccount createAccount(String id) throws IDCollisionException;
+	AccountLocal createAccount(String id) throws IDCollisionException;
 
 }

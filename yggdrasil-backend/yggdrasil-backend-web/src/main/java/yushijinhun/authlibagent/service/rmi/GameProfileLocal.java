@@ -9,7 +9,7 @@ import yushijinhun.authlibagent.api.PlayerTexture;
 public interface GameProfileLocal extends GameProfile {
 
 	@Override
-	UUID getUUID() throws AlreadyDeletedException;
+	UUID getUUID();
 
 	@Override
 	String getName() throws AlreadyDeletedException;

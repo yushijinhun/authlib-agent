@@ -19,10 +19,9 @@ public interface GameProfile extends Remote {
 	 * 此uuid与角色在游戏中的uuid相同。
 	 * 
 	 * @return 角色的uuid
-	 * @throws AlreadyDeletedException 如果角色已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	UUID getUUID() throws AlreadyDeletedException, RemoteException;
+	UUID getUUID() throws RemoteException;
 
 	/**
 	 * 获取角色名。

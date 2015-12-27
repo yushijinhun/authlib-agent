@@ -9,7 +9,7 @@ import yushijinhun.authlibagent.api.YggdrasilAccount;
 public interface AccountLocal extends YggdrasilAccount {
 
 	@Override
-	String getId() throws AlreadyDeletedException;
+	String getId();
 
 	@Override
 	Set<GameProfileLocal> getProfiles() throws AlreadyDeletedException;
