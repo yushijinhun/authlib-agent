@@ -3,11 +3,10 @@ package yushijinhun.authlibagent.service.rmi;
 import java.security.interfaces.RSAPrivateKey;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import yushijinhun.authlibagent.api.YggdrasilBackend;
 import yushijinhun.authlibagent.service.SignatureService;
 
 @Component("backend_access")
-public class YggdrasilBackendImpl implements YggdrasilBackend {
+public class YggdrasilBackendImpl implements YggdrasilBackendLocal {
 
 	@Qualifier("account_manager")
 	private AccountManagerLocal accountManager;
