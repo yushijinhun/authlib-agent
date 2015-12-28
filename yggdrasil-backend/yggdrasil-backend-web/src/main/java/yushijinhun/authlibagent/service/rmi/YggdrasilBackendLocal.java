@@ -1,19 +1,20 @@
 package yushijinhun.authlibagent.service.rmi;
 
 import java.security.interfaces.RSAPrivateKey;
-import yushijinhun.authlibagent.api.AccountManager;
-import yushijinhun.authlibagent.api.HostAccessManager;
 import yushijinhun.authlibagent.api.YggdrasilBackend;
+import yushijinhun.authlibagent.service.SignatureService;
 
 public interface YggdrasilBackendLocal extends YggdrasilBackend {
 
 	@Override
-	AccountManager getAccountManager();
+	AccountManagerLocal getAccountManager();
 
 	@Override
-	HostAccessManager getGameServerAccessManager();
+	HostAccessManagerLocal getGameServerAccessManager();
 
 	@Override
 	void setSignatureKey(RSAPrivateKey key);
+
+	SignatureService getSignatureService();
 
 }

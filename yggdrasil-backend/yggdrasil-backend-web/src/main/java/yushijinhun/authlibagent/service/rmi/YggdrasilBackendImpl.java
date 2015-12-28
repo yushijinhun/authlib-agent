@@ -32,4 +32,9 @@ public class YggdrasilBackendImpl implements YggdrasilBackendLocal {
 		signatureService.setSignatureKey(key);
 	}
 
+	@Override
+	public SignatureService getSignatureService() {
+		return signatureService;
+	}
+
 }
