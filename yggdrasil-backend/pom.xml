@@ -27,7 +27,10 @@
 		</plugins>
 	</build>
 	<modules>
+		<module>yggdrasil-commons</module>
+		<module>yggdrasil-web-api</module>
 		<module>yggdrasil-backend-api</module>
-		<module>yggdrasil-backend-web</module>
+		<module>yggdrasil-backend-impl</module>
+		<module>yggdrasil-web-impl</module>
 	</modules>
 </project>

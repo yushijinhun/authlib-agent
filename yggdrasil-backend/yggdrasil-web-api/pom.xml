@@ -5,7 +5,7 @@
 		<artifactId>yggdrasil-backend</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>yggdrasil-backend-api</artifactId>
+	<artifactId>yggdrasil-web-api</artifactId>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
