@@ -1,14 +1,16 @@
-package yushijinhun.authlibagent.backend.service.rmi;
+package yushijinhun.authlibagent.backend.service;
 
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import yushijinhun.authlibagent.backend.api.AccountManager;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
+import yushijinhun.authlibagent.backend.api.GameProfile;
 import yushijinhun.authlibagent.backend.api.IDCollisionException;
+import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
 import yushijinhun.authlibagent.backend.dao.AccountRepository;
-import yushijinhun.authlibagent.backend.service.PasswordAlgorithm;
 import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
@@ -16,7 +18,7 @@ import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 import static java.util.stream.Collectors.*;
 
 @Component("account_manager")
-public class AccountManagerImpl implements AccountManagerLocal {
+public class AccountManagerImpl implements AccountManager {
 
 	@Qualifier("account_repository")
 	private AccountRepository repo;
@@ -24,7 +26,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 	@Qualifier("password_sha512_salt")
 	private PasswordAlgorithm pwdAlg;
 
-	private class GameProfileImpl implements GameProfileLocal {
+	private class GameProfileImpl implements GameProfile {
 
 		UUID uuid;
 
@@ -48,7 +50,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 		}
 
 		@Override
-		public AccountLocal getOwner() throws AlreadyDeletedException {
+		public AccountImpl getOwner() throws AlreadyDeletedException {
 			return new AccountImpl(repo.getProfileOwner(uuid));
 		}
 
@@ -106,7 +108,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 
 	}
 
-	private class AccountImpl implements AccountLocal {
+	private class AccountImpl implements YggdrasilAccount {
 
 		String id;
 
@@ -120,12 +122,12 @@ public class AccountManagerImpl implements AccountManagerLocal {
 		}
 
 		@Override
-		public Set<GameProfileLocal> getProfiles() throws AlreadyDeletedException {
+		public Set<GameProfileImpl> getProfiles() throws AlreadyDeletedException {
 			return repo.getProfiles(id).stream().map(GameProfileImpl::new).collect(toSet());
 		}
 
 		@Override
-		public GameProfileLocal getSelectedProfile() throws AlreadyDeletedException {
+		public GameProfileImpl getSelectedProfile() throws AlreadyDeletedException {
 			return new GameProfileImpl(repo.getDefaultProfile(id));
 		}
 
@@ -170,7 +172,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 		}
 
 		@Override
-		public GameProfileLocal createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException {
+		public GameProfileImpl createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException {
 			repo.createProfile(id, uuid, name);
 			return new GameProfileImpl(uuid);
 		}
@@ -205,7 +207,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 	}
 
 	@Override
-	public GameProfileLocal lookupGameProfile(UUID uuid) {
+	public GameProfileImpl lookupGameProfile(UUID uuid) {
 		if (uuid == null || !repo.doesProfileExist(uuid)) {
 			return null;
 		}
@@ -213,7 +215,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 	}
 
 	@Override
-	public GameProfileLocal lookupGameProfile(String name) {
+	public GameProfileImpl lookupGameProfile(String name) {
 		if (name == null) {
 			return null;
 		}
@@ -225,7 +227,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 	}
 
 	@Override
-	public AccountLocal lookupAccount(String id) {
+	public AccountImpl lookupAccount(String id) {
 		if (id == null || !repo.doesAccountExist(id)) {
 			return null;
 		}
@@ -233,7 +235,7 @@ public class AccountManagerImpl implements AccountManagerLocal {
 	}
 
 	@Override
-	public AccountLocal createAccount(String id) throws IDCollisionException {
+	public AccountImpl createAccount(String id) throws IDCollisionException {
 		Objects.requireNonNull(id);
 		repo.newAccount(id);
 		return new AccountImpl(id);
