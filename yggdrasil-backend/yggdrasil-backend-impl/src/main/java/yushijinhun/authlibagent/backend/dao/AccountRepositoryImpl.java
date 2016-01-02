@@ -288,4 +288,20 @@ public class AccountRepositoryImpl implements AccountRepository {
 		return session.get(GameProfileDao.class, uuid) != null;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public String getServerId(UUID uuid) throws AlreadyDeletedException {
+		Session session = database.getCurrentSession();
+		GameProfileDao profile = lookupProfile(uuid, session);
+		return profile.getServerId();
+	}
+
+	@Override
+	public void setServerId(UUID uuid, String serverid) throws AlreadyDeletedException {
+		Session session = database.getCurrentSession();
+		GameProfileDao profile = lookupProfile(uuid, session);
+		profile.setServerId(serverid);
+		session.update(profile);
+	}
+
 }

@@ -27,7 +27,7 @@ public interface WebBackend extends Remote {
 
 	void joinServer(UUID accessToken, UUID profile, String serverid) throws ForbiddenOperationException, RemoteException;
 
-	boolean hasJoinServer(String username, String serverid) throws RemoteException;
+	boolean hasJoinServer(String playername, String serverid) throws RemoteException;
 
 	GameProfileResponse lookupProfile(UUID profile) throws RemoteException;
 

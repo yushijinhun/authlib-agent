@@ -63,6 +63,10 @@ public interface AccountRepository {
 
 	void setDefaultProfile(UUID uuid) throws AlreadyDeletedException;
 
+	String getServerId(UUID profile) throws AlreadyDeletedException;
+
+	void setServerId(UUID profile, String serverid) throws AlreadyDeletedException;
+
 	// ============
 
 }

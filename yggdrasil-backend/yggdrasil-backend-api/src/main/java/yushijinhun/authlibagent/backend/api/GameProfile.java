@@ -104,6 +104,32 @@ public interface GameProfile extends Remote {
 	void setToDefault() throws AlreadyDeletedException, RemoteException;
 
 	/**
+	 * 获取该角色用于进行"正版"验证而生成的临时id。
+	 * <p>
+	 * "正版"验证进服流程：<br>
+	 * 0. 客户端请求加入服务端<br>
+	 * 1. 客户端要求服务端生成一个临时id<br>
+	 * 2. 客户端将该临时id和自己的accessToken发送给验证服务器<br>
+	 * 3. 验证服务器确认该accessToken有效后将临时id存储起来<br>
+	 * 4. 服务端将这个临时id和玩家名发送给验证服务器，要求验证服务器对比该临时id和存储的临时id是否一致<br>
+	 * 5. 若两个临时id一致，则进服成功<br>
+	 * 
+	 * @return 该角色用于进行"正版"验证而生成的临时id
+	 * @throws AlreadyDeletedException 如果角色已被删除
+	 * @throws RemoteException 如果RMI调用期间出现异常
+	 */
+	String getServerAuthenticationID() throws AlreadyDeletedException, RemoteException;
+
+	/**
+	 * 设置该角色用于进行"正版"验证而生成的临时id。
+	 * 
+	 * @param authenticationId 该角色用于进行"正版"验证而生成的临时id
+	 * @throws AlreadyDeletedException 如果角色已被删除
+	 * @throws RemoteException 如果RMI调用期间出现异常
+	 */
+	void setServerAuthenticationID(String authenticationId) throws AlreadyDeletedException, RemoteException;
+
+	/**
 	 * 删除该角色。
 	 * 
 	 * @throws AlreadyDeletedException 如果角色已被删除

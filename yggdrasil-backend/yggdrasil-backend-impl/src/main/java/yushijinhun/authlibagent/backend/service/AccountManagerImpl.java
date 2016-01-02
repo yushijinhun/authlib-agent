@@ -1,5 +1,6 @@
 package yushijinhun.authlibagent.backend.service;
 
+import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -81,6 +82,16 @@ public class AccountManagerImpl implements AccountManager {
 		@Override
 		public void setToDefault() throws AlreadyDeletedException {
 			repo.setDefaultProfile(uuid);
+		}
+
+		@Override
+		public String getServerAuthenticationID() throws AlreadyDeletedException, RemoteException {
+			return repo.getServerId(uuid);
+		}
+
+		@Override
+		public void setServerAuthenticationID(String serverid) throws AlreadyDeletedException, RemoteException {
+			repo.setServerId(uuid, serverid);
 		}
 
 		@Override

@@ -25,6 +25,7 @@ public class GameProfileDao implements Serializable {
 	private String skin = null;
 	private String cape = null;
 	private TextureModel textureModel = TextureModel.STEVE;
+	private String serverId;
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -88,6 +89,14 @@ public class GameProfileDao implements Serializable {
 
 	public void setTextureModel(TextureModel textureModel) {
 		this.textureModel = textureModel;
+	}
+
+	public String getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(String serverId) {
+		this.serverId = serverId;
 	}
 
 	@Override
