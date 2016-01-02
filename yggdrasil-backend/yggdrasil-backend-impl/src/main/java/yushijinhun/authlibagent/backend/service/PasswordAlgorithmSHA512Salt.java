@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
 import static yushijinhun.authlibagent.commons.HexUtils.*;
 
-@Component("password_sha512_salt")
+@Component("password_algorithm")
 public class PasswordAlgorithmSHA512Salt implements PasswordAlgorithm {
 
 	private int saltLength = 16;

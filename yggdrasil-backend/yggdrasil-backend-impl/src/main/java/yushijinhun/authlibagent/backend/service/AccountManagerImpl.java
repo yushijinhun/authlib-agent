@@ -11,6 +11,7 @@ import yushijinhun.authlibagent.backend.api.GameProfile;
 import yushijinhun.authlibagent.backend.api.IDCollisionException;
 import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
 import yushijinhun.authlibagent.backend.dao.AccountRepository;
+import yushijinhun.authlibagent.backend.util.Cache;
 import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
@@ -23,8 +24,11 @@ public class AccountManagerImpl implements AccountManager {
 	@Qualifier("account_repository")
 	private AccountRepository repo;
 
-	@Qualifier("password_sha512_salt")
+	@Qualifier("password_algorithm")
 	private PasswordAlgorithm pwdAlg;
+
+	private Cache<String, YggdrasilAccount> accounts = new Cache<>(AccountImpl::new);
+	private Cache<UUID, GameProfile> profiles = new Cache<>(GameProfileImpl::new);
 
 	private class GameProfileImpl implements GameProfile {
 
@@ -50,8 +54,8 @@ public class AccountManagerImpl implements AccountManager {
 		}
 
 		@Override
-		public AccountImpl getOwner() throws AlreadyDeletedException {
-			return new AccountImpl(repo.getProfileOwner(uuid));
+		public YggdrasilAccount getOwner() throws AlreadyDeletedException {
+			return lookupAccount(repo.getProfileOwner(uuid));
 		}
 
 		@Override
@@ -122,13 +126,13 @@ public class AccountManagerImpl implements AccountManager {
 		}
 
 		@Override
-		public Set<GameProfileImpl> getProfiles() throws AlreadyDeletedException {
-			return repo.getProfiles(id).stream().map(GameProfileImpl::new).collect(toSet());
+		public Set<GameProfile> getProfiles() throws AlreadyDeletedException {
+			return repo.getProfiles(id).stream().map(AccountManagerImpl.this::lookupGameProfile).collect(toSet());
 		}
 
 		@Override
-		public GameProfileImpl getSelectedProfile() throws AlreadyDeletedException {
-			return new GameProfileImpl(repo.getDefaultProfile(id));
+		public GameProfile getSelectedProfile() throws AlreadyDeletedException {
+			return lookupGameProfile(repo.getDefaultProfile(id));
 		}
 
 		@Override
@@ -172,9 +176,9 @@ public class AccountManagerImpl implements AccountManager {
 		}
 
 		@Override
-		public GameProfileImpl createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException {
+		public GameProfile createGameProfile(UUID uuid, String name) throws AlreadyDeletedException, IDCollisionException {
 			repo.createProfile(id, uuid, name);
-			return new GameProfileImpl(uuid);
+			return lookupGameProfile(uuid);
 		}
 
 		@Override
@@ -207,15 +211,16 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
-	public GameProfileImpl lookupGameProfile(UUID uuid) {
+	public GameProfile lookupGameProfile(UUID uuid) {
 		if (uuid == null || !repo.doesProfileExist(uuid)) {
+			profiles.remove(uuid);
 			return null;
 		}
-		return new GameProfileImpl(uuid);
+		return profiles.get(uuid);
 	}
 
 	@Override
-	public GameProfileImpl lookupGameProfile(String name) {
+	public GameProfile lookupGameProfile(String name) {
 		if (name == null) {
 			return null;
 		}
@@ -223,22 +228,22 @@ public class AccountManagerImpl implements AccountManager {
 		if (uuid == null) {
 			return null;
 		}
-		return new GameProfileImpl(uuid);
+		return profiles.get(uuid);
 	}
 
 	@Override
-	public AccountImpl lookupAccount(String id) {
+	public YggdrasilAccount lookupAccount(String id) {
 		if (id == null || !repo.doesAccountExist(id)) {
 			return null;
 		}
-		return new AccountImpl(id);
+		return accounts.get(id);
 	}
 
 	@Override
-	public AccountImpl createAccount(String id) throws IDCollisionException {
+	public YggdrasilAccount createAccount(String id) throws IDCollisionException {
 		Objects.requireNonNull(id);
 		repo.newAccount(id);
-		return new AccountImpl(id);
+		return accounts.get(id);
 	}
 
 }

@@ -2,6 +2,7 @@ package yushijinhun.authlibagent.api.web;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.UUID;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.RefreshResponse;
@@ -31,6 +32,10 @@ public interface WebBackend extends Remote {
 
 	AccessPolicy getServerAccessPolicy(String host) throws RemoteException;
 
-	void setSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException;
+	void addSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException;
+
+	void removeSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException;
+
+	RSAPrivateKey getSignatureKey() throws RemoteException;
 
 }
