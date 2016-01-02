@@ -236,11 +236,13 @@ public class WebBackendImpl implements WebBackend {
 
 	@PostConstruct
 	private void rmiBind() throws MalformedURLException, RemoteException, AlreadyBoundException {
+		LOGGER.info("web backend bind: %s", rmiUri);
 		Naming.bind(rmiUri, this);
 	}
 
 	@PreDestroy
 	private void rmiUnbind() throws RemoteException, MalformedURLException, NotBoundException {
+		LOGGER.info("web backend unbind: %s", rmiUri);
 		Naming.unbind(rmiUri);
 	}
 

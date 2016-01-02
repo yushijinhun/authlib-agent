@@ -40,7 +40,7 @@
 	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
 			<list>
-				<value>classpath*:application.properties</value>
+				<value>WEB-INF/application.properties</value>
 			</list>
 		</property>
 	</bean>
