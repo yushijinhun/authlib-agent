@@ -76,17 +76,17 @@ public class AccountRepositoryImpl implements AccountRepository {
 
 	@Override
 	@Transactional(readOnly = true)
-	public String getAccountByClientToken(UUID clientToken) {
+	public String getAccountByAccessToken(UUID accessToken) {
 		Session session = database.getCurrentSession();
 
 		@SuppressWarnings("unchecked")
-		List<AccountDao> results = session.createCriteria(AccountDao.class).add(eq("clientToken", unsign(clientToken))).list();
+		List<AccountDao> results = session.createCriteria(AccountDao.class).add(eq("accessToken", unsign(accessToken))).list();
 
 		if (results.isEmpty()) {
 			return null;
 		}
 		if (results.size() > 1) {
-			LOGGER.warn("%d accounts have the same client token '%s'", results.size(), clientToken);
+			LOGGER.warn("%d accounts have the same access token '%s'", results.size(), accessToken);
 		}
 
 		return results.get(0).getId();

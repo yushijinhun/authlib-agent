@@ -35,10 +35,19 @@ public interface AccountManager extends Remote {
 	 * 根据账户id查询账户。
 	 * 
 	 * @param id 账户id
-	 * @return 查询到的账户，如果id为null或没有角色与给定id对应则返回null
+	 * @return 查询到的账户，如果id为null或没有账户与给定id对应则返回null
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
 	YggdrasilAccount lookupAccount(String id) throws RemoteException;
+
+	/**
+	 * 根据accessToken查询账户。
+	 * 
+	 * @param accessToken accessToken
+	 * @return 查询到的账户，如果accessToken为null或没有账户与给定accessToken对应则返回null
+	 * @throws RemoteException 如果RMI调用期间出现异常
+	 */
+	YggdrasilAccount lookupAccount(UUID accessToken) throws RemoteException;
 
 	/**
 	 * 创建一个账户。

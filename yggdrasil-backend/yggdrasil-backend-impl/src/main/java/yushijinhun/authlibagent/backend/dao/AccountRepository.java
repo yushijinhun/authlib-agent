@@ -23,7 +23,7 @@ public interface AccountRepository {
 
 	TokenPair getTokenByAccount(String id) throws AlreadyDeletedException;
 
-	String getAccountByClientToken(UUID clientToken);
+	String getAccountByAccessToken(UUID accessToken);
 
 	void setToken(String id, TokenPair token) throws AlreadyDeletedException;
 

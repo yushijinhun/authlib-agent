@@ -29,7 +29,7 @@ public interface YggdrasilAccount extends Remote {
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	Set<? extends GameProfile> getProfiles() throws AlreadyDeletedException, RemoteException;
+	Set<GameProfile> getProfiles() throws AlreadyDeletedException, RemoteException;
 
 	/**
 	 * 获取此账户的默认角色。
@@ -58,7 +58,7 @@ public interface YggdrasilAccount extends Remote {
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	String createToken(String clientToken) throws AlreadyDeletedException, RemoteException;
+	UUID createToken(UUID clientToken) throws AlreadyDeletedException, RemoteException;
 
 	/**
 	 * 验证token是否有效。
@@ -69,7 +69,7 @@ public interface YggdrasilAccount extends Remote {
 	 * @throws AlreadyDeletedException 如果账号已被删除
 	 * @throws RemoteException 如果RMI调用期间出现异常
 	 */
-	boolean isTokenValid(String clientToken, String accessToken) throws AlreadyDeletedException, RemoteException;
+	boolean isTokenValid(UUID clientToken, UUID accessToken) throws AlreadyDeletedException, RemoteException;
 
 	/**
 	 * 更改改账户的密码。

@@ -16,8 +16,8 @@ public class YggdrasilBackendImpl implements YggdrasilBackend {
 	@Qualifier("host_access_manager")
 	private HostAccessManager hostAccessManager;
 
-	@Qualifier("signature_service")
-	private SignatureService signatureService;
+	@Qualifier("key_server_service")
+	private KeyServerService keyServerService;
 
 	@Override
 	public AccountManager getAccountManager() {
@@ -31,7 +31,7 @@ public class YggdrasilBackendImpl implements YggdrasilBackend {
 
 	@Override
 	public void setSignatureKey(RSAPrivateKey key) {
-		signatureService.setSignatureKey(key);
+		keyServerService.setKey(key);
 	}
 
 }

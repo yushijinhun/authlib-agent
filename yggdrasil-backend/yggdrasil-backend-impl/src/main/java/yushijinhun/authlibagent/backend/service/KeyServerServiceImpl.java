@@ -5,44 +5,26 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
-import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import javax.management.openmbean.InvalidKeyException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-@Component("signature_service")
-public class SignatureServiceImpl implements SignatureService {
+@Component("key_server_service")
+public class KeyServerServiceImpl implements KeyServerService {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
-	private volatile RSAPrivateKey signKey;
+	private volatile RSAPrivateKey key;
+	private Set<KeyChangeListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	public SignatureServiceImpl() {
+	public KeyServerServiceImpl() {
 		loadLocalKey();
-	}
-
-	@Override
-	public byte[] sign(byte[] data) throws GeneralSecurityException {
-		RSAPrivateKey key = signKey;
-		if (key == null) {
-			throw new InvalidKeyException("no key to sign with");
-		}
-
-		Signature signature = null;
-		signature = Signature.getInstance("SHA1withRSA");
-		signature.initSign(signKey);
-		signature.update(data);
-		return signature.sign();
-	}
-
-	@Override
-	public void setSignatureKey(RSAPrivateKey key) {
-		LOGGER.info("new signature key: " + key);
-		this.signKey = key;
 	}
 
 	private void loadLocalKey() {
@@ -69,11 +51,33 @@ public class SignatureServiceImpl implements SignatureService {
 		}
 
 		if (key instanceof RSAPrivateKey) {
-			setSignatureKey((RSAPrivateKey) key);
+			setKey((RSAPrivateKey) key);
 		} else {
 			LOGGER.warn("unable to cast " + key + " to a rsa private key");
 			return;
 		}
+	}
+
+	@Override
+	public RSAPrivateKey getKey() {
+		return key;
+	}
+
+	@Override
+	public void setKey(RSAPrivateKey key) {
+		LOGGER.info("new signature key: " + key);
+		this.key = key;
+		listeners.forEach(l -> l.onChange(key));
+	}
+
+	@Override
+	public void addKeyChangeListener(KeyChangeListener l) {
+		listeners.add(l);
+	}
+
+	@Override
+	public void removeKeyChangeListener(KeyChangeListener l) {
+		listeners.remove(l);
 	}
 
 }

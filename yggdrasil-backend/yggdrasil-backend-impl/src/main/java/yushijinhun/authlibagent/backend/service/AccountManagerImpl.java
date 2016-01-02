@@ -16,7 +16,6 @@ import yushijinhun.authlibagent.backend.util.Cache;
 import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
-import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 import static java.util.stream.Collectors.*;
 
 @Component("account_manager")
@@ -152,16 +151,15 @@ public class AccountManagerImpl implements AccountManager {
 		}
 
 		@Override
-		public String createToken(String clientTokenStr) throws AlreadyDeletedException {
-			UUID clientToken = toUUID(clientTokenStr);
+		public UUID createToken(UUID clientToken) throws AlreadyDeletedException {
 			UUID accessToken = randomUUID();
 			repo.setToken(id, new TokenPair(clientToken, accessToken));
-			return unsign(accessToken);
+			return accessToken;
 		}
 
 		@Override
-		public boolean isTokenValid(String clientToken, String accessToken) throws AlreadyDeletedException {
-			return new TokenPair(toUUID(clientToken), toUUID(accessToken)).equals(repo.getTokenByAccount(id));
+		public boolean isTokenValid(UUID clientToken, UUID accessToken) throws AlreadyDeletedException {
+			return new TokenPair(clientToken, accessToken).equals(repo.getTokenByAccount(id));
 		}
 
 		@Override
@@ -254,6 +252,18 @@ public class AccountManagerImpl implements AccountManager {
 	public YggdrasilAccount createAccount(String id) throws IDCollisionException {
 		Objects.requireNonNull(id);
 		repo.newAccount(id);
+		return accounts.get(id);
+	}
+
+	@Override
+	public YggdrasilAccount lookupAccount(UUID accessToken) throws RemoteException {
+		if (accessToken == null) {
+			return null;
+		}
+		String id = repo.getAccountByAccessToken(accessToken);
+		if (id == null) {
+			return null;
+		}
 		return accounts.get(id);
 	}
 

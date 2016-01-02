@@ -15,7 +15,7 @@ public interface WebBackend extends Remote {
 
 	RefreshResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
 
-	RefreshResponse selectProfile(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
+	RefreshResponse selectProfile(UUID accessToken, UUID clientToken, UUID profile) throws ForbiddenOperationException, RemoteException;
 
 	boolean validate(UUID accessToken, UUID clientToken) throws RemoteException;
 
