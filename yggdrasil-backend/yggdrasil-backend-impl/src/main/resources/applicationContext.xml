@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop
+                            http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+                            http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                            http://www.springframework.org/schema/jee
+                            http://www.springframework.org/schema/jee/spring-jee-3.2.xsd 
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="yushijinhun.authlibagent.backend" />
+
+	<bean id="session_factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.dao.pojo" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="connection.driver_class">com.mysql.jdbc.Driver</prop>
+				<prop key="connection.url">jdbc:mysql://localhost/yggdrasil</prop>
+				<prop key="connection.username">yggdrasil</prop>
+				<prop key="connection.password">authlibagent_yggdrasil_backend</prop>
+				<prop key="c3p0.min_size">5</prop>
+				<prop key="c3p0.max_size">100</prop>
+				<prop key="c3p0.timeout">8000</prop>
+				<prop key="c3p0.max_statements">100</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transaction_manager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="session_factory"></property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transaction_manager" />
+
+	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath*:application.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="property_configurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="properties" ref="config" />
+	</bean>
+
+</beans>
