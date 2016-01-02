@@ -1,5 +1,9 @@
 package yushijinhun.authlibagent.backend.service;
 
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
@@ -11,6 +15,7 @@ import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
@@ -48,6 +53,9 @@ public class WebBackendImpl implements WebBackend {
 
 	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private KeyChangeListener keyChangeListener;
+
+	@Value("#{config['rmi.web_backend']}")
+	private String rmiUri;
 
 	@Transactional
 	@Override
@@ -224,6 +232,16 @@ public class WebBackendImpl implements WebBackend {
 	@PreDestroy
 	private void unregisterKeyListener() {
 		keyServerService.removeKeyChangeListener(keyChangeListener);
+	}
+
+	@PostConstruct
+	private void rmiBind() throws MalformedURLException, RemoteException, AlreadyBoundException {
+		Naming.bind(rmiUri, this);
+	}
+
+	@PreDestroy
+	private void rmiUnbind() throws RemoteException, MalformedURLException, NotBoundException {
+		Naming.unbind(rmiUri);
 	}
 
 	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) throws AlreadyDeletedException, RemoteException {
