@@ -1,10 +1,10 @@
-package yushijinhun.authlibagent.api.web;
+package yushijinhun.authlibagent.api.web.response;
 
 import java.io.Serializable;
 import java.util.UUID;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 
-public class GameProfile implements Serializable {
+public class GameProfileResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -12,11 +12,11 @@ public class GameProfile implements Serializable {
 	private String name;
 	private PlayerTexture texture;
 
-	public GameProfile(UUID uuid, String name) {
+	public GameProfileResponse(UUID uuid, String name) {
 		this(uuid, name, null);
 	}
 
-	public GameProfile(UUID uuid, String name, PlayerTexture texture) {
+	public GameProfileResponse(UUID uuid, String name, PlayerTexture texture) {
 		this.uuid = uuid;
 		this.name = name;
 		this.texture = texture;

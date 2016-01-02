@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.UUID;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
+import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
 import yushijinhun.authlibagent.api.web.response.RefreshResponse;
 import yushijinhun.authlibagent.commons.AccessPolicy;
 
@@ -28,7 +29,7 @@ public interface WebBackend extends Remote {
 
 	boolean hasJoinServer(String username, String serverid) throws RemoteException;
 
-	GameProfile lookupProfile(UUID profile) throws RemoteException;
+	GameProfileResponse lookupProfile(UUID profile) throws RemoteException;
 
 	AccessPolicy getServerAccessPolicy(String host) throws RemoteException;
 
