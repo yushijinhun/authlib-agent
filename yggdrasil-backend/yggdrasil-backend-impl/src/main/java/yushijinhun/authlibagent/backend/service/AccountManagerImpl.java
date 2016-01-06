@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.backend.api.AccountManager;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
@@ -21,10 +21,10 @@ import static java.util.stream.Collectors.*;
 @Component("account_manager")
 public class AccountManagerImpl implements AccountManager {
 
-	@Qualifier("account_repository")
+	@Resource(name = "account_repository")
 	private AccountRepository repo;
 
-	@Qualifier("password_algorithm")
+	@Resource(name = "password_algorithm")
 	private PasswordAlgorithm pwdAlg;
 
 	private Cache<String, YggdrasilAccount> accounts = new Cache<>(AccountImpl::new);

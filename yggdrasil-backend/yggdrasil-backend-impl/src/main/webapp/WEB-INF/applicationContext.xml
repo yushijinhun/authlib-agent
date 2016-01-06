@@ -14,27 +14,25 @@
 	<context:annotation-config />
 	<context:component-scan base-package="yushijinhun.authlibagent.backend" />
 
+	<bean id="data_source" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost/yggdrasil" />
+		<property name="user" value="yggdrasil" />
+		<property name="password" value="authlibagent_yggdrasil_backend" />
+		<property name="maxIdleTime" value="8000" />
+		<property name="maxPoolSize" value="40" />
+		<property name="maxStatements" value="100" />
+	</bean>
+
 	<bean id="session_factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.dao.pojo" />
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="connection.driver_class">com.mysql.jdbc.Driver</prop>
-				<prop key="connection.url">jdbc:mysql://localhost/yggdrasil</prop>
-				<prop key="connection.username">yggdrasil</prop>
-				<prop key="connection.password">authlibagent_yggdrasil_backend</prop>
-				<prop key="c3p0.min_size">5</prop>
-				<prop key="c3p0.max_size">100</prop>
-				<prop key="c3p0.timeout">8000</prop>
-				<prop key="c3p0.max_statements">100</prop>
-			</props>
-		</property>
+		<property name="dataSource" ref="data_source" />
 	</bean>
 
 	<bean id="transaction_manager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="session_factory"></property>
+		<property name="sessionFactory" ref="session_factory" />
 	</bean>
+
 	<tx:annotation-driven transaction-manager="transaction_manager" />
 
 	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -46,6 +44,18 @@
 	</bean>
 	<bean id="property_configurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
 		<property name="properties" ref="config" />
+	</bean>
+
+	<bean id="rmi_web_backend" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="web_backend" />
+		<property name="serviceName" value="rmi://localhost:10099/web_backend" />
+		<property name="serviceInterface" value="yushijinhun.authlibagent.api.web.WebBackend" />
+	</bean>
+
+	<bean id="rmi_backend" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="backend_access" />
+		<property name="serviceName" value="rmi://localhost:10099/backend_access" />
+		<property name="serviceInterface" value="yushijinhun.authlibagent.backend.api.YggdrasilBackend" />
 	</bean>
 
 </beans>

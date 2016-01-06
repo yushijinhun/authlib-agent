@@ -1,8 +1,8 @@
 package yushijinhun.authlibagent.backend.dao;
 
+import javax.annotation.Resource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.backend.dao.pojo.AccessPolicyDao;
@@ -12,7 +12,7 @@ import yushijinhun.authlibagent.commons.AccessPolicy;
 @Transactional
 public class HostAccessRepositoryImpl implements HostAccessRepository {
 
-	@Qualifier("session_factory")
+	@Resource(name = "session_factory")
 	private SessionFactory database;
 
 	@Override

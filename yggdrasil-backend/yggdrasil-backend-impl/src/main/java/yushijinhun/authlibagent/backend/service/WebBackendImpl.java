@@ -1,9 +1,5 @@
 package yushijinhun.authlibagent.backend.service;
 
-import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
@@ -12,10 +8,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
@@ -42,20 +37,17 @@ public class WebBackendImpl implements WebBackend {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
-	@Qualifier("account_manager")
+	@Resource(name = "account_manager")
 	private AccountManager accountManager;
 
-	@Qualifier("host_access_manager")
+	@Resource(name = "host_access_manager")
 	private HostAccessManager hostAccessManager;
 
-	@Qualifier("key_server_service")
+	@Resource(name = "key_server_service")
 	private KeyServerService keyServerService;
 
 	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private KeyChangeListener keyChangeListener;
-
-	@Value("#{config['rmi.web_backend']}")
-	private String rmiUri;
 
 	@Transactional
 	@Override
@@ -232,18 +224,6 @@ public class WebBackendImpl implements WebBackend {
 	@PreDestroy
 	private void unregisterKeyListener() {
 		keyServerService.removeKeyChangeListener(keyChangeListener);
-	}
-
-	@PostConstruct
-	private void rmiBind() throws MalformedURLException, RemoteException, AlreadyBoundException {
-		LOGGER.info("web backend bind: %s", rmiUri);
-		Naming.bind(rmiUri, this);
-	}
-
-	@PreDestroy
-	private void rmiUnbind() throws RemoteException, MalformedURLException, NotBoundException {
-		LOGGER.info("web backend unbind: %s", rmiUri);
-		Naming.unbind(rmiUri);
 	}
 
 	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) throws AlreadyDeletedException, RemoteException {

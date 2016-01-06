@@ -1,7 +1,7 @@
 package yushijinhun.authlibagent.backend.service;
 
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Qualifier;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.backend.api.HostAccessManager;
 import yushijinhun.authlibagent.backend.dao.HostAccessRepository;
@@ -13,7 +13,7 @@ public class HostAccessManagerImpl implements HostAccessManager {
 	private static final String DEFAULT_POLICY_KEY = "default_policy";
 	private static final AccessPolicy DEFAULT_POLICY = AccessPolicy.ALLOW;
 
-	@Qualifier("host_access_repository")
+	@Resource(name = "host_access_repository")
 	private HostAccessRepository repo;
 
 	@Override

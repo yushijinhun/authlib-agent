@@ -3,11 +3,11 @@ package yushijinhun.authlibagent.backend.dao;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
@@ -26,7 +26,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
-	@Qualifier("session_factory")
+	@Resource(name = "session_factory")
 	private SessionFactory database;
 
 	@Override
