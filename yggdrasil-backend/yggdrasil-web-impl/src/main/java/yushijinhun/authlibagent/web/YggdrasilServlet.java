@@ -73,7 +73,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 		}
 	}
 
-	abstract protected JSONObject process(HttpServletRequest req, HttpServletResponse resp) throws Exception;
+	abstract protected JSONObject process(HttpServletRequest req) throws Exception;
 
 	private String lookupErrorName(Throwable e) {
 		if (e == null) {
