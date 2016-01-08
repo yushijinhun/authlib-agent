@@ -37,7 +37,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 		int respCode;
 		JSONObject jsonResp;
 		try {
-			jsonResp = process(req, resp);
+			jsonResp = process(req);
 			if (jsonResp == null) {
 				respCode = 204;
 			} else {
