@@ -67,6 +67,8 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 		resp.setStatus(respCode);
 		if (jsonResp != null) {
+			resp.setContentType("application/json");
+			resp.setCharacterEncoding("UTF-8");
 			resp.getWriter().print(jsonResp);
 		}
 	}

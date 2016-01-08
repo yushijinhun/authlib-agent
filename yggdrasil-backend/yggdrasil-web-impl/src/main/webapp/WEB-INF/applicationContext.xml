@@ -31,10 +31,12 @@
 	</bean>
 
 	<util:map id="error_messages">
+		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value="Unsupported Media Type" />
 	</util:map>
 
 	<util:map id="error_codes">
 		<entry key="yushijinhun.authlibagent.api.web.ForbiddenOperationException" value=403 />
+		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value=400 />
 	</util:map>
 
 </beans>
