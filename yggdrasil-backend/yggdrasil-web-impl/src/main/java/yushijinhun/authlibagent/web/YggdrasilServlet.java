@@ -19,6 +19,9 @@ abstract public class YggdrasilServlet extends HttpServlet {
 	@Resource(name = "backend")
 	protected WebBackend backend;
 
+	@Resource(name = "game_profile_serializer")
+	protected GameProfileSerializer profileSerializer;
+
 	@Resource(name = "error_messages")
 	private Map<String, String> errorMessages;
 

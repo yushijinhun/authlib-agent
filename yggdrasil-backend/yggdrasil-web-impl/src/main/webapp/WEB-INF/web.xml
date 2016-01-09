@@ -7,4 +7,8 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>WEB-INF/applicationContext.xml</param-value>
 	</context-param>
+	<servlet>
+		<servlet-name>AuthenticateServlet</servlet-name>
+		<servlet-class>yushijinhun.authlibagent.web.servlet.AuthenticateServle</servlet-class>
+	</servlet>
 </web-app>
