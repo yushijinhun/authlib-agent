@@ -16,7 +16,7 @@
 	<context:annotation-config />
 	<context:component-scan base-package="yushijinhun.authlibagent.backend" />
 
-	<bean id="data_source" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" value="jdbc:mysql://localhost/yggdrasil" />
 		<property name="user" value="yggdrasil" />
@@ -26,16 +26,21 @@
 		<property name="maxStatements" value="100" />
 	</bean>
 
-	<bean id="session_factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.dao.pojo" />
-		<property name="dataSource" ref="data_source" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
 	</bean>
 
-	<bean id="transaction_manager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="session_factory" />
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<tx:annotation-driven transaction-manager="transaction_manager" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
@@ -44,20 +49,36 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="property_configurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
 		<property name="properties" ref="config" />
 	</bean>
 
-	<bean id="rmi_web_backend" class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<property name="service" ref="web_backend" />
-		<property name="serviceName" value="rmi://localhost:10099/web_backend" />
+	<bean id="rmiWebBackend" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="webBackend" />
+		<property name="serviceName" value="webBackend" />
+		<property name="registryPort" value="10099" />
 		<property name="serviceInterface" value="yushijinhun.authlibagent.api.web.WebBackend" />
 	</bean>
 
-	<bean id="rmi_backend" class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<property name="service" ref="backend_access" />
-		<property name="serviceName" value="rmi://localhost:10099/backend_access" />
-		<property name="serviceInterface" value="yushijinhun.authlibagent.backend.api.YggdrasilBackend" />
+	<bean id="rmiSignatureKeyManager" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="keyServerService" />
+		<property name="serviceName" value="signatureKeyManager" />
+		<property name="registryPort" value="10099" />
+		<property name="serviceInterface" value="yushijinhun.authlibagent.backend.api.SignatureKeyManager" />
+	</bean>
+	
+	<bean id="rmiHostAccessManager" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="hostAccessManager" />
+		<property name="serviceName" value="hostAccessManager" />
+		<property name="registryPort" value="10099" />
+		<property name="serviceInterface" value="yushijinhun.authlibagent.backend.api.HostAccessManager" />
+	</bean>
+
+	<bean id="rmiAccountManager" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="accountManager" />
+		<property name="serviceName" value="accountManager" />
+		<property name="registryPort" value="10099" />
+		<property name="serviceInterface" value="yushijinhun.authlibagent.backend.api.AccountManager" />
 	</bean>
 
 </beans>

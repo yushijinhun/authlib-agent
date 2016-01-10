@@ -14,9 +14,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import yushijinhun.authlibagent.backend.api.SignatureKeyManager;
 
-@Component("key_server_service")
-public class KeyServerServiceImpl implements KeyServerService {
+@Component("keyServerService")
+public class KeyServerServiceImpl implements KeyServerService, SignatureKeyManager {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 

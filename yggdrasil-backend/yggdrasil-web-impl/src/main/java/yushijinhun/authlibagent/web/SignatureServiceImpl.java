@@ -1,22 +1,23 @@
 package yushijinhun.authlibagent.web;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.api.web.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.api.web.WebBackend;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
 
-@Component("signature_service")
+@Component
 public class SignatureServiceImpl implements SignatureService {
 
-	@Resource(name = "backend")
+	@Autowired
 	private WebBackend backend;
 
 	private volatile RSAPrivateKey key;
@@ -42,6 +43,7 @@ public class SignatureServiceImpl implements SignatureService {
 				key = newKey;
 			}
 		};
+		UnicastRemoteObject.exportObject(keyListener, 0);
 		backend.addSignatureKeyListener(keyListener);
 		key = backend.getSignatureKey();
 	}

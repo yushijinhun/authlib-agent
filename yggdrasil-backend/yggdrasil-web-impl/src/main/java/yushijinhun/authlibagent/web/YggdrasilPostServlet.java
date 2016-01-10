@@ -21,7 +21,8 @@ abstract public class YggdrasilPostServlet extends YggdrasilServlet {
 
 	@Override
 	protected JSONObject process(HttpServletRequest req) throws Exception {
-		if (!"application/json".equals(req.getContentType())) {
+		String contentType = req.getContentType();
+		if (!contentType.startsWith("application/json")) {
 			throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
 		}
 

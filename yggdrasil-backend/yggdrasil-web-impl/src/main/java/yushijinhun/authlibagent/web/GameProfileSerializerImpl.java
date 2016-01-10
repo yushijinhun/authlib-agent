@@ -5,18 +5,18 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 
-@Component("game_profile_serializer")
+@Component
 public class GameProfileSerializerImpl implements GameProfileSerializer {
 
-	@Resource(name = "signature_service")
+	@Autowired
 	private SignatureService signatureService;
 
 	@Override

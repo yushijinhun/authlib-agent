@@ -2,12 +2,12 @@ package yushijinhun.authlibagent.web;
 
 import java.io.IOException;
 import java.util.Map;
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import yushijinhun.authlibagent.api.web.WebBackend;
@@ -16,16 +16,16 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	@Resource(name = "backend")
+	@Autowired
 	protected WebBackend backend;
 
-	@Resource(name = "game_profile_serializer")
+	@Autowired
 	protected GameProfileSerializer profileSerializer;
 
-	@Resource(name = "error_messages")
-	private Map<String, String> errorMessages;
+	@Value("#{errorNames}")
+	private Map<String, String> errorNames;
 
-	@Resource(name = "error_codes")
+	@Value("#{errorCodes}")
 	private Map<String, Integer> errorCodes;
 
 	@Value("#{config['security.showErrorCause']}")
@@ -70,8 +70,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 		resp.setStatus(respCode);
 		if (jsonResp != null) {
-			resp.setContentType("application/json");
-			resp.setCharacterEncoding("UTF-8");
+			resp.setContentType("application/json; charset=utf-8");
 			resp.getWriter().print(jsonResp);
 		}
 	}
@@ -92,7 +91,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 	private String getConfiguredErrorName(Class<?> clazz) {
 		String exName = null;
 		for (Class<?> currentClass = clazz; currentClass != null; currentClass = currentClass.getSuperclass()) {
-			exName = errorMessages.get(currentClass.getCanonicalName());
+			exName = errorNames.get(currentClass.getCanonicalName());
 			if (exName != null) {
 				break;
 			}

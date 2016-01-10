@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.backend.api.AccountManager;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
@@ -17,14 +17,15 @@ import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
 import static java.util.stream.Collectors.*;
+import static yushijinhun.authlibagent.backend.util.RMIUtils.*;
 
-@Component("account_manager")
+@Component("accountManager")
 public class AccountManagerImpl implements AccountManager {
 
-	@Resource(name = "account_repository")
+	@Autowired
 	private AccountRepository repo;
 
-	@Resource(name = "password_algorithm")
+	@Autowired
 	private PasswordAlgorithm pwdAlg;
 
 	private Cache<String, YggdrasilAccount> accounts = new Cache<>(AccountImpl::new);
@@ -36,6 +37,7 @@ public class AccountManagerImpl implements AccountManager {
 
 		GameProfileImpl(UUID uuid) {
 			this.uuid = uuid;
+			exportRemoteObject(this);
 		}
 
 		@Override
@@ -128,6 +130,7 @@ public class AccountManagerImpl implements AccountManager {
 
 		AccountImpl(String id) {
 			this.id = id;
+			exportRemoteObject(this);
 		}
 
 		@Override

@@ -8,9 +8,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
@@ -26,7 +26,7 @@ import yushijinhun.authlibagent.backend.api.HostAccessManager;
 import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
 import yushijinhun.authlibagent.commons.AccessPolicy;
 
-@Component("web_backend")
+@Component("webBackend")
 public class WebBackendImpl implements WebBackend {
 
 	private static final String MSG_INVALID_USERNAME_OR_PASSWORD = "Invalid credentials. Invalid username or password.";
@@ -35,15 +35,18 @@ public class WebBackendImpl implements WebBackend {
 	// TODO after mojang implements selecting profiles, change this to the official message.
 	private static final String MSG_INVALID_PROFILE = "Invalid profile.";
 
+	private static final String MSG_ACCOUNT_BANNED = "Account has been banned.";
+	private static final String MSG_PROFILE_BANNED = "Game profile has been banned.";
+
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
-	@Resource(name = "account_manager")
+	@Autowired
 	private AccountManager accountManager;
 
-	@Resource(name = "host_access_manager")
+	@Autowired
 	private HostAccessManager hostAccessManager;
 
-	@Resource(name = "key_server_service")
+	@Autowired
 	private KeyServerService keyServerService;
 
 	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -56,6 +59,9 @@ public class WebBackendImpl implements WebBackend {
 			YggdrasilAccount account = accountManager.lookupAccount(username);
 			if (account == null || !account.isPasswordValid(password)) {
 				throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
+			}
+			if (account.isBanned()) {
+				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 			}
 			UUID accessToken = account.createToken(clientToken);
 			GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
@@ -80,6 +86,9 @@ public class WebBackendImpl implements WebBackend {
 			if (account == null || !account.isTokenValid(clientToken, accessToken)) {
 				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 			}
+			if (account.isBanned()) {
+				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+			}
 			UUID newAccessToken = account.createToken(clientToken);
 			if (profileUUID != null) {
 				GameProfile profile = accountManager.lookupGameProfile(profileUUID);
@@ -101,9 +110,9 @@ public class WebBackendImpl implements WebBackend {
 	public boolean validate(UUID accessToken, UUID clientToken) throws RemoteException {
 		try {
 			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-			return account != null && account.isTokenValid(clientToken, accessToken);
+			return account != null && !account.isBanned() && account.isTokenValid(clientToken, accessToken);
 		} catch (AlreadyDeletedException e) {
-			LOGGER.info("an AlreadyDeletedException has thrown during validate request", e);
+			LOGGER.debug("an AlreadyDeletedException has thrown during validate request", e);
 			return false;
 		}
 	}
@@ -112,7 +121,12 @@ public class WebBackendImpl implements WebBackend {
 	@Override
 	public boolean validate(UUID accessToken) throws RemoteException {
 		YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-		return account != null;
+		try {
+			return account != null && !account.isBanned();
+		} catch (AlreadyDeletedException e) {
+			LOGGER.debug("an AlreadyDeletedException has thrown during validate request", e);
+			return false;
+		}
 	}
 
 	@Transactional
@@ -122,6 +136,9 @@ public class WebBackendImpl implements WebBackend {
 			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
 			if (account == null || !account.isTokenValid(clientToken, accessToken)) {
 				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
+			}
+			if (account.isBanned()) {
+				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 			}
 			account.revokeToken();
 		} catch (AlreadyDeletedException e) {
@@ -136,6 +153,9 @@ public class WebBackendImpl implements WebBackend {
 			YggdrasilAccount account = accountManager.lookupAccount(username);
 			if (account == null || !account.isPasswordValid(password)) {
 				throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
+			}
+			if (account.isBanned()) {
+				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 			}
 			account.revokeToken();
 		} catch (AlreadyDeletedException e) {
@@ -152,6 +172,12 @@ public class WebBackendImpl implements WebBackend {
 			if (account == null || profile == null || !account.equals(profile.getOwner())) {
 				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 			}
+			if (account.isBanned()) {
+				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+			}
+			if (profile.isBanned()) {
+				throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
+			}
 			profile.setServerAuthenticationID(serverid);
 		} catch (AlreadyDeletedException e) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN, e);
@@ -163,12 +189,12 @@ public class WebBackendImpl implements WebBackend {
 	public boolean hasJoinServer(String playername, String serverid) throws RemoteException {
 		try {
 			GameProfile profile = accountManager.lookupGameProfile(playername);
-			if (profile == null || !serverid.equals(profile.getServerAuthenticationID())) {
+			if (profile == null || profile.getOwner().isBanned() || profile.isBanned() || !serverid.equals(profile.getServerAuthenticationID())) {
 				return false;
 			}
 			return true;
 		} catch (AlreadyDeletedException e) {
-			LOGGER.info("an AlreadyDeletedException has thrown during hasJoinServer request", e);
+			LOGGER.debug("an AlreadyDeletedException has thrown during hasJoinServer request", e);
 			return false;
 		}
 	}
@@ -179,7 +205,7 @@ public class WebBackendImpl implements WebBackend {
 		try {
 			return createGameProfileResponse(accountManager.lookupGameProfile(profileUUID), true);
 		} catch (AlreadyDeletedException e) {
-			LOGGER.info("an AlreadyDeletedException has thrown during lookupProfile request", e);
+			LOGGER.debug("an AlreadyDeletedException has thrown during lookupProfile request", e);
 			return null;
 		}
 	}

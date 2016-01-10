@@ -21,22 +21,22 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="property_configurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
 		<property name="properties" ref="config" />
 	</bean>
 
 	<bean id="backend" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-		<property name="serviceUrl" value="rmi://localhost:10099/web_backend" />
+		<property name="serviceUrl" value="rmi://localhost:10099/webBackend" />
 		<property name="serviceInterface" value="yushijinhun.authlibagent.api.web.WebBackend" />
 	</bean>
 
-	<util:map id="error_messages">
+	<util:map id="errorNames">
 		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value="Unsupported Media Type" />
 	</util:map>
 
-	<util:map id="error_codes">
-		<entry key="yushijinhun.authlibagent.api.web.ForbiddenOperationException" value=403 />
-		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value=400 />
+	<util:map id="errorCodes" value-type="java.lang.Integer">
+		<entry key="yushijinhun.authlibagent.api.web.ForbiddenOperationException" value="403" />
+		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value="400" />
 	</util:map>
 
 </beans>
