@@ -13,11 +13,11 @@ import yushijinhun.authlibagent.backend.api.IDCollisionException;
 import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
 import yushijinhun.authlibagent.backend.dao.AccountRepository;
 import yushijinhun.authlibagent.backend.util.Cache;
+import yushijinhun.authlibagent.backend.util.RemoteObjectCache;
 import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
 import static java.util.stream.Collectors.*;
-import static yushijinhun.authlibagent.backend.util.RMIUtils.*;
 
 @Component("accountManager")
 public class AccountManagerImpl implements AccountManager {
@@ -28,8 +28,8 @@ public class AccountManagerImpl implements AccountManager {
 	@Autowired
 	private PasswordAlgorithm pwdAlg;
 
-	private Cache<String, YggdrasilAccount> accounts = new Cache<>(AccountImpl::new);
-	private Cache<UUID, GameProfile> profiles = new Cache<>(GameProfileImpl::new);
+	private Cache<String, YggdrasilAccount> accounts = new RemoteObjectCache<>(AccountImpl::new);
+	private Cache<UUID, GameProfile> profiles = new RemoteObjectCache<>(GameProfileImpl::new);
 
 	private class GameProfileImpl implements GameProfile {
 
@@ -37,7 +37,6 @@ public class AccountManagerImpl implements AccountManager {
 
 		GameProfileImpl(UUID uuid) {
 			this.uuid = uuid;
-			exportRemoteObject(this);
 		}
 
 		@Override
@@ -130,7 +129,6 @@ public class AccountManagerImpl implements AccountManager {
 
 		AccountImpl(String id) {
 			this.id = id;
-			exportRemoteObject(this);
 		}
 
 		@Override
@@ -173,7 +171,13 @@ public class AccountManagerImpl implements AccountManager {
 
 		@Override
 		public boolean isPasswordValid(String password) throws AlreadyDeletedException {
+			if (password == null) {
+				return false;
+			}
 			String hash = repo.getEncryptedPassword(id);
+			if (hash == null) {
+				return false;
+			}
 			return pwdAlg.verify(password, hash);
 		}
 
@@ -224,7 +228,10 @@ public class AccountManagerImpl implements AccountManager {
 
 	@Override
 	public GameProfile lookupGameProfile(UUID uuid) {
-		if (uuid == null || !repo.doesProfileExist(uuid)) {
+		if (uuid == null) {
+			return null;
+		}
+		if (!repo.doesProfileExist(uuid)) {
 			profiles.remove(uuid);
 			return null;
 		}
@@ -245,7 +252,11 @@ public class AccountManagerImpl implements AccountManager {
 
 	@Override
 	public YggdrasilAccount lookupAccount(String id) {
-		if (id == null || !repo.doesAccountExist(id)) {
+		if (id == null) {
+			return null;
+		}
+		if (!repo.doesAccountExist(id)) {
+			accounts.remove(id);
 			return null;
 		}
 		return accounts.get(id);

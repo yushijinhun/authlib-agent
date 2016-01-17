@@ -9,14 +9,15 @@ public class RandomUtils {
 
 	private static SecureRandom rnd;
 
-	public static SecureRandom getSecureRandom() {
-		if (rnd == null) {
-			try {
-				rnd = SecureRandom.getInstance("NativePRNGBlocking");
-			} catch (NoSuchAlgorithmException e) {
-				rnd = new SecureRandom();
-			}
+	static {
+		try {
+			rnd = SecureRandom.getInstance("NativePRNGBlocking");
+		} catch (NoSuchAlgorithmException e) {
+			rnd = new SecureRandom();
 		}
+	}
+
+	public static SecureRandom getSecureRandom() {
 		return rnd;
 	}
 

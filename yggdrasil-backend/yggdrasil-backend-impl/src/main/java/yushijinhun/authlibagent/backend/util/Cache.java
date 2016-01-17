@@ -1,13 +1,13 @@
 package yushijinhun.authlibagent.backend.util;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Function;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.InvocationHandler;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
 
 public class Cache<K, V> {
@@ -44,7 +44,7 @@ public class Cache<K, V> {
 
 
 		void expire() {
-			cahces.remove(key);
+			remove(key);
 		}
 
 	}
@@ -65,7 +65,7 @@ public class Cache<K, V> {
 				if (val == null) {
 					V produce = producer.apply(key);
 					if (produce != null) {
-						val = wrap(key, producer.apply(key));
+						val = wrap(key, produce);
 						cahces.put(key, val);
 					}
 				}
@@ -79,8 +79,11 @@ public class Cache<K, V> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private V wrap(K key, V val) {
-		return ((V) Proxy.newProxyInstance(getClass().getClassLoader(), val.getClass().getInterfaces(), new ExpirableObjectProxyWithKey(key, val)));
+	protected V wrap(K key, V val) {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(val.getClass().getInterfaces());
+		enhancer.setCallback(new ExpirableObjectProxyWithKey(key, val));
+		return (V) enhancer.create();
 	}
 
 }

@@ -17,7 +17,6 @@ import yushijinhun.authlibagent.backend.dao.pojo.GameProfileDao;
 import yushijinhun.authlibagent.backend.util.TokenPair;
 import yushijinhun.authlibagent.commons.PlayerTexture;
 import static org.hibernate.criterion.Restrictions.*;
-import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 import static java.util.stream.Collectors.*;
 
 @Repository
@@ -71,7 +70,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 		if (account.getClientToken() == null || account.getAccessToken() == null) {
 			return null;
 		}
-		return new TokenPair(toUUID(account.getClientToken()), toUUID(account.getAccessToken()));
+		return new TokenPair(UUID.fromString(account.getClientToken()), UUID.fromString(account.getAccessToken()));
 	}
 
 	@Override
@@ -80,7 +79,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 		Session session = database.getCurrentSession();
 
 		@SuppressWarnings("unchecked")
-		List<AccountDao> results = session.createCriteria(AccountDao.class).add(eq("accessToken", unsign(accessToken))).list();
+		List<AccountDao> results = session.createCriteria(AccountDao.class).add(eq("accessToken", accessToken.toString())).list();
 
 		if (results.isEmpty()) {
 			return null;
@@ -100,8 +99,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 			account.setClientToken(null);
 			account.setAccessToken(null);
 		} else {
-			account.setClientToken(unsign(token.getClientToken()));
-			account.setAccessToken(unsign(token.getAccessToken()));
+			account.setClientToken(token.getClientToken().toString());
+			account.setAccessToken(token.getAccessToken().toString());
 		}
 		session.update(account);
 	}
@@ -127,17 +126,22 @@ public class AccountRepositoryImpl implements AccountRepository {
 		Session session = database.getCurrentSession();
 		AccountDao account = lookupAccount(ownerId, session);
 
-		if (session.get(GameProfileDao.class, uuid) != null) {
+		if (doesProfileExist(uuid)) {
 			throw new IDCollisionException("uuid collision '" + uuid + "'");
 		}
-		if (!session.createCriteria(GameProfileDao.class).add(eq("name", name)).list().isEmpty()) {
+		if (getProfileByName(name) != null) {
 			throw new IDCollisionException("name collision '" + name + "'");
 		}
 
 		GameProfileDao profile = new GameProfileDao();
-		profile.setUuid(uuid);
+		profile.setUuid(uuid.toString());
 		profile.setName(name);
 		profile.setOwner(account);
+
+		if (account.getSelectedProfile() == null) {
+			account.setSelectedProfile(profile);
+		}
+
 		session.save(profile);
 		session.update(account);
 	}
@@ -180,7 +184,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 			LOGGER.warn("%d profiles have the same name '%s'", results.size(), name);
 		}
 
-		return results.get(0).getUuid();
+		return UUID.fromString(results.get(0).getUuid());
 	}
 
 	@Override
@@ -238,7 +242,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 	public Set<UUID> getProfiles(String accountId) throws AlreadyDeletedException {
 		Session session = database.getCurrentSession();
 		AccountDao account = lookupAccount(accountId, session);
-		return account.getProfiles().stream().map(GameProfileDao::getUuid).collect(toSet());
+		return account.getProfiles().stream().map(GameProfileDao::getUuid).map(UUID::fromString).collect(toSet());
 	}
 
 	@Override
@@ -246,7 +250,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 	public UUID getDefaultProfile(String accountId) throws AlreadyDeletedException {
 		Session session = database.getCurrentSession();
 		AccountDao account = lookupAccount(accountId, session);
-		return account.getSelectedProfile().getUuid();
+		GameProfileDao profile = account.getSelectedProfile();
+		return profile == null ? null : UUID.fromString(profile.getUuid());
 	}
 
 	@Override
@@ -267,7 +272,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 	}
 
 	private GameProfileDao lookupProfile(UUID uuid, Session session) throws AlreadyDeletedException {
-		GameProfileDao profile = session.get(GameProfileDao.class, uuid);
+		GameProfileDao profile = session.get(GameProfileDao.class, uuid.toString());
 		if (profile == null) {
 			throw new AlreadyDeletedException("profile '" + uuid + "' does not exist");
 		}
@@ -285,7 +290,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 	@Transactional(readOnly = true)
 	public boolean doesProfileExist(UUID uuid) {
 		Session session = database.getCurrentSession();
-		return session.get(GameProfileDao.class, uuid) != null;
+		return session.get(GameProfileDao.class, uuid.toString()) != null;
 	}
 
 	@Override

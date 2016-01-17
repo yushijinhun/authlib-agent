@@ -254,7 +254,7 @@ public class WebBackendImpl implements WebBackend {
 
 	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) throws AlreadyDeletedException, RemoteException {
 		if (profile == null) {
-			throw null;
+			return null;
 		}
 		return new GameProfileResponse(profile.getUUID(), profile.getName(), withTexture ? profile.getTexture() : null);
 	}

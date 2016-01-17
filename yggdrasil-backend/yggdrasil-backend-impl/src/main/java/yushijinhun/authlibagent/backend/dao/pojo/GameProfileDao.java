@@ -2,7 +2,6 @@ package yushijinhun.authlibagent.backend.dao.pojo;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +17,7 @@ public class GameProfileDao implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private UUID uuid;
+	private String uuid;
 	private String name;
 	private AccountDao owner;
 	private boolean banned = false;
@@ -29,11 +28,11 @@ public class GameProfileDao implements Serializable {
 
 	@Id
 	@Column(nullable = false, unique = true)
-	public UUID getUuid() {
+	public String getUuid() {
 		return uuid;
 	}
 
-	public void setUuid(UUID uuid) {
+	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
 
