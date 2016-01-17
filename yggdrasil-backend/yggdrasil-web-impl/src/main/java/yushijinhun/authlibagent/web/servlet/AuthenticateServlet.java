@@ -39,7 +39,10 @@ public class AuthenticateServlet extends YggdrasilPostServlet {
 		userEntry.put("id", username);
 		resp.put("user", userEntry);
 
-		resp.put("selectedProfile", profileSerializer.serialize(authResp.getSelectedProfile()));
+		GameProfileResponse selectedProfile = authResp.getSelectedProfile();
+		if (selectedProfile != null) {
+			resp.put("selectedProfile", profileSerializer.serialize(selectedProfile));
+		}
 
 		JSONArray profilesEntry = new JSONArray();
 		for (GameProfileResponse profile : authResp.getProfiles()) {
