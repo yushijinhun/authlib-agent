@@ -20,7 +20,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 	protected WebBackend backend;
 
 	@Autowired
-	protected GameProfileSerializer profileSerializer;
+	protected ResponseSerializer serializer;
 
 	@Value("#{errorNames}")
 	private Map<String, String> errorNames;

@@ -3,11 +3,9 @@ package yushijinhun.authlibagent.web.servlet;
 import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
-import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
 import yushijinhun.authlibagent.web.YggdrasilPostServlet;
 import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 import static yushijinhun.authlibagent.commons.RandomUtils.*;
@@ -30,27 +28,8 @@ public class AuthenticateServlet extends YggdrasilPostServlet {
 			clientToken = toUUID(clientTokenStr);
 		}
 
-		AuthenticateResponse authResp = backend.authenticate(username, password, clientToken);
-		JSONObject resp = new JSONObject();
-		resp.put("accessToken", unsign(authResp.getAccessToken()));
-		resp.put("clientToken", unsign(clientToken));
-
-		JSONObject userEntry = new JSONObject();
-		userEntry.put("id", username);
-		resp.put("user", userEntry);
-
-		GameProfileResponse selectedProfile = authResp.getSelectedProfile();
-		if (selectedProfile != null) {
-			resp.put("selectedProfile", profileSerializer.serialize(selectedProfile));
-		}
-
-		JSONArray profilesEntry = new JSONArray();
-		for (GameProfileResponse profile : authResp.getProfiles()) {
-			profilesEntry.put(profileSerializer.serialize(profile));
-		}
-		resp.put("availableProfiles", profilesEntry);
-
-		return resp;
+		AuthenticateResponse auth = backend.authenticate(username, password, clientToken);
+		return serializer.serializeAuthenticateResponse(auth, clientToken);
 	}
 
 	private void checkAgent(JSONObject req) throws ForbiddenOperationException {
