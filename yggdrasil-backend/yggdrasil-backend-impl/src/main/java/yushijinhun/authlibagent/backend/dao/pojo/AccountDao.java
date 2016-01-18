@@ -36,7 +36,6 @@ public class AccountDao implements Serializable {
 		this.id = id;
 	}
 
-	@Column(length = Short.MAX_VALUE)
 	public String getPassword() {
 		return password;
 	}
