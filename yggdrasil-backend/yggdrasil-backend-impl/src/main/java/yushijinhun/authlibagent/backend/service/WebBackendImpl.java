@@ -1,8 +1,10 @@
 package yushijinhun.authlibagent.backend.service;
 
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +13,7 @@ import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
@@ -18,19 +21,20 @@ import yushijinhun.authlibagent.api.web.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.api.web.WebBackend;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.api.web.response.RefreshResponse;
 import yushijinhun.authlibagent.backend.api.AccountManager;
 import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
 import yushijinhun.authlibagent.backend.api.GameProfile;
 import yushijinhun.authlibagent.backend.api.HostAccessManager;
 import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
 import yushijinhun.authlibagent.commons.AccessPolicy;
+import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 
 @Component("webBackend")
 public class WebBackendImpl implements WebBackend {
 
 	private static final String MSG_INVALID_USERNAME_OR_PASSWORD = "Invalid credentials. Invalid username or password.";
 	private static final String MSG_INVALID_TOKEN = "Invalid token.";
+	private static final String MSG_SELECTING_PROFILE_NOT_SUPPORTED = "Access token already has a profile assigned.";
 
 	// TODO after mojang implements selecting profiles, change this to the official message.
 	private static final String MSG_INVALID_PROFILE = "Invalid profile.";
@@ -49,6 +53,12 @@ public class WebBackendImpl implements WebBackend {
 	@Autowired
 	private KeyServerService keyServerService;
 
+	@Value("#{config['feature.allowSelectingProfile']}")
+	private boolean allowSelectingProfile;
+
+	@Value("#{config['feature.includeProfilesInRefresh']}")
+	private boolean includeProfilesInRefresh;
+
 	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private KeyChangeListener keyChangeListener;
 
@@ -64,9 +74,7 @@ public class WebBackendImpl implements WebBackend {
 				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 			}
 			UUID accessToken = account.createToken(clientToken);
-			GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
-			GameProfileResponse[] profiles = createGameProfileResponses(account.getProfiles(), false);
-			return new AuthenticateResponse(accessToken, selectedProfile, profiles);
+			return createAuthenticateResponse(account, accessToken, true);
 		} catch (AlreadyDeletedException e) {
 			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD, e);
 		}
@@ -74,13 +82,13 @@ public class WebBackendImpl implements WebBackend {
 
 	@Transactional
 	@Override
-	public RefreshResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException {
+	public AuthenticateResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException {
 		return selectProfile(accessToken, clientToken, null);
 	}
 
 	@Transactional
 	@Override
-	public RefreshResponse selectProfile(UUID accessToken, UUID clientToken, UUID profileUUID) throws ForbiddenOperationException, RemoteException {
+	public AuthenticateResponse selectProfile(UUID accessToken, UUID clientToken, UUID profileUUID) throws ForbiddenOperationException, RemoteException {
 		try {
 			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
 			if (account == null || !account.isTokenValid(clientToken, accessToken)) {
@@ -90,7 +98,13 @@ public class WebBackendImpl implements WebBackend {
 				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 			}
 			UUID newAccessToken = account.createToken(clientToken);
+
+			// select profile
 			if (profileUUID != null) {
+				if (!allowSelectingProfile) {
+					throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
+				}
+
 				GameProfile profile = accountManager.lookupGameProfile(profileUUID);
 				if (profile == null || !profile.getOwner().equals(account)) {
 					throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
@@ -98,8 +112,8 @@ public class WebBackendImpl implements WebBackend {
 					profile.setToDefault();
 				}
 			}
-			GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
-			return new RefreshResponse(newAccessToken, selectedProfile);
+
+			return createAuthenticateResponse(account, newAccessToken, includeProfilesInRefresh);
 		} catch (AlreadyDeletedException e) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN, e);
 		}
@@ -266,6 +280,27 @@ public class WebBackendImpl implements WebBackend {
 			responses[index++] = createGameProfileResponse(profile, withTexture);
 		}
 		return responses;
+	}
+
+	private String getUserid(YggdrasilAccount account) throws RemoteException {
+		try {
+			return unsign(UUID.nameUUIDFromBytes(account.getId().getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException("utf-8 not supported", e);
+		}
+	}
+
+	private Map<String, String> getUserProperties(YggdrasilAccount account) {
+		// TODO: Add twich support
+		return null;
+	}
+
+	private AuthenticateResponse createAuthenticateResponse(YggdrasilAccount account, UUID accessToken, boolean withProfiles) throws AlreadyDeletedException, RemoteException {
+		GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
+		GameProfileResponse[] profiles = withProfiles ? createGameProfileResponses(account.getProfiles(), false) : null;
+		String userid = getUserid(account);
+		Map<String, String> properties = getUserProperties(account);
+		return new AuthenticateResponse(accessToken, selectedProfile, profiles, userid, properties);
 	}
 
 }

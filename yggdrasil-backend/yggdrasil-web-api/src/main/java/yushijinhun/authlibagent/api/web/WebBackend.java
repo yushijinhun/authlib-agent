@@ -6,16 +6,15 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.UUID;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.api.web.response.RefreshResponse;
 import yushijinhun.authlibagent.commons.AccessPolicy;
 
 public interface WebBackend extends Remote {
 
 	AuthenticateResponse authenticate(String username, String password, UUID clientToken) throws ForbiddenOperationException, RemoteException;
 
-	RefreshResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
+	AuthenticateResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
 
-	RefreshResponse selectProfile(UUID accessToken, UUID clientToken, UUID profile) throws ForbiddenOperationException, RemoteException;
+	AuthenticateResponse selectProfile(UUID accessToken, UUID clientToken, UUID profile) throws ForbiddenOperationException, RemoteException;
 
 	boolean validate(UUID accessToken, UUID clientToken) throws RemoteException;
 
