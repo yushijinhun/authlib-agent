@@ -37,7 +37,7 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 				} catch (GeneralSecurityException e) {
 					throw new IllegalStateException("unable to sign", e);
 				}
-				entry.put("signature", Base64.getEncoder().encode(signature));
+				entry.put("signature", Base64.getEncoder().encodeToString(signature));
 			}
 			entries.put(entry);
 		});

@@ -14,7 +14,7 @@ public class GameProfileServlet extends YggdrasilGetServlet {
 
 	@Override
 	protected JSONObject process(HttpServletRequest req) throws Exception {
-		String path = req.getPathTranslated();
+		String path = req.getPathInfo().substring(1); // delete the / at the beginning
 		if (path == null) {
 			return null;
 		}

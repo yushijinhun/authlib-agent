@@ -90,25 +90,23 @@ abstract public class YggdrasilServlet extends HttpServlet {
 	}
 
 	private String getConfiguredErrorName(Class<?> clazz) {
-		String exName = null;
 		for (Class<?> currentClass = clazz; currentClass != null; currentClass = currentClass.getSuperclass()) {
-			exName = errorNames.get(currentClass.getCanonicalName());
+			String exName = errorNames.get(currentClass.getCanonicalName());
 			if (exName != null) {
-				break;
+				return exName;
 			}
 		}
-		return exName;
+		return null;
 	}
 
 	private int getConfiguredErrorCode(Class<?> clazz) {
-		int exCode = -1;
 		for (Class<?> currentClass = clazz; currentClass != null; currentClass = currentClass.getSuperclass()) {
-			exCode = errorCodes.get(currentClass.getCanonicalName());
-			if (exCode != -1) {
-				break;
+			Integer code = errorCodes.get(currentClass.getCanonicalName());
+			if (code != null) {
+				return code;
 			}
 		}
-		return exCode;
+		return -1;
 	}
 
 }
