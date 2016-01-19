@@ -200,16 +200,16 @@ public class WebBackendImpl implements WebBackend {
 
 	@Transactional
 	@Override
-	public boolean hasJoinServer(String playername, String serverid) throws RemoteException {
+	public GameProfileResponse hasJoinServer(String playername, String serverid) throws RemoteException {
 		try {
 			GameProfile profile = accountManager.lookupGameProfile(playername);
 			if (profile == null || profile.getOwner().isBanned() || profile.isBanned() || !serverid.equals(profile.getServerAuthenticationID())) {
-				return false;
+				return null;
 			}
-			return true;
+			return createGameProfileResponse(profile, true);
 		} catch (AlreadyDeletedException e) {
 			LOGGER.debug("an AlreadyDeletedException has thrown during hasJoinServer request", e);
-			return false;
+			return null;
 		}
 	}
 
