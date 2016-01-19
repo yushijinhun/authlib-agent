@@ -5,7 +5,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
-import yushijinhun.authlibagent.web.YggdrasilPostServlet;
 import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
 
 @WebServlet("/yggdrasil/validate")

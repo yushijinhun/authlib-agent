@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web;
+package yushijinhun.authlibagent.web.servlet;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import yushijinhun.authlibagent.api.web.WebBackend;
+import yushijinhun.authlibagent.web.ResponseSerializer;
 
 abstract public class YggdrasilServlet extends HttpServlet {
 

@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web;
+package yushijinhun.authlibagent.web.servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
 import yushijinhun.authlibagent.commons.AccessPolicy;
-import yushijinhun.authlibagent.web.YggdrasilGetServlet;
 
 @WebServlet("/session/hasjoinserver")
 public class HasJoinServerServlet extends YggdrasilGetServlet {

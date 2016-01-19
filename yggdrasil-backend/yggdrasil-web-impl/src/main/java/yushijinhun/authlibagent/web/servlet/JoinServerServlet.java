@@ -4,7 +4,6 @@ import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
-import yushijinhun.authlibagent.web.YggdrasilPostServlet;
 import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
 
 @WebServlet("/session/joinserver")

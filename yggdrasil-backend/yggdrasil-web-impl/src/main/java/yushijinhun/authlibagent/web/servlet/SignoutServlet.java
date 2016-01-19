@@ -3,7 +3,6 @@ package yushijinhun.authlibagent.web.servlet;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
-import yushijinhun.authlibagent.web.YggdrasilPostServlet;
 
 @WebServlet("/yggdrasil/signout")
 public class SignoutServlet extends YggdrasilPostServlet {

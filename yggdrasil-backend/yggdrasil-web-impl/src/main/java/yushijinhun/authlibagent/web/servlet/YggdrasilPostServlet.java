@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web;
+package yushijinhun.authlibagent.web.servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import yushijinhun.authlibagent.web.UnsupportedMediaTypeException;
 
 abstract public class YggdrasilPostServlet extends YggdrasilServlet {
 
