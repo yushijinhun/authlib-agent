@@ -4,6 +4,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -28,13 +29,29 @@ abstract public class YggdrasilPostServlet extends YggdrasilServlet {
 		}
 
 		try {
-			JSONObject json = new JSONObject(new JSONTokener(req.getReader()));
-			return process(json, req);
+			JSONTokener tokener = new JSONTokener(req.getReader());
+			char next = tokener.nextClean();
+			tokener.back();
+			if (next == '{') {
+				JSONObject json = new JSONObject(tokener);
+				return process(json, req);
+			} else if (next == '[') {
+				JSONArray json = new JSONArray(tokener);
+				return process(json, req);
+			} else {
+				throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
+			}
 		} catch (JSONException e) {
-			throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
+			throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID, e);
 		}
 	}
 
-	abstract protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception;
+	protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception {
+		throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
+	}
+
+	protected JSONObject process(JSONArray req, HttpServletRequest rawReq) throws Exception {
+		throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
+	}
 
 }

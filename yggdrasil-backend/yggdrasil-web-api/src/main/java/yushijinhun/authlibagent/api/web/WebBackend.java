@@ -30,6 +30,8 @@ public interface WebBackend extends Remote {
 
 	GameProfileResponse lookupProfile(UUID profile) throws RemoteException;
 
+	GameProfileResponse lookupProfile(String name) throws RemoteException;
+
 	AccessPolicy getServerAccessPolicy(String host) throws RemoteException;
 
 	void addSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException;

@@ -226,6 +226,17 @@ public class WebBackendImpl implements WebBackend {
 
 	@Transactional
 	@Override
+	public GameProfileResponse lookupProfile(String name) throws RemoteException {
+		try {
+			return createGameProfileResponse(accountManager.lookupGameProfile(name), true);
+		} catch (AlreadyDeletedException e) {
+			LOGGER.debug("an AlreadyDeletedException has thrown during lookupProfile request", e);
+			return null;
+		}
+	}
+
+	@Transactional
+	@Override
 	public AccessPolicy getServerAccessPolicy(String host) throws RemoteException {
 		AccessPolicy policy = hostAccessManager.getHostPolicy(host);
 		if (policy == null) {
