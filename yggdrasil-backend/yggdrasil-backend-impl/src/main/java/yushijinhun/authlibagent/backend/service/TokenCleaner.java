@@ -36,7 +36,7 @@ public class TokenCleaner {
 		@Override
 		public void run() {
 			long earliestTime = System.currentTimeMillis() - expireTime;
-			LOGGER.info("executing time expire clean up on %s. earliestTime=%d", entity.getSimpleName(), earliestTime);
+			LOGGER.debug("executing time expire clean up on %s. earliestTime=%d", entity.getSimpleName(), earliestTime);
 			int cleans;
 
 			// TODO: maybe we can use spring managed transaction here?
@@ -54,7 +54,7 @@ public class TokenCleaner {
 				session.close();
 			}
 
-			LOGGER.info("executed time expire clean up on %s. clean up %d objects", entity.getSimpleName(), cleans);
+			LOGGER.debug("executed time expire clean up on %s. clean up %d objects", entity.getSimpleName(), cleans);
 		}
 
 	}
