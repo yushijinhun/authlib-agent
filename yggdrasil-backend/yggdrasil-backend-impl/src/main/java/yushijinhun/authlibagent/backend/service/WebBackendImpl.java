@@ -3,6 +3,7 @@ package yushijinhun.authlibagent.backend.service;
 import java.io.UnsupportedEncodingException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -257,8 +258,14 @@ public class WebBackendImpl implements WebBackend {
 	}
 
 	private Map<String, String> getUserProperties(Account account) {
-		// TODO: Add twich support
-		return null;
+		Map<String, String> properties = new HashMap<>();
+
+		// twitch
+		if (account.getTwitchToken() != null) {
+			properties.put("twitch_access_token", account.getTwitchToken());
+		}
+
+		return properties;
 	}
 
 	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, boolean withProfiles) {

@@ -25,6 +25,9 @@ public class Account implements Serializable {
 	private GameProfile selectedProfile;
 	private Set<Token> tokens = new HashSet<>();
 
+	// third-part tokens
+	private String twitchToken;
+
 	@Id
 	@Column(nullable = false, unique = true)
 	public String getId() {
@@ -78,6 +81,14 @@ public class Account implements Serializable {
 
 	public void setTokens(Set<Token> tokens) {
 		this.tokens = tokens;
+	}
+
+	public String getTwitchToken() {
+		return twitchToken;
+	}
+
+	public void setTwitchToken(String twitchToken) {
+		this.twitchToken = twitchToken;
 	}
 
 	@Override
