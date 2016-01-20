@@ -16,6 +16,7 @@ public class ServerId implements Serializable {
 
 	private String serverId;
 	private GameProfile profile;
+	private long createTime;
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -35,6 +36,15 @@ public class ServerId implements Serializable {
 
 	public void setProfile(GameProfile profile) {
 		this.profile = profile;
+	}
+
+	@Column(nullable = false)
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
 	}
 
 	@Override

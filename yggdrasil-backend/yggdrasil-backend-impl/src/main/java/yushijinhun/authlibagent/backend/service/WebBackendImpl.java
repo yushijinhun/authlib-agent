@@ -145,6 +145,7 @@ public class WebBackendImpl implements WebBackend {
 		ServerId verifyid = new ServerId();
 		verifyid.setServerId(serverid);
 		verifyid.setProfile(profile);
+		verifyid.setCreateTime(System.currentTimeMillis());
 		session.save(verifyid);
 	}
 
