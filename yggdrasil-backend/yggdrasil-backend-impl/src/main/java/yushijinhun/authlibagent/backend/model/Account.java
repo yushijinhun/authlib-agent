@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.backend.dao.pojo;
+package yushijinhun.authlibagent.backend.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -14,17 +14,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
-public class AccountDao implements Serializable {
+public class Account implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String password;
 	private boolean banned;
-	private String clientToken;
-	private String accessToken;
-	private Set<GameProfileDao> profiles = new HashSet<>();
-	private GameProfileDao selectedProfile;
+	private Set<GameProfile> profiles = new HashSet<>();
+	private GameProfile selectedProfile;
+	private Set<Token> tokens = new HashSet<>();
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -53,39 +52,32 @@ public class AccountDao implements Serializable {
 		this.banned = banned;
 	}
 
-	public String getClientToken() {
-		return clientToken;
-	}
-
-	public void setClientToken(String clientToken) {
-		this.clientToken = clientToken;
-	}
-
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public Set<GameProfileDao> getProfiles() {
+	public Set<GameProfile> getProfiles() {
 		return profiles;
 	}
 
-	public void setProfiles(Set<GameProfileDao> profiles) {
+	public void setProfiles(Set<GameProfile> profiles) {
 		this.profiles = profiles;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn
-	public GameProfileDao getSelectedProfile() {
+	public GameProfile getSelectedProfile() {
 		return selectedProfile;
 	}
 
-	public void setSelectedProfile(GameProfileDao selectedProfile) {
+	public void setSelectedProfile(GameProfile selectedProfile) {
 		this.selectedProfile = selectedProfile;
+	}
+
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public Set<Token> getTokens() {
+		return tokens;
+	}
+
+	public void setTokens(Set<Token> tokens) {
+		this.tokens = tokens;
 	}
 
 	@Override
@@ -98,8 +90,8 @@ public class AccountDao implements Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof AccountDao) {
-			AccountDao another = (AccountDao) obj;
+		if (obj instanceof Account) {
+			Account another = (Account) obj;
 			return Objects.equals(getId(), another.getId());
 		}
 		return false;

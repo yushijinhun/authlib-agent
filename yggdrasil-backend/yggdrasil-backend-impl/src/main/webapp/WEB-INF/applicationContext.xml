@@ -27,7 +27,7 @@
 	</bean>
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.dao.pojo" />
+		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.model" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties">
 			<props>

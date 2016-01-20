@@ -1,9 +1,9 @@
 package yushijinhun.authlibagent.backend.service;
 
 import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -12,6 +12,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,13 +23,16 @@ import yushijinhun.authlibagent.api.web.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.api.web.WebBackend;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.backend.api.AccountManager;
-import yushijinhun.authlibagent.backend.api.AlreadyDeletedException;
-import yushijinhun.authlibagent.backend.api.GameProfile;
-import yushijinhun.authlibagent.backend.api.HostAccessManager;
-import yushijinhun.authlibagent.backend.api.YggdrasilAccount;
+import yushijinhun.authlibagent.backend.model.AccessRule;
+import yushijinhun.authlibagent.backend.model.Account;
+import yushijinhun.authlibagent.backend.model.GameProfile;
+import yushijinhun.authlibagent.backend.model.ServerId;
+import yushijinhun.authlibagent.backend.model.Token;
 import yushijinhun.authlibagent.commons.AccessPolicy;
-import static yushijinhun.authlibagent.commons.UUIDUtils.*;
+import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
+import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
+import static yushijinhun.authlibagent.backend.model.Token.createToken;
+import static org.hibernate.criterion.Restrictions.eq;
 
 @Component("webBackend")
 public class WebBackendImpl implements WebBackend {
@@ -45,13 +50,13 @@ public class WebBackendImpl implements WebBackend {
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
 	@Autowired
-	private AccountManager accountManager;
-
-	@Autowired
-	private HostAccessManager hostAccessManager;
+	private SessionFactory sessionFactory;
 
 	@Autowired
 	private KeyServerService keyServerService;
+
+	@Autowired
+	private PasswordAlgorithm passwordAlgorithm;
 
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
@@ -59,204 +64,208 @@ public class WebBackendImpl implements WebBackend {
 	@Value("#{config['feature.includeProfilesInRefresh']}")
 	private boolean includeProfilesInRefresh;
 
+	@Value("#{config['access.policy.default']}")
+	private String defaultPolicy;
+
 	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private KeyChangeListener keyChangeListener;
 
 	@Transactional
 	@Override
-	public AuthenticateResponse authenticate(String username, String password, UUID clientToken) throws ForbiddenOperationException, RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(username);
-			if (account == null || !account.isPasswordValid(password)) {
-				throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
-			}
-			if (account.isBanned()) {
-				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-			}
-			UUID accessToken = account.createToken(clientToken);
-			return createAuthenticateResponse(account, accessToken, true);
-		} catch (AlreadyDeletedException e) {
-			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD, e);
+	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
+		Session session = sessionFactory.getCurrentSession();
+		Account account = session.get(Account.class, username);
+		if (account == null || !passwordAlgorithm.verify(password, account)) {
+			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
 		}
+		if (account.isBanned()) {
+			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+		}
+
+		Token token = Token.createToken(account, clientToken);
+		session.save(token);
+		return createAuthenticateResponse(account, token, true);
 	}
 
 	@Transactional
 	@Override
-	public AuthenticateResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException {
+	public AuthenticateResponse refresh(String accessToken, String clientToken) throws ForbiddenOperationException {
 		return selectProfile(accessToken, clientToken, null);
 	}
 
 	@Transactional
 	@Override
-	public AuthenticateResponse selectProfile(UUID accessToken, UUID clientToken, UUID profileUUID) throws ForbiddenOperationException, RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-			if (account == null || !account.isTokenValid(clientToken, accessToken)) {
-				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-			}
-			if (account.isBanned()) {
-				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-			}
-			UUID newAccessToken = account.createToken(clientToken);
-
-			// select profile
-			if (profileUUID != null) {
-				if (!allowSelectingProfile) {
-					throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
-				}
-
-				GameProfile profile = accountManager.lookupGameProfile(profileUUID);
-				if (profile == null || !profile.getOwner().equals(account)) {
-					throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
-				} else {
-					profile.setToDefault();
-				}
-			}
-
-			return createAuthenticateResponse(account, newAccessToken, includeProfilesInRefresh);
-		} catch (AlreadyDeletedException e) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN, e);
+	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
+		Session session = sessionFactory.getCurrentSession();
+		Token token = session.get(Token.class, accessToken);
+		if (token == null || !token.getClientToken().equals(clientToken)) {
+			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
+		Account account = token.getOwner();
+		if (account.isBanned()) {
+			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+		}
+
+		Token newToken = createToken(account, clientToken);
+		session.save(newToken);
+		session.delete(token);
+
+		// select profile
+		if (profileUUID != null) {
+			if (!allowSelectingProfile) {
+				throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
+			}
+
+			GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
+			if (profile == null || !profile.getOwner().equals(account)) {
+				throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
+			}
+
+			account.setSelectedProfile(profile);
+			session.update(account);
+		}
+
+		return createAuthenticateResponse(account, newToken, includeProfilesInRefresh);
 	}
 
 	@Transactional
 	@Override
-	public boolean validate(UUID accessToken, UUID clientToken) throws RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-			return account != null && !account.isBanned() && account.isTokenValid(clientToken, accessToken);
-		} catch (AlreadyDeletedException e) {
-			LOGGER.debug("an AlreadyDeletedException has thrown during validate request", e);
-			return false;
-		}
+	public boolean validate(String accessToken, String clientToken) {
+		Session session = sessionFactory.getCurrentSession();
+		Token token = session.get(Token.class, accessToken);
+		return token != null && token.getClientToken().equals(clientToken);
 	}
 
 	@Transactional
 	@Override
-	public boolean validate(UUID accessToken) throws RemoteException {
-		YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-		try {
-			return account != null && !account.isBanned();
-		} catch (AlreadyDeletedException e) {
-			LOGGER.debug("an AlreadyDeletedException has thrown during validate request", e);
-			return false;
-		}
+	public boolean validate(String accessToken) {
+		Session session = sessionFactory.getCurrentSession();
+		Token token = session.get(Token.class, accessToken);
+		return token != null;
 	}
 
 	@Transactional
 	@Override
-	public void invalidate(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-			if (account == null || !account.isTokenValid(clientToken, accessToken)) {
-				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-			}
-			if (account.isBanned()) {
-				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-			}
-			account.revokeToken();
-		} catch (AlreadyDeletedException e) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN, e);
+	public void invalidate(String accessToken, String clientToken) throws ForbiddenOperationException {
+		Session session = sessionFactory.getCurrentSession();
+		Token token = session.get(Token.class, accessToken);
+		if (token == null || !token.getClientToken().equals(clientToken)) {
+			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
+		Account account = token.getOwner();
+		if (account.isBanned()) {
+			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+		}
+
+		session.delete(token);
 	}
 
 	@Transactional
 	@Override
-	public void signout(String username, String password) throws ForbiddenOperationException, RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(username);
-			if (account == null || !account.isPasswordValid(password)) {
-				throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
-			}
-			if (account.isBanned()) {
-				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-			}
-			account.revokeToken();
-		} catch (AlreadyDeletedException e) {
-			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD, e);
+	public void signout(String username, String password) throws ForbiddenOperationException {
+		Session session = sessionFactory.getCurrentSession();
+		Account account = session.get(Account.class, username);
+		if (account == null || !passwordAlgorithm.verify(password, account)) {
+			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
 		}
+		if (account.isBanned()) {
+			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+		}
+
+		account.getTokens().forEach(session::delete);
 	}
 
 	@Transactional
 	@Override
-	public void joinServer(UUID accessToken, UUID profileUUID, String serverid) throws ForbiddenOperationException, RemoteException {
-		try {
-			YggdrasilAccount account = accountManager.lookupAccount(accessToken);
-			GameProfile profile = accountManager.lookupGameProfile(profileUUID);
-			if (account == null || profile == null || !account.equals(profile.getOwner())) {
-				throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-			}
-			if (account.isBanned()) {
-				throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-			}
-			if (profile.isBanned()) {
-				throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
-			}
-			profile.setServerAuthenticationID(serverid);
-		} catch (AlreadyDeletedException e) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN, e);
+	public void joinServer(String accessToken, UUID profileUUID, String serverid) throws ForbiddenOperationException {
+		Session session = sessionFactory.getCurrentSession();
+		Token token = session.get(Token.class, accessToken);
+		if (token == null) {
+			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
+
+		Account account = token.getOwner();
+		GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
+		if (profile == null || !account.equals(profile.getOwner())) {
+			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
+		}
+
+		if (account.isBanned()) {
+			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
+		}
+		if (profile.isBanned()) {
+			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
+		}
+
+		ServerId verifyid = new ServerId();
+		verifyid.setServerId(serverid);
+		verifyid.setProfile(profile);
+		session.save(verifyid);
 	}
 
 	@Transactional
 	@Override
-	public GameProfileResponse hasJoinServer(String playername, String serverid) throws RemoteException {
-		try {
-			GameProfile profile = accountManager.lookupGameProfile(playername);
-			if (profile == null || profile.getOwner().isBanned() || profile.isBanned() || !serverid.equals(profile.getServerAuthenticationID())) {
-				return null;
+	public GameProfileResponse hasJoinServer(String playername, String serverid) {
+		Session session = sessionFactory.getCurrentSession();
+		ServerId verifyid = session.get(ServerId.class, serverid);
+		if (verifyid != null) {
+			GameProfile profile = verifyid.getProfile();
+			if (profile.getName().equals(playername)) {
+				session.delete(verifyid);
+				return createGameProfileResponse(profile, true);
 			}
-			return createGameProfileResponse(profile, true);
-		} catch (AlreadyDeletedException e) {
-			LOGGER.debug("an AlreadyDeletedException has thrown during hasJoinServer request", e);
+		}
+		return null;
+	}
+
+	@Transactional
+	@Override
+	public GameProfileResponse lookupProfile(UUID profileUUID) {
+		Session session = sessionFactory.getCurrentSession();
+		return createGameProfileResponse(session.get(GameProfile.class, profileUUID.toString()), true);
+	}
+
+	@Transactional
+	@Override
+	public GameProfileResponse lookupProfile(String name) {
+		Session session = sessionFactory.getCurrentSession();
+		@SuppressWarnings("unchecked")
+		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).list();
+		if (profiles.isEmpty()) {
 			return null;
+		} else {
+			return createGameProfileResponse(profiles.get(0), true);
 		}
 	}
 
 	@Transactional
 	@Override
-	public GameProfileResponse lookupProfile(UUID profileUUID) throws RemoteException {
-		try {
-			return createGameProfileResponse(accountManager.lookupGameProfile(profileUUID), true);
-		} catch (AlreadyDeletedException e) {
-			LOGGER.debug("an AlreadyDeletedException has thrown during lookupProfile request", e);
-			return null;
+	public AccessPolicy getServerAccessPolicy(String host) {
+		Session session = sessionFactory.getCurrentSession();
+		AccessRule rule = session.get(AccessRule.class, host);
+		if (rule == null) {
+			rule = session.get(AccessRule.class, AccessRule.DEFAULT_RULE_KEY);
+		}
+
+		if (rule == null) {
+			return AccessPolicy.valueOf(defaultPolicy);
+		} else {
+			return rule.getPolicy();
 		}
 	}
 
-	@Transactional
 	@Override
-	public GameProfileResponse lookupProfile(String name) throws RemoteException {
-		try {
-			return createGameProfileResponse(accountManager.lookupGameProfile(name), true);
-		} catch (AlreadyDeletedException e) {
-			LOGGER.debug("an AlreadyDeletedException has thrown during lookupProfile request", e);
-			return null;
-		}
-	}
-
-	@Transactional
-	@Override
-	public AccessPolicy getServerAccessPolicy(String host) throws RemoteException {
-		AccessPolicy policy = hostAccessManager.getHostPolicy(host);
-		if (policy == null) {
-			policy = hostAccessManager.getDefaultPolicy();
-		}
-		return policy;
-	}
-
-	@Override
-	public void addSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException {
+	public void addSignatureKeyListener(SignatureKeyChangeCallback listener) {
 		keyListeners.add(listener);
 	}
 
 	@Override
-	public void removeSignatureKeyListener(SignatureKeyChangeCallback listener) throws RemoteException {
+	public void removeSignatureKeyListener(SignatureKeyChangeCallback listener) {
 		keyListeners.remove(listener);
 	}
 
 	@Override
-	public RSAPrivateKey getSignatureKey() throws RemoteException {
+	public RSAPrivateKey getSignatureKey() {
 		return keyServerService.getKey();
 	}
 
@@ -277,14 +286,14 @@ public class WebBackendImpl implements WebBackend {
 		keyServerService.removeKeyChangeListener(keyChangeListener);
 	}
 
-	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) throws AlreadyDeletedException, RemoteException {
+	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) {
 		if (profile == null) {
 			return null;
 		}
-		return new GameProfileResponse(profile.getUUID(), profile.getName(), withTexture ? profile.getTexture() : null);
+		return new GameProfileResponse(toUUID(profile.getUuid()), profile.getName(), withTexture ? profile.getTexture() : null);
 	}
 
-	private GameProfileResponse[] createGameProfileResponses(Set<GameProfile> profiles, boolean withTexture) throws AlreadyDeletedException, RemoteException {
+	private GameProfileResponse[] createGameProfileResponses(Set<GameProfile> profiles, boolean withTexture) {
 		GameProfileResponse[] responses = new GameProfileResponse[profiles.size()];
 		int index = 0;
 		for (GameProfile profile : profiles) {
@@ -293,7 +302,7 @@ public class WebBackendImpl implements WebBackend {
 		return responses;
 	}
 
-	private String getUserid(YggdrasilAccount account) throws RemoteException {
+	private String getUserid(Account account) {
 		try {
 			return unsign(UUID.nameUUIDFromBytes(account.getId().getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
@@ -301,17 +310,17 @@ public class WebBackendImpl implements WebBackend {
 		}
 	}
 
-	private Map<String, String> getUserProperties(YggdrasilAccount account) {
+	private Map<String, String> getUserProperties(Account account) {
 		// TODO: Add twich support
 		return null;
 	}
 
-	private AuthenticateResponse createAuthenticateResponse(YggdrasilAccount account, UUID accessToken, boolean withProfiles) throws AlreadyDeletedException, RemoteException {
+	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, boolean withProfiles) {
 		GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
 		GameProfileResponse[] profiles = withProfiles ? createGameProfileResponses(account.getProfiles(), false) : null;
 		String userid = getUserid(account);
 		Map<String, String> properties = getUserProperties(account);
-		return new AuthenticateResponse(accessToken, selectedProfile, profiles, userid, properties);
+		return new AuthenticateResponse(token.getClientToken(), token.getAccessToken(), selectedProfile, profiles, userid, properties);
 	}
 
 }

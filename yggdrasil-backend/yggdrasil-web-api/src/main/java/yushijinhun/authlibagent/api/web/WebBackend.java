@@ -10,21 +10,21 @@ import yushijinhun.authlibagent.commons.AccessPolicy;
 
 public interface WebBackend extends Remote {
 
-	AuthenticateResponse authenticate(String username, String password, UUID clientToken) throws ForbiddenOperationException, RemoteException;
+	AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException, RemoteException;
 
-	AuthenticateResponse refresh(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
+	AuthenticateResponse refresh(String accessToken, String clientToken) throws ForbiddenOperationException, RemoteException;
 
-	AuthenticateResponse selectProfile(UUID accessToken, UUID clientToken, UUID profile) throws ForbiddenOperationException, RemoteException;
+	AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profile) throws ForbiddenOperationException, RemoteException;
 
-	boolean validate(UUID accessToken, UUID clientToken) throws RemoteException;
+	boolean validate(String accessToken, String clientToken) throws RemoteException;
 
-	boolean validate(UUID accessToken) throws RemoteException;
+	boolean validate(String accessToken) throws RemoteException;
 
-	void invalidate(UUID accessToken, UUID clientToken) throws ForbiddenOperationException, RemoteException;
+	void invalidate(String accessToken, String clientToken) throws ForbiddenOperationException, RemoteException;
 
 	void signout(String username, String password) throws ForbiddenOperationException, RemoteException;
 
-	void joinServer(UUID accessToken, UUID profile, String serverid) throws ForbiddenOperationException, RemoteException;
+	void joinServer(String accessToken, UUID profile, String serverid) throws ForbiddenOperationException, RemoteException;
 
 	GameProfileResponse hasJoinServer(String playername, String serverid) throws RemoteException;
 

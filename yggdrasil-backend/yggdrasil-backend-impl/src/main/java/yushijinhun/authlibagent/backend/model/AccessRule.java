@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.backend.dao.pojo;
+package yushijinhun.authlibagent.backend.model;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -10,9 +10,11 @@ import javax.persistence.Id;
 import yushijinhun.authlibagent.commons.AccessPolicy;
 
 @Entity
-public class AccessPolicyDao implements Serializable {
+public class AccessRule implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String DEFAULT_RULE_KEY = "default";
 
 	private String host;
 	private AccessPolicy policy;
@@ -47,8 +49,8 @@ public class AccessPolicyDao implements Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof AccessPolicyDao) {
-			AccessPolicyDao another = (AccessPolicyDao) obj;
+		if (obj instanceof AccessRule) {
+			AccessRule another = (AccessRule) obj;
 			return Objects.equals(getHost(), another.getHost());
 		}
 		return false;
