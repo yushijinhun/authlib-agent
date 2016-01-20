@@ -13,7 +13,7 @@ public class JoinServerServlet extends YggdrasilPostServlet {
 
 	@Override
 	protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception {
-		UUID accessToken = toUUID(req.getString("accessToken"));
+		String accessToken = req.getString("accessToken");
 		UUID profile = toUUID(req.getString("selectedProfile"));
 		String serverid = req.getString("serverId");
 		backend.joinServer(accessToken, profile, serverid);

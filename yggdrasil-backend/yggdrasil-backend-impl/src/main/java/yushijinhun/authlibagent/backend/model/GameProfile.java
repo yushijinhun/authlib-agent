@@ -1,30 +1,36 @@
-package yushijinhun.authlibagent.backend.dao.pojo;
+package yushijinhun.authlibagent.backend.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import yushijinhun.authlibagent.commons.PlayerTexture;
 import yushijinhun.authlibagent.commons.TextureModel;
 
 @Entity
-public class GameProfileDao implements Serializable {
+public class GameProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String uuid;
 	private String name;
-	private AccountDao owner;
+	private Account owner;
 	private boolean banned = false;
 	private String skin = null;
 	private String cape = null;
 	private TextureModel textureModel = TextureModel.STEVE;
-	private String serverId;
+	private Set<ServerId> serverIds = new HashSet<>();
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -47,11 +53,11 @@ public class GameProfileDao implements Serializable {
 
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn
-	public AccountDao getOwner() {
+	public Account getOwner() {
 		return owner;
 	}
 
-	public void setOwner(AccountDao owner) {
+	public void setOwner(Account owner) {
 		this.owner = owner;
 	}
 
@@ -90,12 +96,13 @@ public class GameProfileDao implements Serializable {
 		this.textureModel = textureModel;
 	}
 
-	public String getServerId() {
-		return serverId;
+	@OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public Set<ServerId> getServerIds() {
+		return serverIds;
 	}
 
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
+	public void setServerIds(Set<ServerId> serverIds) {
+		this.serverIds = serverIds;
 	}
 
 	@Override
@@ -108,11 +115,23 @@ public class GameProfileDao implements Serializable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof GameProfileDao) {
-			GameProfileDao another = (GameProfileDao) obj;
+		if (obj instanceof GameProfile) {
+			GameProfile another = (GameProfile) obj;
 			return Objects.equals(getUuid(), another.getUuid());
 		}
 		return false;
+	}
+
+	@Transient
+	public PlayerTexture getTexture() {
+		return new PlayerTexture(textureModel, skin, cape);
+	}
+
+	@Transient
+	public void setTexture(PlayerTexture texture) {
+		textureModel = texture.getModel();
+		skin = texture.getSkin();
+		cape = texture.getCape();
 	}
 
 }
