@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
-import static yushijinhun.authlibagent.commons.RandomUtils.randomUUID;
 
 @Entity
 public class Token implements Serializable {
@@ -73,16 +71,6 @@ public class Token implements Serializable {
 			return Objects.equals(getAccessToken(), another.getAccessToken());
 		}
 		return false;
-	}
-
-	public static Token createToken(Account account, String clientToken) {
-		Token token = new Token();
-		token.setAccessToken(unsign(randomUUID()));
-		token.setClientToken(clientToken);
-		token.setOwner(account);
-		long currentTime = System.currentTimeMillis();
-		token.setCreateTime(currentTime);
-		return token;
 	}
 
 }

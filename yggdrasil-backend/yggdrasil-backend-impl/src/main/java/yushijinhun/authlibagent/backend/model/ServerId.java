@@ -2,7 +2,14 @@ package yushijinhun.authlibagent.backend.model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+@Entity
 public class ServerId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -10,6 +17,8 @@ public class ServerId implements Serializable {
 	private String serverId;
 	private GameProfile profile;
 
+	@Id
+	@Column(nullable = false, unique = true)
 	public String getServerId() {
 		return serverId;
 	}
@@ -18,6 +27,8 @@ public class ServerId implements Serializable {
 		this.serverId = serverId;
 	}
 
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn
 	public GameProfile getProfile() {
 		return profile;
 	}

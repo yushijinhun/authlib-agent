@@ -31,7 +31,6 @@ import yushijinhun.authlibagent.backend.model.Token;
 import yushijinhun.authlibagent.commons.AccessPolicy;
 import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
 import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
-import static yushijinhun.authlibagent.backend.model.Token.createToken;
 import static org.hibernate.criterion.Restrictions.eq;
 
 @Component("webBackend")
@@ -53,10 +52,10 @@ public class WebBackendImpl implements WebBackend {
 	private SessionFactory sessionFactory;
 
 	@Autowired
-	private KeyServerService keyServerService;
+	private LoginService loginService;
 
 	@Autowired
-	private PasswordAlgorithm passwordAlgorithm;
+	private KeyServerService keyServerService;
 
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
@@ -73,17 +72,8 @@ public class WebBackendImpl implements WebBackend {
 	@Transactional
 	@Override
 	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Account account = session.get(Account.class, username);
-		if (account == null || !passwordAlgorithm.verify(password, account)) {
-			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
-		}
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
-
-		Token token = Token.createToken(account, clientToken);
-		session.save(token);
+		Account account = loginService.loginWithPassword(username, password);
+		Token token = loginService.createToken(account, clientToken);
 		return createAuthenticateResponse(account, token, true);
 	}
 
@@ -96,19 +86,8 @@ public class WebBackendImpl implements WebBackend {
 	@Transactional
 	@Override
 	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		if (token == null || !token.getClientToken().equals(clientToken)) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-		}
-		Account account = token.getOwner();
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
-
-		Token newToken = createToken(account, clientToken);
-		session.save(newToken);
-		session.delete(token);
+		Account account = loginService.loginWithToken(accessToken, clientToken);
+		Token token = loginService.createToken(account, clientToken);
 
 		// select profile
 		if (profileUUID != null) {
@@ -116,6 +95,7 @@ public class WebBackendImpl implements WebBackend {
 				throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
 			}
 
+			Session session = sessionFactory.getCurrentSession();
 			GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 			if (profile == null || !profile.getOwner().equals(account)) {
 				throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
@@ -125,74 +105,45 @@ public class WebBackendImpl implements WebBackend {
 			session.update(account);
 		}
 
-		return createAuthenticateResponse(account, newToken, includeProfilesInRefresh);
+		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}
 
 	@Transactional
 	@Override
 	public boolean validate(String accessToken, String clientToken) {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		return token != null && token.getClientToken().equals(clientToken);
+		return loginService.isTokenAvailable(accessToken, clientToken);
 	}
 
 	@Transactional
 	@Override
 	public boolean validate(String accessToken) {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		return token != null;
+		return loginService.isTokenAvailable(accessToken);
 	}
 
 	@Transactional
 	@Override
 	public void invalidate(String accessToken, String clientToken) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		if (token == null || !token.getClientToken().equals(clientToken)) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-		}
-		Account account = token.getOwner();
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
-
-		session.delete(token);
+		loginService.revokeToken(accessToken, clientToken);
 	}
 
 	@Transactional
 	@Override
 	public void signout(String username, String password) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Account account = session.get(Account.class, username);
-		if (account == null || !passwordAlgorithm.verify(password, account)) {
-			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
-		}
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
-
-		account.getTokens().forEach(session::delete);
+		Account account = loginService.loginWithPassword(username, password);
+		loginService.revokeAllTokens(account);
 	}
 
 	@Transactional
 	@Override
 	public void joinServer(String accessToken, UUID profileUUID, String serverid) throws ForbiddenOperationException {
 		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		if (token == null) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
-		}
 
-		Account account = token.getOwner();
+		Account account = loginService.loginWithToken(accessToken);
 		GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 		if (profile == null || !account.equals(profile.getOwner())) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
 		if (profile.isBanned()) {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
