@@ -36,15 +36,9 @@ import static org.hibernate.criterion.Restrictions.eq;
 @Component("webBackend")
 public class WebBackendImpl implements WebBackend {
 
-	private static final String MSG_INVALID_USERNAME_OR_PASSWORD = "Invalid credentials. Invalid username or password.";
-	private static final String MSG_INVALID_TOKEN = "Invalid token.";
-	private static final String MSG_SELECTING_PROFILE_NOT_SUPPORTED = "Access token already has a profile assigned.";
-
-	// TODO after mojang implements selecting profiles, change this to the official message.
 	private static final String MSG_INVALID_PROFILE = "Invalid profile.";
-
-	private static final String MSG_ACCOUNT_BANNED = "Account has been banned.";
 	private static final String MSG_PROFILE_BANNED = "Game profile has been banned.";
+	private static final String MSG_SELECTING_PROFILE_NOT_SUPPORTED = "Access token already has a profile assigned.";
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
@@ -141,7 +135,7 @@ public class WebBackendImpl implements WebBackend {
 		Account account = loginService.loginWithToken(accessToken);
 		GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 		if (profile == null || !account.equals(profile.getOwner())) {
-			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
+			throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
 		}
 
 		if (profile.isBanned()) {
