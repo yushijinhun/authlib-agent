@@ -14,8 +14,8 @@ public class RefreshServlet extends YggdrasilPostServlet {
 
 	@Override
 	protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception {
-		UUID clientToken = toUUID(req.getString("clientToken"));
-		UUID accessToken = toUUID(req.getString("accessToken"));
+		String clientToken = req.getString("clientToken");
+		String accessToken = req.getString("accessToken");
 
 		AuthenticateResponse auth;
 
@@ -29,7 +29,7 @@ public class RefreshServlet extends YggdrasilPostServlet {
 			auth = backend.selectProfile(accessToken, clientToken, newProfile);
 		}
 
-		return serializer.serializeAuthenticateResponse(auth, clientToken);
+		return serializer.serializeAuthenticateResponse(auth);
 	}
 
 }

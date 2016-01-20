@@ -1,7 +1,6 @@
 package yushijinhun.authlibagent.web;
 
 import java.util.Map;
-import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
@@ -13,6 +12,6 @@ public interface ResponseSerializer {
 
 	JSONObject serializeGameProfile(GameProfileResponse profile, boolean withProperties);
 
-	JSONObject serializeAuthenticateResponse(AuthenticateResponse auth, UUID clientToken);
+	JSONObject serializeAuthenticateResponse(AuthenticateResponse auth);
 
 }

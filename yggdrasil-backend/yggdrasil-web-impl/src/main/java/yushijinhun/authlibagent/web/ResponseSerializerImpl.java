@@ -6,7 +6,6 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,10 +99,10 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 	}
 
 	@Override
-	public JSONObject serializeAuthenticateResponse(AuthenticateResponse auth, UUID clientToken) {
+	public JSONObject serializeAuthenticateResponse(AuthenticateResponse auth) {
 		JSONObject resp = new JSONObject();
-		resp.put("accessToken", unsign(auth.getAccessToken()));
-		resp.put("clientToken", unsign(clientToken));
+		resp.put("accessToken", auth.getAccessToken());
+		resp.put("clientToken", auth.getClientToken());
 
 		if (auth.getSelectedProfile() != null) {
 			resp.put("selectedProfile", serializeGameProfile(auth.getSelectedProfile(), false));
