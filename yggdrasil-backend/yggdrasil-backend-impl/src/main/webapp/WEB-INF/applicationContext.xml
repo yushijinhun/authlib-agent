@@ -1,63 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop
-                            http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
-                            http://www.springframework.org/schema/beans
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
                             http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
                             http://www.springframework.org/schema/context
-                            http://www.springframework.org/schema/context/spring-context-4.2.xsd
-                            http://www.springframework.org/schema/jee
-                            http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
-                            http://www.springframework.org/schema/tx
-                            http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-                            http://www.springframework.org/schema/util
-                            http://www.springframework.org/schema/util/spring-util-4.2.xsd ">
+                            http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
 	<context:annotation-config />
 	<context:component-scan base-package="yushijinhun.authlibagent.backend" />
-
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://localhost/yggdrasil" />
-		<property name="user" value="yggdrasil" />
-		<property name="password" value="authlibagent_yggdrasil_backend" />
-		<property name="maxIdleTime" value="8000" />
-		<property name="maxPoolSize" value="40" />
-		<property name="maxStatements" value="100" />
-	</bean>
-
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-		<property name="packagesToScan" value="yushijinhun.authlibagent.backend.model" />
-		<property name="dataSource" ref="dataSource" />
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
-			</props>
-		</property>
-	</bean>
-
-	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-
-	<tx:annotation-driven transaction-manager="transactionManager" />
-
-	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-		<property name="locations">
-			<list>
-				<value>WEB-INF/application.properties</value>
-			</list>
-		</property>
-	</bean>
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
-		<property name="properties" ref="config" />
-	</bean>
-
-	<bean id="rmiWebBackend" class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<property name="service" ref="webBackend" />
-		<property name="serviceName" value="webBackend" />
-		<property name="registryPort" value="10099" />
-		<property name="serviceInterface" value="yushijinhun.authlibagent.api.web.WebBackend" />
-	</bean>
 
 </beans>
