@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:cxf="http://cxf.apache.org/core" xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                            http://cxf.apache.org/core
+                            http://cxf.apache.org/schemas/core.xsd
+                            http://cxf.apache.org/jaxrs
+                            http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+
+	<jaxrs:server id="restfulApi">
+		<jaxrs:serviceBeans>
+			<ref bean="accountResource" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jsonProvider" />
+			<ref bean="jsonExceptionHandler"/>
+			<ref bean="applicationExceptionHandler"/>
+		</jaxrs:providers>
+	</jaxrs:server>
+
+</beans>

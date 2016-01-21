@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,30 @@ public class TokenCleaner {
 
 		@Override
 		public void run() {
+			try {
+				doCleanup();
+			} catch (Exception e) {
+				LOGGER.warn("failed to execute time expire clean up on " + entity, e);
+			}
+		}
+
+		void doCleanup() {
 			long earliestTime = System.currentTimeMillis() - expireTime;
 			LOGGER.debug("executing time expire clean up on %s. earliestTime=%d", entity.getSimpleName(), earliestTime);
+
 			int cleans;
 
 			// TODO: maybe we can use spring managed transaction here?
-			Session session = sessionFactory.openSession();
+			Session session;
+			try {
+				session = sessionFactory.openSession();
+			} catch (HibernateException e) {
+				// sometimes the data source is not initialized here
+				// it's usually not a issue
+				LOGGER.debug("failed to execute time expire clean up on " + entity + ", maybe the datasource is not initialized?", e);
+				return;
+			}
+
 			try {
 				List<?> matches = session.createCriteria(entity).add(lt(timeField, earliestTime)).list();
 				cleans = matches.size();
@@ -89,6 +108,7 @@ public class TokenCleaner {
 
 	@PreDestroy
 	private void stopThread() {
+		timer.cancel();
 	}
 
 }

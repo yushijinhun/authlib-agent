@@ -3,6 +3,8 @@ package yushijinhun.authlibagent.backend.web;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @XmlRootElement(name = "account")
 public class AccountInfo implements Serializable {
@@ -45,6 +47,7 @@ public class AccountInfo implements Serializable {
 	}
 
 	@XmlElement
+	@JsonInclude(Include.NON_NULL)
 	public String getPassword() {
 		return password;
 	}
@@ -53,6 +56,7 @@ public class AccountInfo implements Serializable {
 		this.password = password;
 	}
 
+	@XmlElement
 	public String getTwitchToken() {
 		return twitchToken;
 	}

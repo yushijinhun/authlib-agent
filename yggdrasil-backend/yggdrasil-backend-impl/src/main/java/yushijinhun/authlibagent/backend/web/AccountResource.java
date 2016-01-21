@@ -32,6 +32,10 @@ public interface AccountResource {
 
 	@PUT
 	@Path("{id}")
+	AccountInfo updateOrCreateAccount(@PathParam("id") String id, AccountInfo account);
+
+	@POST
+	@Path("{id}")
 	AccountInfo updateAccount(@PathParam("id") String id, AccountInfo account);
 
 }
