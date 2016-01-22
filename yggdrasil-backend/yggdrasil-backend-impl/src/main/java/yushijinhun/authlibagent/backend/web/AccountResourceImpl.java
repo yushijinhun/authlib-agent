@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Set;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
-import static com.google.common.base.Strings.nullToEmpty;;
+import static com.google.common.base.Strings.nullToEmpty;
+import static yushijinhun.authlibagent.backend.web.WebUtils.requireNonNullBody;
 
-@Transactional(noRollbackFor = WebApplicationException.class)
+@Transactional
 @Component("accountResource")
 public class AccountResourceImpl implements AccountResource {
 
@@ -93,19 +93,19 @@ public class AccountResourceImpl implements AccountResource {
 	}
 
 	@Override
-	public AccountInfo createAccount(AccountInfo accountinfo) {
-		checkRequest(accountinfo);
-		if (accountinfo.getId() == null) {
-			throw new BadRequestException("id is null");
+	public AccountInfo createAccount(AccountInfo info) {
+		requireNonNullBody(info);
+		if (info.getId() == null) {
+			throw new BadRequestException("id cannot be null");
 		}
 
 		Session session = sessionFactory.getCurrentSession();
-		if (session.get(Account.class, accountinfo.getId()) != null) {
+		if (session.get(Account.class, info.getId()) != null) {
 			throw new ConflictException("account already exists");
 		}
 
 		Account account = new Account();
-		fillAccountInfo(account, accountinfo);
+		fillAccountInfo(account, info);
 		session.save(account);
 		return createAccountInfo(account);
 	}
@@ -132,7 +132,7 @@ public class AccountResourceImpl implements AccountResource {
 
 	@Override
 	public AccountInfo updateOrCreateAccount(String id, AccountInfo info) {
-		checkRequest(info);
+		requireNonNullBody(info);
 
 		Session session = sessionFactory.getCurrentSession();
 		Account account = session.get(Account.class, id);
@@ -148,7 +148,7 @@ public class AccountResourceImpl implements AccountResource {
 
 	@Override
 	public AccountInfo updateAccount(String id, AccountInfo info) {
-		checkRequest(info);
+		requireNonNullBody(info);
 
 		Session session = sessionFactory.getCurrentSession();
 		Account account = session.get(Account.class, id);
@@ -166,6 +166,7 @@ public class AccountResourceImpl implements AccountResource {
 			if (account.getId() == null) {
 				account.setId(info.getId());
 			} else if (!account.getId().equals(info.getId())) {
+				// changing the id is not allowed
 				throw new ConflictException("id conflict");
 			}
 		}
@@ -192,12 +193,6 @@ public class AccountResourceImpl implements AccountResource {
 		info.setBanned(account.isBanned());
 		info.setTwitchToken(nullToEmpty(account.getTwitchToken()));
 		return info;
-	}
-
-	private void checkRequest(AccountInfo info) {
-		if (info == null) {
-			throw new BadRequestException("body cannot be empty");
-		}
 	}
 
 }

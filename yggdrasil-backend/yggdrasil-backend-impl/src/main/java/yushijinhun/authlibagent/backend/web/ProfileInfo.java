@@ -15,8 +15,17 @@ public class ProfileInfo implements Serializable {
 	private String name;
 	private String owner;
 	private Boolean banned;
+
+	/**
+	 * Null by default, empty for no skin
+	 */
 	private String skin;
+
+	/**
+	 * Null by default, empty for no cape
+	 */
 	private String cape;
+
 	private TextureModel textureModel;
 
 	@XmlElement
