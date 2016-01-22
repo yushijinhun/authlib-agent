@@ -15,7 +15,10 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
+import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;;
 
 @Transactional(noRollbackFor = WebApplicationException.class)
 @Component("accountResource")
@@ -36,8 +39,8 @@ public class AccountResourceImpl implements AccountResource {
 			if (banned != null) {
 				conjunction.add(eq("banned", banned));
 			}
-			if (twitchToken == null) {
-				conjunction.add(eq("twitchToken", twitchToken));
+			if (twitchToken != null) {
+				conjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
 			}
 
 			@SuppressWarnings("unchecked")
@@ -47,21 +50,36 @@ public class AccountResourceImpl implements AccountResource {
 		} else {
 			Conjunction conjunction = conjunction();
 			if (accessToken != null) {
+				if (accessToken.isEmpty()) {
+					throw new BadRequestException("accessToken is empty");
+				}
 				conjunction.add(eq("accessToken", accessToken));
 			}
 			if (clientToken != null) {
+				if (clientToken.isEmpty()) {
+					throw new BadRequestException("clientToken is empty");
+				}
 				conjunction.add(eq("clientToken", clientToken));
 			}
-			if (banned != null) {
-				conjunction.add(eq("owner.banned", banned));
-			}
-			if (twitchToken != null) {
-				conjunction.add(eq("owner.twitchToken", twitchToken));
-			}
 
-			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Token.class).add(conjunction).setProjection(property("owner.id")).list();
-			return ids.toArray(new String[ids.size()]);
+			if (banned == null && twitchToken == null) {
+				@SuppressWarnings("unchecked")
+				List<String> ids = session.createCriteria(Token.class).add(conjunction).setProjection(property("owner.id")).list();
+				return ids.toArray(new String[ids.size()]);
+
+			} else {
+				Conjunction subconjunction = conjunction();
+				if (banned != null) {
+					subconjunction.add(eq("banned", banned));
+				}
+				if (twitchToken != null) {
+					subconjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
+				}
+
+				@SuppressWarnings("unchecked")
+				List<String> ids = session.createCriteria(Token.class).add(conjunction).createCriteria("owner").add(subconjunction).setProjection(property("id")).list();
+				return ids.toArray(new String[ids.size()]);
+			}
 		}
 	}
 
@@ -147,17 +165,11 @@ public class AccountResourceImpl implements AccountResource {
 			account.setBanned(info.getBanned());
 		}
 
-		String twitchToken = info.getTwitchToken();
-		if (twitchToken != null) {
-			if ("".equals(twitchToken)) {
-				twitchToken = null;
-			}
-			account.setTwitchToken(twitchToken);
-		}
+		account.setTwitchToken(emptyToNull(info.getTwitchToken()));
 
 		String password = info.getPassword();
 		if (password != null) {
-			if ("".equals(password)) {
+			if (password.isEmpty()) {
 				account.setPassword(null);
 			} else {
 				account.setPassword(passwordAlgorithm.hash(password));
@@ -166,13 +178,11 @@ public class AccountResourceImpl implements AccountResource {
 	}
 
 	private AccountInfo createAccountInfo(Account account) {
-		AccountInfo accountinfo = new AccountInfo();
-		accountinfo.setId(account.getId());
-		accountinfo.setBanned(account.isBanned());
-
-		String twitchToken = accountinfo.getTwitchToken();
-		accountinfo.setTwitchToken(twitchToken == null ? "" : twitchToken);
-		return accountinfo;
+		AccountInfo info = new AccountInfo();
+		info.setId(account.getId());
+		info.setBanned(account.isBanned());
+		info.setTwitchToken(nullToEmpty(account.getTwitchToken()));
+		return info;
 	}
 
 	private void checkRequest(AccountInfo info) {

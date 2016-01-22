@@ -37,7 +37,7 @@ public class LoginServiceImpl implements LoginService {
 
 		Session session = sessionFactory.getCurrentSession();
 		Account account = session.get(Account.class, username);
-		if (account == null || !passwordAlgorithm.verify(password, account)) {
+		if (account == null || account.getPassword() == null || !passwordAlgorithm.verify(password, account.getPassword())) {
 			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
 		}
 		if (account.isBanned()) {
