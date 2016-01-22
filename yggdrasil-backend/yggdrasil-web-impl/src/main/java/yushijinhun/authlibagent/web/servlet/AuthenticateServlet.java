@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 
-@WebServlet("/yggdrasil/authenticate")
+@WebServlet("/authenticate")
 public class AuthenticateServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet("/api/profiles/minecraft")
+@WebServlet("/profilerepo/minecraft")
 public class ProfileSearchServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;

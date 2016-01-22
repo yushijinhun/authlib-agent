@@ -4,7 +4,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
-@WebServlet("/yggdrasil/signout")
+@WebServlet("/signout")
 public class SignoutServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;

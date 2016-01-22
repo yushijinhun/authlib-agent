@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
 
-@WebServlet("/session/joinserver")
+@WebServlet("/joinserver")
 public class JoinServerServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;

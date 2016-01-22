@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 
-@WebServlet("/yggdrasil/validate")
+@WebServlet("/validate")
 public class ValidateServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;
