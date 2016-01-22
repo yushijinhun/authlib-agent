@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.backend.model.Account;
 import yushijinhun.authlibagent.backend.model.Token;
 import yushijinhun.authlibagent.backend.service.PasswordAlgorithm;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
@@ -31,10 +34,11 @@ public class AccountResourceImpl implements AccountResource {
 	private PasswordAlgorithm passwordAlgorithm;
 
 	@Override
-	public String[] getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
+	public Collection<String> getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
 		Session session = sessionFactory.getCurrentSession();
 
 		if (accessToken == null && clientToken == null) {
+			// query accounts
 			Conjunction conjunction = conjunction();
 			if (banned != null) {
 				conjunction.add(eq("banned", banned));
@@ -45,9 +49,13 @@ public class AccountResourceImpl implements AccountResource {
 
 			@SuppressWarnings("unchecked")
 			List<String> ids = session.createCriteria(Account.class).add(conjunction).setProjection(property("id")).list();
-			return ids.toArray(new String[ids.size()]);
+			return ids;
 
 		} else {
+			// query tokens
+			@SuppressWarnings("rawtypes")
+			List ids;
+
 			Conjunction conjunction = conjunction();
 			if (accessToken != null) {
 				if (accessToken.isEmpty()) {
@@ -63,9 +71,7 @@ public class AccountResourceImpl implements AccountResource {
 			}
 
 			if (banned == null && twitchToken == null) {
-				@SuppressWarnings("unchecked")
-				List<String> ids = session.createCriteria(Token.class).add(conjunction).setProjection(property("owner.id")).list();
-				return ids.toArray(new String[ids.size()]);
+				ids = session.createCriteria(Token.class).add(conjunction).setProjection(property("owner.id")).list();
 
 			} else {
 				Conjunction subconjunction = conjunction();
@@ -76,10 +82,13 @@ public class AccountResourceImpl implements AccountResource {
 					subconjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
 				}
 
-				@SuppressWarnings("unchecked")
-				List<String> ids = session.createCriteria(Token.class).add(conjunction).createCriteria("owner").add(subconjunction).setProjection(property("id")).list();
-				return ids.toArray(new String[ids.size()]);
+				ids = session.createCriteria(Token.class).add(conjunction).createCriteria("owner").add(subconjunction).setProjection(property("id")).list();
 			}
+
+			// remove same results
+			@SuppressWarnings("unchecked")
+			Set<String> result = new HashSet<>(ids);
+			return result;
 		}
 	}
 

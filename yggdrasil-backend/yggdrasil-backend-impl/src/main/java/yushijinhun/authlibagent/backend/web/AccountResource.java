@@ -1,5 +1,6 @@
 package yushijinhun.authlibagent.backend.web;
 
+import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 public interface AccountResource {
 
 	@GET
-	String[] getAccounts(@QueryParam("accessToken") String accessToken, @QueryParam("clientToken") String clientToken, @QueryParam("banned") Boolean banned, @QueryParam("twitchToken") String twitchToken);
+	Collection<String> getAccounts(@QueryParam("accessToken") String accessToken, @QueryParam("clientToken") String clientToken, @QueryParam("banned") Boolean banned, @QueryParam("twitchToken") String twitchToken);
 
 	@POST
 	AccountInfo createAccount(AccountInfo account);
