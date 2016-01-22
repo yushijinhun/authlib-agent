@@ -13,7 +13,7 @@ public class ProfileInfo implements Serializable {
 
 	private UUID uuid;
 	private String name;
-	private UUID owner;
+	private String owner;
 	private Boolean banned;
 	private String skin;
 	private String cape;
@@ -38,11 +38,11 @@ public class ProfileInfo implements Serializable {
 	}
 
 	@XmlElement
-	public UUID getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 
-	public void setOwner(UUID owner) {
+	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
