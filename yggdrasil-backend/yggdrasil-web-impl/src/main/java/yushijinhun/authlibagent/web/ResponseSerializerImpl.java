@@ -125,7 +125,7 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 		}
 		resp.put("user", userResp);
 
-		return null;
+		return resp;
 	}
 
 }
