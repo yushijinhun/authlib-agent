@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                            http://www.springframework.org/schema/util
+                            http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<util:map id="errorNames">
+		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value="Unsupported Media Type" />
+	</util:map>
+
+	<util:map id="errorCodes" value-type="java.lang.Integer">
+		<entry key="yushijinhun.authlibagent.api.web.ForbiddenOperationException" value="403" />
+		<entry key="yushijinhun.authlibagent.web.UnsupportedMediaTypeException" value="400" />
+	</util:map>
+
+</beans>
