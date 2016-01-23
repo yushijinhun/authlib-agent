@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo Loading configurations...
 source ./configure.sh
@@ -17,11 +17,13 @@ export WEB_CONF=./yggdrasil-backend/yggdrasil-web-impl/config.properties
 echo Building...
 mvn clean install
 
+echo
+
 cp ./authlib-javaagent/target/authlib-javaagent-*-jar-with-dependencies.jar authlibagent.jar
-echo ./authlib-javaagent/target/authlib-javaagent-*-jar-with-dependencies.jar is saved authlibagent.jar
+echo ./authlib-javaagent/target/authlib-javaagent-*-jar-with-dependencies.jar is saved to authlibagent.jar
 
 cp ./yggdrasil-backend/yggdrasil-backend-impl/target/yggdrasil-backend-impl-*.war yggdrasil-backend.war
-echo ./yggdrasil-backend/yggdrasil-backend-impl/target/yggdrasil-backend-impl-*.war is saved yggdrasil-backend.war
+echo ./yggdrasil-backend/yggdrasil-backend-impl/target/yggdrasil-backend-impl-*.war is saved to yggdrasil-backend.war
 
 cp ./yggdrasil-backend/yggdrasil-web-impl/target/yggdrasil-web-impl-*.war yggdrasil-web.war
-echo ./yggdrasil-backend/yggdrasil-web-impl/target/yggdrasil-web-impl-*.war is saved yggdrasil-web.war
+echo ./yggdrasil-backend/yggdrasil-web-impl/target/yggdrasil-web-impl-*.war is saved to yggdrasil-web.war
