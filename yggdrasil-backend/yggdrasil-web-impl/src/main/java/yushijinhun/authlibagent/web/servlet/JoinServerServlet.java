@@ -1,10 +1,10 @@
 package yushijinhun.authlibagent.web.servlet;
 
-import static yushijinhun.authlibagent.api.util.UUIDUtils.toUUID;
 import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.toUUID;
 
 @WebServlet("/joinserver")
 public class JoinServerServlet extends YggdrasilPostServlet {

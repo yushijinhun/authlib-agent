@@ -1,6 +1,5 @@
 package yushijinhun.authlibagent.web;
 
-import static yushijinhun.authlibagent.api.util.RandomUtils.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.GeneralSecurityException;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.api.web.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.api.web.WebBackend;
+import static yushijinhun.authlibagent.api.util.RandomUtils.getSecureRandom;
 
 @Component
 public class SignatureServiceImpl implements SignatureService {

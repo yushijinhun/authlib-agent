@@ -1,11 +1,11 @@
 package yushijinhun.authlibagent.web.servlet;
 
-import static yushijinhun.authlibagent.api.util.UUIDUtils.*;
 import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.toUUID;
 
 @WebServlet("/refresh")
 public class RefreshServlet extends YggdrasilPostServlet {
