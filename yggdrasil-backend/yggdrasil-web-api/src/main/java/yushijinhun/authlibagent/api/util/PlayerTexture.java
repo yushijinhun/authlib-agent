@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.commons;
+package yushijinhun.authlibagent.api.util;
 
 import java.io.Serializable;
 import java.util.Objects;

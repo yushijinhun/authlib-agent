@@ -1,6 +1,6 @@
 package yushijinhun.authlibagent.web;
 
-import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.unsign;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
@@ -10,9 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import yushijinhun.authlibagent.api.util.PlayerTexture;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.commons.PlayerTexture;
 
 @Component
 public class ResponseSerializerImpl implements ResponseSerializer {

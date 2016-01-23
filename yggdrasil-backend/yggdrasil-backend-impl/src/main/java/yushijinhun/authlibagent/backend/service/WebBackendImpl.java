@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import yushijinhun.authlibagent.api.util.AccessPolicy;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 import yushijinhun.authlibagent.api.web.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.api.web.WebBackend;
@@ -29,10 +30,9 @@ import yushijinhun.authlibagent.backend.model.Account;
 import yushijinhun.authlibagent.backend.model.GameProfile;
 import yushijinhun.authlibagent.backend.model.ServerId;
 import yushijinhun.authlibagent.backend.model.Token;
-import yushijinhun.authlibagent.commons.AccessPolicy;
-import static yushijinhun.authlibagent.commons.UUIDUtils.toUUID;
-import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
 import static org.hibernate.criterion.Restrictions.eq;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.toUUID;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.unsign;
 
 @Component("webBackend")
 public class WebBackendImpl implements WebBackend {

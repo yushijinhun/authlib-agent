@@ -3,9 +3,9 @@ package yushijinhun.authlibagent.web.servlet;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import yushijinhun.authlibagent.api.util.AccessPolicy;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.commons.AccessPolicy;
 
 @WebServlet("/hasjoinserver")
 public class HasJoinServerServlet extends YggdrasilGetServlet {

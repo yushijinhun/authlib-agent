@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.api.web.ForbiddenOperationException;
 import yushijinhun.authlibagent.backend.model.Account;
 import yushijinhun.authlibagent.backend.model.Token;
-import static yushijinhun.authlibagent.commons.UUIDUtils.unsign;
-import static yushijinhun.authlibagent.commons.RandomUtils.randomUUID;
 import static org.hibernate.criterion.Restrictions.eq;
+import static yushijinhun.authlibagent.api.util.RandomUtils.randomUUID;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.unsign;
 import static org.hibernate.criterion.Restrictions.and;
 
 @Transactional

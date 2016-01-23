@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.commons;
+package yushijinhun.authlibagent.api.util;
 
 /**
  * 描述一个皮肤的模型类型

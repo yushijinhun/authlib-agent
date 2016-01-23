@@ -4,9 +4,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.UUID;
+import yushijinhun.authlibagent.api.util.AccessPolicy;
 import yushijinhun.authlibagent.api.web.response.AuthenticateResponse;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
-import yushijinhun.authlibagent.commons.AccessPolicy;
 
 public interface WebBackend extends Remote {
 

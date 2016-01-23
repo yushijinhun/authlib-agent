@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import yushijinhun.authlibagent.commons.TextureModel;
+import yushijinhun.authlibagent.api.util.TextureModel;
 
 @XmlRootElement(name = "profile")
 public class ProfileInfo implements Serializable {

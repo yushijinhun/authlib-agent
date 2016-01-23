@@ -4,8 +4,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.api.web.response.GameProfileResponse;
+import static yushijinhun.authlibagent.api.util.UUIDUtils.*;
 import java.util.UUID;
-import static yushijinhun.authlibagent.commons.UUIDUtils.*;
 
 @WebServlet("/profiles/minecraft/*")
 public class GameProfileServlet extends YggdrasilGetServlet {

@@ -1,9 +1,9 @@
-package yushijinhun.authlibagent.commons;
+package yushijinhun.authlibagent.api.util;
 
+import static yushijinhun.authlibagent.api.util.HexUtils.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.UUID;
-import static yushijinhun.authlibagent.commons.HexUtils.*;
 
 public class RandomUtils {
 

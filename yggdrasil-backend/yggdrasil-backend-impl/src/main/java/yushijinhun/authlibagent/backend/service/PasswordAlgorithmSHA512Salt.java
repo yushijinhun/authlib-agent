@@ -1,11 +1,11 @@
 package yushijinhun.authlibagent.backend.service;
 
+import static yushijinhun.authlibagent.api.util.HexUtils.*;
+import static yushijinhun.authlibagent.api.util.RandomUtils.*;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.stereotype.Component;
-import static yushijinhun.authlibagent.commons.RandomUtils.*;
-import static yushijinhun.authlibagent.commons.HexUtils.*;
 
 @Component
 public class PasswordAlgorithmSHA512Salt implements PasswordAlgorithm {
