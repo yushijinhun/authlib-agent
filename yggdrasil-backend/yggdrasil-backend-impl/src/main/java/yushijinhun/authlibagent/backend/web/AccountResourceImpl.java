@@ -35,58 +35,37 @@ public class AccountResourceImpl implements AccountResource {
 
 	@Override
 	public Collection<String> getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
+		Conjunction accountConjunction = conjunction();
+		if (banned != null) {
+			accountConjunction.add(eq("banned", banned));
+		}
+		if (twitchToken != null) {
+			accountConjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
+		}
+
 		Session session = sessionFactory.getCurrentSession();
-
 		if (accessToken == null && clientToken == null) {
-			// query accounts
-			Conjunction conjunction = conjunction();
-			if (banned != null) {
-				conjunction.add(eq("banned", banned));
-			}
-			if (twitchToken != null) {
-				conjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
-			}
-
 			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Account.class).add(conjunction).setProjection(property("id")).list();
+			List<String> ids = session.createCriteria(Account.class).add(accountConjunction).setProjection(property("id")).list();
 			return ids;
 
 		} else {
-			// query tokens
-			@SuppressWarnings("rawtypes")
-			List ids;
-
-			Conjunction conjunction = conjunction();
+			Conjunction tokenConjunction = conjunction();
 			if (accessToken != null) {
 				if (accessToken.isEmpty()) {
 					throw new BadRequestException("accessToken is empty");
 				}
-				conjunction.add(eq("accessToken", accessToken));
+				tokenConjunction.add(eq("accessToken", accessToken));
 			}
 			if (clientToken != null) {
 				if (clientToken.isEmpty()) {
 					throw new BadRequestException("clientToken is empty");
 				}
-				conjunction.add(eq("clientToken", clientToken));
+				tokenConjunction.add(eq("clientToken", clientToken));
 			}
 
-			if (banned == null && twitchToken == null) {
-				ids = session.createCriteria(Token.class).add(conjunction).setProjection(property("owner.id")).list();
-
-			} else {
-				Conjunction subconjunction = conjunction();
-				if (banned != null) {
-					subconjunction.add(eq("banned", banned));
-				}
-				if (twitchToken != null) {
-					subconjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
-				}
-
-				ids = session.createCriteria(Token.class).add(conjunction).createCriteria("owner").add(subconjunction).setProjection(property("id")).list();
-			}
-
-			// remove same results
 			@SuppressWarnings("unchecked")
+			List<String> ids = session.createCriteria(Token.class).add(tokenConjunction).createCriteria("owner").add(accountConjunction).setProjection(property("id")).list();
 			Set<String> result = new HashSet<>(ids);
 			return result;
 		}

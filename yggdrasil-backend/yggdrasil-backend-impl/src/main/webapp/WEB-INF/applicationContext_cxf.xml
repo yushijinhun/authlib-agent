@@ -14,6 +14,7 @@
 	<jaxrs:server id="restfulApi">
 		<jaxrs:serviceBeans>
 			<ref bean="accountResource" />
+			<ref bean="profileResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />

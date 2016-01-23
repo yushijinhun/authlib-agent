@@ -12,14 +12,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import yushijinhun.authlibagent.commons.TextureModel;
 
-@Path("/accounts")
+@Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ProfileResource {
 
 	@GET
-	Collection<String> getProfiles(@QueryParam("name") String name, @QueryParam("owner") String owner, @QueryParam("banned") Boolean banned, @QueryParam("skin") String skin, @QueryParam("cape") String cape, @QueryParam("model") String model, @QueryParam("serverId") String serverId);
+	Collection<String> getProfiles(@QueryParam("name") String name, @QueryParam("owner") String owner, @QueryParam("banned") Boolean banned, @QueryParam("skin") String skin, @QueryParam("cape") String cape, @QueryParam("model") TextureModel model, @QueryParam("serverId") String serverId);
 
 	@POST
 	ProfileInfo createProfile(ProfileInfo profile);

@@ -26,7 +26,7 @@ public class ProfileInfo implements Serializable {
 	 */
 	private String cape;
 
-	private TextureModel textureModel;
+	private TextureModel model;
 
 	@XmlElement
 	public UUID getUuid() {
@@ -83,12 +83,12 @@ public class ProfileInfo implements Serializable {
 	}
 
 	@XmlElement
-	public TextureModel getTextureModel() {
-		return textureModel;
+	public TextureModel getModel() {
+		return model;
 	}
 
-	public void setTextureModel(TextureModel textureModel) {
-		this.textureModel = textureModel;
+	public void setModel(TextureModel model) {
+		this.model = model;
 	}
 
 }
