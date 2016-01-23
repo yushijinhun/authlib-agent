@@ -88,7 +88,7 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 	private JSONObject toTextureEntry(String url, Map<String, String> properties) {
 		JSONObject entry = new JSONObject();
 		entry.put("url", url);
-		entry.put("metadata", serializeMap(properties, false));
+		entry.put("metadata", properties);
 		return entry;
 	}
 
