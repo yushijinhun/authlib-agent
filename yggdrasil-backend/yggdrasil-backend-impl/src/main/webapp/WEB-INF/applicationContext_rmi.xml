@@ -5,8 +5,8 @@
 
 	<bean id="rmiWebBackend" class="org.springframework.remoting.rmi.RmiServiceExporter">
 		<property name="service" ref="webBackend" />
-		<property name="serviceName" value="webBackend" />
-		<property name="registryPort" value="10099" />
+		<property name="serviceName" value="${rmi.webBackend.serviceName}" />
+		<property name="registryPort" value="${rmi.webBackend.port}" />
 		<property name="serviceInterface" value="yushijinhun.authlibagent.api.web.WebBackend" />
 	</bean>
 

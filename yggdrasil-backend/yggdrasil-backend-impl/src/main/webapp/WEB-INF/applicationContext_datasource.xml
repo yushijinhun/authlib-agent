@@ -7,11 +7,11 @@
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://localhost/yggdrasil" />
-		<property name="user" value="yggdrasil" />
-		<property name="password" value="authlibagent_yggdrasil_backend" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
 		<property name="maxIdleTime" value="8000" />
-		<property name="maxPoolSize" value="40" />
+		<property name="maxPoolSize" value="${jdbc.pool.maxSize}" />
 		<property name="maxStatements" value="100" />
 	</bean>
 
