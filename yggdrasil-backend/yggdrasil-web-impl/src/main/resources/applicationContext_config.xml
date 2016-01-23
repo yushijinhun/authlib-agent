@@ -5,7 +5,7 @@
 	<bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
 			<list>
-				<value>WEB-INF/application.properties</value>
+				<value>classpath:application.properties</value>
 			</list>
 		</property>
 	</bean>
