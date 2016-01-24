@@ -51,3 +51,6 @@ nbproject/
 # maven
 target/
 
+# keys
+*.der
+*.pem
