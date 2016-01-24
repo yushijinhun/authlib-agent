@@ -12,12 +12,15 @@ echo Writing configurations...
 export AGENT_CONF=./authlib-javaagent/config.properties
 export BACKEND_CONF=./yggdrasil-backend/yggdrasil-backend-impl/config.properties
 export WEB_CONF=./yggdrasil-backend/yggdrasil-web-impl/config.properties
+./scripts/backup-config.sh
 ./scripts/write-config.sh
 
 echo Building...
 mvn clean install
 
 echo
+
+./scripts/restore-config.sh
 
 cp ./authlib-javaagent/target/authlib-javaagent-*-jar-with-dependencies.jar authlibagent.jar
 echo ./authlib-javaagent/target/authlib-javaagent-*-jar-with-dependencies.jar is saved to authlibagent.jar
