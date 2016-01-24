@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Environment variables:
 # KEY_BITS - the bits of the key
@@ -8,8 +8,13 @@
 # publickey.der - the SubjectPublicKeyInfo
 # privatekey.der - the PrivateKeyInfo
 
-# generate keys
-openssl genrsa -out key.pem $KEY_BITS -batch
+if [ -e key.pem ]
+then
+	echo key.pem already exists, using existing key.
+else
+	openssl genrsa -out key.pem $KEY_BITS -batch
+fi
+
 openssl req -new -x509 -key key.pem -out cert.pem -batch
 ASN_CERT=`openssl asn1parse -in cert.pem`
 SUB_OFFSET=`echo $ASN_CERT|grep -P -o '\d+(?=:d=\d+\s*hl=\d+\s*l=\s*\d+\s*cons:\s*SEQUENCE\s*\d+:d=\d+\s*hl=\d+\s*l=\s*\d+\s*cons:\s*SEQUENCE\s*\d+:d=\d+\s*hl=\d+\s*l=\s*\d+\s*prim:\s*OBJECT\s*:rsaEncryption)'`
