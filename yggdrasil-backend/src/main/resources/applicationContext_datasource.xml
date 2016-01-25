@@ -6,7 +6,7 @@
                             http://www.springframework.org/schema/jee
                             http://www.springframework.org/schema/jee/spring-jee-4.2.xsd">
 
-	<jee:jndi-lookup jndi-name="java:comp/env/yggdrasilDataSource" />
+	<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/yggdrasilDataSource" />
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="packagesToScan" value="yushijinhun.authlibagent.model" />
