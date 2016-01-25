@@ -30,3 +30,6 @@ echo ./yggdrasil-backend/yggdrasil-backend-impl/target/yggdrasil-backend-impl-*.
 
 cp ./yggdrasil-backend/yggdrasil-web-impl/target/yggdrasil-web-impl-*.war yggdrasil-web.war
 echo ./yggdrasil-backend/yggdrasil-web-impl/target/yggdrasil-web-impl-*.war is saved to yggdrasil-web.war
+
+cp ./yggdrasil-backend/yggdrasil-web-api/target/yggdrasil-web-api-*.jar yggdrasil-web-api.jar
+echo ./yggdrasil-backend/yggdrasil-web-api/target/yggdrasil-web-api-*.jar is saved to yggdrasil-web-api.jar
