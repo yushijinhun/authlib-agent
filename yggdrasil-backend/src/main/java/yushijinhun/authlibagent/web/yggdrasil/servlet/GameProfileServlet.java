@@ -3,7 +3,7 @@ package yushijinhun.authlibagent.web.yggdrasil.servlet;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
-import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
+import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 import static yushijinhun.authlibagent.util.UUIDUtils.toUUID;
 import java.util.UUID;
 

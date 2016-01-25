@@ -5,7 +5,7 @@ import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
-import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
+import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
 
 @WebServlet("/refresh")
 public class RefreshServlet extends YggdrasilPostServlet {

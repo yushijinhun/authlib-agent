@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.model.PlayerTexture;
 import yushijinhun.authlibagent.service.SignatureService;
-import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
-import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
 
 @Component
 public class ResponseSerializerImpl implements ResponseSerializer {

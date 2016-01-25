@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web.yggdrasil.api;
+package yushijinhun.authlibagent.service;
 
 public class ForbiddenOperationException extends Exception {
 

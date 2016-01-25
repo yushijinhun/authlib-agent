@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web.yggdrasil.api.response;
+package yushijinhun.authlibagent.web.yggdrasil;
 
 import java.io.Serializable;
 import java.util.UUID;

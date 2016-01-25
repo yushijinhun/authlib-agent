@@ -3,7 +3,7 @@ package yushijinhun.authlibagent.web.yggdrasil.servlet;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
-import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
+import yushijinhun.authlibagent.service.ForbiddenOperationException;
 
 @WebServlet("/validate")
 public class ValidateServlet extends YggdrasilPostServlet {

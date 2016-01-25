@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
-import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
 import static org.hibernate.criterion.Restrictions.eq;
 import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 import static yushijinhun.authlibagent.util.UUIDUtils.unsign;

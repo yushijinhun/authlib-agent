@@ -2,7 +2,6 @@ package yushijinhun.authlibagent.service;
 
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
-import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
 
 public interface LoginService {
 
