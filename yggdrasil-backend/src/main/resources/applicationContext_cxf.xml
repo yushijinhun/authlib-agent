@@ -9,7 +9,13 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+	<bean id="jsonFactory" class="yushijinhun.authlibagent.util.JsonFactoryBean" />
+	<bean id="jsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+		<constructor-arg ref="jsonFactory" />
+	</bean>
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider">
+		<property name="mapper" ref="jsonMapper" />
+	</bean>
 
 	<jaxrs:server id="restfulApi">
 		<jaxrs:serviceBeans>
@@ -18,8 +24,8 @@
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />
-			<ref bean="jsonExceptionHandler"/>
-			<ref bean="applicationExceptionHandler"/>
+			<ref bean="jsonExceptionHandler" />
+			<ref bean="applicationExceptionHandler" />
 		</jaxrs:providers>
 	</jaxrs:server>
 
