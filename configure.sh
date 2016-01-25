@@ -48,26 +48,10 @@ export BACKEND_SERVERID_EXPIRE_TIME=60000
 # 默认为60000(1分钟)
 export BACKEND_SERVERID_EXPIRE_SCAN=60000
 
-# 后端的rmi服务名
-export BACKEND_RMI_NAME=webBackend
-
-# 暴露后端rmi服务的端口
-# 由于安全原因, 该端口应只能被web端访问
-# 此端口应没有被其它服务占用
-export BACKEND_RMI_PORT=10099
-
-
-## web端相关设置
-
 # 是否将错误原因发送给客户端
 # 所谓原因即为java错误链的cause
 # 由于安全原因, 推荐在生产中设为false
-export WEB_SHOW_ERROR_CAUSE=true
-
-# web端访问backend暴露的rmi服务的uri
-# 格式: rmi://<主机>:<端口>/<服务名>
-# 端口和服务名应与BACKEND_RMI_PORT和BACKEND_RMI_NAME对应
-export WEB_RMI_URI='rmi://localhost:10099/webBackend'
+export BACKEND_SHOW_ERROR_CAUSE=true
 
 
 ## 其它设置
