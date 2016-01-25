@@ -17,7 +17,7 @@
 		<property name="mapper" ref="jsonMapper" />
 	</bean>
 
-	<jaxrs:server id="restfulApi">
+	<jaxrs:server id="restfulApi" address="/api">
 		<jaxrs:serviceBeans>
 			<ref bean="accountResource" />
 			<ref bean="profileResource" />
