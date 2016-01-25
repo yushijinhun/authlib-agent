@@ -48,18 +48,6 @@ export BACKEND_SERVERID_EXPIRE_TIME=60000
 # 默认为60000(1分钟)
 export BACKEND_SERVERID_EXPIRE_SCAN=60000
 
-# 数据源的jdbc url
-export BACKEND_JDBC_URL='jdbc:mysql://localhost/yggdrasil'
-
-# 访问数据源使用的用户名
-export BACKEND_JDBC_USER='yggdrasil'
-
-# 访问数据源使用的密码
-export BACKEND_JDBC_PASSWORD='authlibagent_yggdrasil_backend'
-
-# jdbc链接池的最大大小
-export BACKEND_JDBC_POOL_MAX=40
-
 # 后端的rmi服务名
 export BACKEND_RMI_NAME=webBackend
 

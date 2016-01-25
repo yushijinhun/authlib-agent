@@ -30,10 +30,6 @@ echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.serverid.time='$BACKEND_SERVERID_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.token.scantime='$BACKEND_TOKEN_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'expire.serverid.scantime='$BACKEND_SERVERID_EXPIRE_SCAN >> $BACKEND_CONF
-echo 'jdbc.url='$BACKEND_JDBC_URL >> $BACKEND_CONF
-echo 'jdbc.user='$BACKEND_JDBC_USER >> $BACKEND_CONF
-echo 'jdbc.password='$BACKEND_JDBC_PASSWORD >> $BACKEND_CONF
-echo 'jdbc.pool.maxSize='$BACKEND_JDBC_POOL_MAX >> $BACKEND_CONF
 echo 'rmi.webBackend.serviceName='$BACKEND_RMI_NAME >> $BACKEND_CONF
 echo 'rmi.webBackend.port='$BACKEND_RMI_PORT >> $BACKEND_CONF
 
