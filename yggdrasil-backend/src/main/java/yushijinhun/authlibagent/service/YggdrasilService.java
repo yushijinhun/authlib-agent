@@ -1,7 +1,7 @@
 package yushijinhun.authlibagent.service;
 
 import java.util.UUID;
-import yushijinhun.authlibagent.util.AccessPolicy;
+import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;

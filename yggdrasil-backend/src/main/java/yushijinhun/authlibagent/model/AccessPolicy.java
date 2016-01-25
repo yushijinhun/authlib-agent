@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.util;
+package yushijinhun.authlibagent.model;
 
 /**
  * 访问政策

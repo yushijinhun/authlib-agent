@@ -2,7 +2,7 @@ package yushijinhun.authlibagent.web.yggdrasil.api.response;
 
 import java.io.Serializable;
 import java.util.UUID;
-import yushijinhun.authlibagent.util.PlayerTexture;
+import yushijinhun.authlibagent.model.PlayerTexture;
 
 public class GameProfileResponse implements Serializable {
 

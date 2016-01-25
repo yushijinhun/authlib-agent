@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import yushijinhun.authlibagent.util.PlayerTexture;
-import yushijinhun.authlibagent.util.TextureModel;
 
 @Entity
 public class GameProfile implements Serializable {

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.ServerId;
-import yushijinhun.authlibagent.util.TextureModel;
+import yushijinhun.authlibagent.model.TextureModel;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;

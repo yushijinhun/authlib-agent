@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.util;
+package yushijinhun.authlibagent.model;
 
 import java.io.Serializable;
 import java.util.Objects;
