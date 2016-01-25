@@ -11,6 +11,8 @@
 	<util:map id="errorCodes" value-type="java.lang.Integer">
 		<entry key="yushijinhun.authlibagent.service.ForbiddenOperationException" value="403" />
 		<entry key="yushijinhun.authlibagent.web.yggdrasil.UnsupportedMediaTypeException" value="400" />
+		<entry key="org.json.JSONException" value="400" />
+		<entry key="java.lang.IllegalArgumentException" value="400" />
 	</util:map>
 
 </beans>
