@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.web;
+package yushijinhun.authlibagent.web.manager;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;

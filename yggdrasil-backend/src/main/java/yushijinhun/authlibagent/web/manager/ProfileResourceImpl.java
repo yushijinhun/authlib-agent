@@ -17,7 +17,6 @@ import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.TextureModel;
-import yushijinhun.authlibagent.web.ConflictException;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
