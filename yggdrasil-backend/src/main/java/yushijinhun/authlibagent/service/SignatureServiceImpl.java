@@ -1,29 +1,28 @@
 package yushijinhun.authlibagent.service;
 
+import static yushijinhun.authlibagent.util.RandomUtils.getSecureRandom;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KeyServerServiceImpl implements KeyServerService {
+public class SignatureServiceImpl implements SignatureService {
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
 	private volatile RSAPrivateKey key;
-	private Set<KeyChangeListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	public KeyServerServiceImpl() {
+	public SignatureServiceImpl() {
 		loadLocalKey();
 	}
 
@@ -67,17 +66,17 @@ public class KeyServerServiceImpl implements KeyServerService {
 	public void setKey(RSAPrivateKey key) {
 		LOGGER.info("new signature key: " + key);
 		this.key = key;
-		listeners.forEach(l -> l.onChange(key));
 	}
 
 	@Override
-	public void addKeyChangeListener(KeyChangeListener l) {
-		listeners.add(l);
-	}
-
-	@Override
-	public void removeKeyChangeListener(KeyChangeListener l) {
-		listeners.remove(l);
+	public byte[] sign(byte[] data) throws GeneralSecurityException {
+		if (key == null) {
+			throw new InvalidKeyException("no key to sign with");
+		}
+		Signature signature = Signature.getInstance("SHA1withRSA");
+		signature.initSign(key, getSecureRandom());
+		signature.update(data);
+		return signature.sign();
 	}
 
 }

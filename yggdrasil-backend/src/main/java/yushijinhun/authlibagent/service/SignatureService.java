@@ -1,15 +1,14 @@
 package yushijinhun.authlibagent.service;
 
+import java.security.GeneralSecurityException;
 import java.security.interfaces.RSAPrivateKey;
 
-public interface KeyServerService {
+public interface SignatureService {
 
 	RSAPrivateKey getKey();
 
 	void setKey(RSAPrivateKey key);
 
-	void addKeyChangeListener(KeyChangeListener l);
-
-	void removeKeyChangeListener(KeyChangeListener l);
+	byte[] sign(byte[] data) throws GeneralSecurityException;
 
 }

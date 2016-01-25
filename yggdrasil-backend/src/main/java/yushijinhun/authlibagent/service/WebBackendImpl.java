@@ -1,18 +1,11 @@
 package yushijinhun.authlibagent.service;
 
 import java.io.UnsupportedEncodingException;
-import java.security.interfaces.RSAPrivateKey;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +19,6 @@ import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.util.AccessPolicy;
 import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
-import yushijinhun.authlibagent.web.yggdrasil.api.SignatureKeyChangeCallback;
 import yushijinhun.authlibagent.web.yggdrasil.api.WebBackend;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
@@ -41,16 +33,11 @@ public class WebBackendImpl implements WebBackend {
 	private static final String MSG_PROFILE_BANNED = "Game profile has been banned.";
 	private static final String MSG_SELECTING_PROFILE_NOT_SUPPORTED = "Access token already has a profile assigned.";
 
-	private static final Logger LOGGER = LogManager.getFormatterLogger();
-
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	@Autowired
 	private LoginService loginService;
-
-	@Autowired
-	private KeyServerService keyServerService;
 
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
@@ -60,9 +47,6 @@ public class WebBackendImpl implements WebBackend {
 
 	@Value("#{config['access.policy.default']}")
 	private String defaultPolicy;
-
-	private Set<SignatureKeyChangeCallback> keyListeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	private KeyChangeListener keyChangeListener;
 
 	@Transactional
 	@Override
@@ -199,38 +183,6 @@ public class WebBackendImpl implements WebBackend {
 		} else {
 			return rule.getPolicy();
 		}
-	}
-
-	@Override
-	public void addSignatureKeyListener(SignatureKeyChangeCallback listener) {
-		keyListeners.add(listener);
-	}
-
-	@Override
-	public void removeSignatureKeyListener(SignatureKeyChangeCallback listener) {
-		keyListeners.remove(listener);
-	}
-
-	@Override
-	public RSAPrivateKey getSignatureKey() {
-		return keyServerService.getKey();
-	}
-
-	@PostConstruct
-	private void registerKeyListener() {
-		keyChangeListener = key -> keyListeners.forEach(l -> {
-			try {
-				l.call(key);
-			} catch (Throwable e) {
-				LOGGER.warn("exception during posting key change listener to " + l, e);
-			}
-		});
-		keyServerService.addKeyChangeListener(keyChangeListener);
-	}
-
-	@PreDestroy
-	private void unregisterKeyListener() {
-		keyServerService.removeKeyChangeListener(keyChangeListener);
 	}
 
 	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) {

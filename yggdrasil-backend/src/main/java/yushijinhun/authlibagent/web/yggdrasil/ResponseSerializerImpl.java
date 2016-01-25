@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import yushijinhun.authlibagent.service.SignatureService;
 import yushijinhun.authlibagent.util.PlayerTexture;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
