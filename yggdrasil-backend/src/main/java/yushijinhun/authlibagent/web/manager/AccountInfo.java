@@ -1,6 +1,8 @@
 package yushijinhun.authlibagent.web.manager;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,6 +29,16 @@ public class AccountInfo implements Serializable {
 	 * Null by default, empty string for no token
 	 */
 	private String twitchToken;
+
+	/**
+	 * Only exists in the request to the client
+	 */
+	private Set<UUID> profiles;
+
+	/**
+	 * Null by default, empty for no selected profile, use UUID.fromString() to decode this
+	 */
+	private String selectedProfile;
 
 	@XmlElement
 	public String getId() {
@@ -63,6 +75,24 @@ public class AccountInfo implements Serializable {
 
 	public void setTwitchToken(String twitchToken) {
 		this.twitchToken = twitchToken;
+	}
+
+	@XmlElement
+	public Set<UUID> getProfiles() {
+		return profiles;
+	}
+
+	public void setProfiles(Set<UUID> profiles) {
+		this.profiles = profiles;
+	}
+
+	@XmlElement
+	public String getSelectedProfile() {
+		return selectedProfile;
+	}
+
+	public void setSelectedProfile(String selectedProfile) {
+		this.selectedProfile = selectedProfile;
 	}
 
 }
