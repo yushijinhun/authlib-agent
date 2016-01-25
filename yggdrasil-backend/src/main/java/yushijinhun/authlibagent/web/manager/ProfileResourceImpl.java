@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
@@ -20,17 +17,13 @@ import yushijinhun.authlibagent.model.TextureModel;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
-import static yushijinhun.authlibagent.web.manager.WebUtils.requireNonNullBody;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Transactional
 @Component("profileResource")
-public class ProfileResourceImpl implements ProfileResource {
-
-	@Autowired
-	private SessionFactory sessionFactory;
+public class ProfileResourceImpl extends ResourceBase implements ProfileResource {
 
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
@@ -113,22 +106,12 @@ public class ProfileResourceImpl implements ProfileResource {
 
 	@Override
 	public ProfileInfo getProfileInfo(UUID uuid) {
-		Session session = sessionFactory.getCurrentSession();
-		GameProfile profile = session.get(GameProfile.class, uuid.toString());
-		if (profile == null) {
-			throw new NotFoundException();
-		}
-		return createProfileInfo(profile);
+		return createProfileInfo(lookupProfile(uuid));
 	}
 
 	@Override
 	public void deleteProfile(UUID uuid) {
-		Session session = sessionFactory.getCurrentSession();
-		GameProfile profile = session.get(GameProfile.class, uuid.toString());
-		if (profile == null) {
-			throw new NotFoundException();
-		}
-		session.delete(profile);
+		sessionFactory.getCurrentSession().delete(lookupProfile(uuid));
 	}
 
 	@Override
@@ -151,13 +134,9 @@ public class ProfileResourceImpl implements ProfileResource {
 	public ProfileInfo updateProfile(UUID uuid, ProfileInfo info) {
 		requireNonNullBody(info);
 
-		Session session = sessionFactory.getCurrentSession();
-		GameProfile profile = session.get(GameProfile.class, uuid.toString());
-		if (profile == null) {
-			throw new NotFoundException();
-		}
+		GameProfile profile = lookupProfile(uuid);
 		fillProfileInfo(profile, info);
-		session.update(profile);
+		sessionFactory.getCurrentSession().update(profile);
 
 		return createProfileInfo(profile);
 	}

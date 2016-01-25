@@ -1,7 +1,6 @@
 package yushijinhun.authlibagent.web.manager;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,21 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
-import static yushijinhun.authlibagent.web.manager.WebUtils.requireNonNullBody;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Transactional
 @Component("accountResource")
-public class AccountResourceImpl implements AccountResource {
-
-	@Autowired
-	private SessionFactory sessionFactory;
+public class AccountResourceImpl extends ResourceBase implements AccountResource {
 
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
@@ -91,22 +85,12 @@ public class AccountResourceImpl implements AccountResource {
 
 	@Override
 	public AccountInfo getAccountInfo(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		Account account = session.get(Account.class, id);
-		if (account == null) {
-			throw new NotFoundException();
-		}
-		return createAccountInfo(account);
+		return createAccountInfo(lookupAccount(id));
 	}
 
 	@Override
 	public void deleteAccount(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		Account account = session.get(Account.class, id);
-		if (account == null) {
-			throw new NotFoundException();
-		}
-		session.delete(account);
+		sessionFactory.getCurrentSession().delete(lookupAccount(id));
 	}
 
 	@Override
@@ -129,13 +113,9 @@ public class AccountResourceImpl implements AccountResource {
 	public AccountInfo updateAccount(String id, AccountInfo info) {
 		requireNonNullBody(info);
 
-		Session session = sessionFactory.getCurrentSession();
-		Account account = session.get(Account.class, id);
-		if (account == null) {
-			throw new NotFoundException();
-		}
+		Account account = lookupAccount(id);
 		fillAccountInfo(account, info);
-		session.update(account);
+		sessionFactory.getCurrentSession().update(account);
 
 		return createAccountInfo(account);
 	}
