@@ -3,7 +3,6 @@
 # Environment variables:
 # AGENT_CONF - javaagent config location
 # BACKEND_CONF - backend config location
-# WEB_CONF - web config location
 
 # javaagent
 echo '# auto-generated javaagent config' > $AGENT_CONF
@@ -30,11 +29,4 @@ echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.serverid.time='$BACKEND_SERVERID_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.token.scantime='$BACKEND_TOKEN_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'expire.serverid.scantime='$BACKEND_SERVERID_EXPIRE_SCAN >> $BACKEND_CONF
-echo 'rmi.webBackend.serviceName='$BACKEND_RMI_NAME >> $BACKEND_CONF
-echo 'rmi.webBackend.port='$BACKEND_RMI_PORT >> $BACKEND_CONF
-
-# web
-echo '# auto-generated web config' > $WEB_CONF
-echo '# '`date` >> $WEB_CONF
-echo 'security.showErrorCause='$WEB_SHOW_ERROR_CAUSE >> $WEB_CONF
-echo 'rmi.webBackend.uri='$WEB_RMI_URI >> $WEB_CONF
+echo 'security.showErrorCause='$BACKEND_SHOW_ERROR_CAUSE >> $BACKEND_CONF
