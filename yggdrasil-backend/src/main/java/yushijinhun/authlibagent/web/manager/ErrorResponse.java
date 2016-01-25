@@ -13,7 +13,7 @@ public class ErrorResponse implements Serializable {
 
 	private int errorCode;
 	private String error;
-	private String stackdump;
+	private String stacktrace;
 
 	@XmlElement
 	public int getErrorCode() {
@@ -35,12 +35,12 @@ public class ErrorResponse implements Serializable {
 
 	@JsonInclude(Include.NON_NULL)
 	@XmlElement
-	public String getStackdump() {
-		return stackdump;
+	public String getStacktrace() {
+		return stacktrace;
 	}
 
-	public void setStackdump(String stackdump) {
-		this.stackdump = stackdump;
+	public void setStacktrace(String stacktrace) {
+		this.stacktrace = stacktrace;
 	}
 
 }

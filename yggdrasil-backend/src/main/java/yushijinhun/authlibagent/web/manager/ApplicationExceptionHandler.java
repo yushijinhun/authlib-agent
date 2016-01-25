@@ -34,9 +34,10 @@ public class ApplicationExceptionHandler implements ExceptionMapper<Throwable> {
 		if (e instanceof WebApplicationException) {
 			status = ((WebApplicationException) e).getResponse().getStatus();
 			if (e.getCause() != null && status == Status.NOT_FOUND.getStatusCode()) {
-				return toResponse(e.getCause());
-			}
-			if (e.getMessage() != null) {
+				// error when handling arguments
+				e = e.getCause();
+				status = Status.BAD_REQUEST.getStatusCode();
+			} else if (e.getMessage() != null) {
 				errMsg = e.getMessage();
 			}
 		} else if (e instanceof JsonProcessingException) {
@@ -56,7 +57,7 @@ public class ApplicationExceptionHandler implements ExceptionMapper<Throwable> {
 		err.setError(errMsg);
 		err.setErrorCode(status);
 		if (showStacktrace) {
-			err.setStackdump(Throwables.getStackTraceAsString(e));
+			err.setStacktrace(Throwables.getStackTraceAsString(e));
 		}
 		try {
 			return Response.status(status).type(MediaType.APPLICATION_JSON).entity(objectMapper.writeValueAsString(err)).build();
