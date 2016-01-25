@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.service.PasswordAlgorithm;
+import yushijinhun.authlibagent.web.ConflictException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
