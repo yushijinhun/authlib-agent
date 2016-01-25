@@ -30,3 +30,4 @@ echo 'expire.serverid.time='$BACKEND_SERVERID_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.token.scantime='$BACKEND_TOKEN_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'expire.serverid.scantime='$BACKEND_SERVERID_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'security.showErrorCause='$BACKEND_SHOW_ERROR_CAUSE >> $BACKEND_CONF
+echo 'security.showStacktrace='$BACKEND_SHOW_STACKTRACE >> $BACKEND_CONF

@@ -48,10 +48,13 @@ export BACKEND_SERVERID_EXPIRE_TIME=60000
 # 默认为60000(1分钟)
 export BACKEND_SERVERID_EXPIRE_SCAN=60000
 
-# 是否将错误原因发送给客户端
+# 是否将错误原因发送给客户端(yggdrasil服务)
 # 所谓原因即为java错误链的cause
 # 由于安全原因, 推荐在生产中设为false
 export BACKEND_SHOW_ERROR_CAUSE=true
+
+# 是否将错误的stack trace发送给客户端(管理服务)
+export BACKEND_SHOW_STACKTRACE=true
 
 
 ## 其它设置

@@ -24,9 +24,11 @@
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />
-			<ref bean="jsonExceptionHandler" />
 			<ref bean="applicationExceptionHandler" />
 		</jaxrs:providers>
+		<jaxrs:properties>
+			<entry key="default.wae.mapper.least.specific" value="true" />
+		</jaxrs:properties>
 	</jaxrs:server>
 
 </beans>
