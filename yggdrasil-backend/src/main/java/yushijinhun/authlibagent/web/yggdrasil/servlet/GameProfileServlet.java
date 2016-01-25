@@ -7,7 +7,7 @@ import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 import static yushijinhun.authlibagent.util.UUIDUtils.toUUID;
 import java.util.UUID;
 
-@WebServlet("/profiles/minecraft/*")
+@WebServlet("/yggdrasil/profiles/minecraft/*")
 public class GameProfileServlet extends YggdrasilGetServlet {
 
 	private static final long serialVersionUID = 1L;

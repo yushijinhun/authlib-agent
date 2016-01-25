@@ -3,9 +3,9 @@
 ## javaagent相关设置
 
 # javaagent的api root
-# 通过该api root应可以访问到部署了yggdrasil-web-impl的服务器
+# 通过该api root应可以访问到部署了yggdrasil-backend的服务器的/yggdrasil目录
 # 应以/结尾
-export AGENT_API_ROOT='http://localhost:8080/'
+export AGENT_API_ROOT='http://localhost:8080/yggdrasil/'
 
 # 要加入到authlib的白名单的域名的结尾
 # authlib只会从符合白名单的域名下载皮肤

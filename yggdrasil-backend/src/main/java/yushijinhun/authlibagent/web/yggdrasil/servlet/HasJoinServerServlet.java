@@ -7,7 +7,7 @@ import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.service.ForbiddenOperationException;
 import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 
-@WebServlet("/hasjoinserver")
+@WebServlet("/yggdrasil/hasjoinserver")
 public class HasJoinServerServlet extends YggdrasilGetServlet {
 
 	private static final long serialVersionUID = 1L;

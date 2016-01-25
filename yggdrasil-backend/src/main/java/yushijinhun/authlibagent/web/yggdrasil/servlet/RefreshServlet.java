@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
 
-@WebServlet("/refresh")
+@WebServlet("/yggdrasil/refresh")
 public class RefreshServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;

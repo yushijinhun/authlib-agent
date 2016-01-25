@@ -6,7 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
-@WebServlet("/joinserver")
+@WebServlet("/yggdrasil/joinserver")
 public class JoinServerServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;
