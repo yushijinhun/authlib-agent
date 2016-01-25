@@ -19,15 +19,14 @@ import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.util.AccessPolicy;
 import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
-import yushijinhun.authlibagent.web.yggdrasil.api.WebBackend;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
 import static org.hibernate.criterion.Restrictions.eq;
 import static yushijinhun.authlibagent.util.UUIDUtils.toUUID;
 import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
 
-@Component("webBackend")
-public class WebBackendImpl implements WebBackend {
+@Component
+public class YggdrasilServiceImpl implements YggdrasilService {
 
 	private static final String MSG_INVALID_PROFILE = "Invalid profile.";
 	private static final String MSG_PROFILE_BANNED = "Game profile has been banned.";

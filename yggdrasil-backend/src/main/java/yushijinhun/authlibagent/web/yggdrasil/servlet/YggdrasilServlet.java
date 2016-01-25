@@ -10,15 +10,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import yushijinhun.authlibagent.service.YggdrasilService;
 import yushijinhun.authlibagent.web.yggdrasil.ResponseSerializer;
-import yushijinhun.authlibagent.web.yggdrasil.api.WebBackend;
 
 abstract public class YggdrasilServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	protected WebBackend backend;
+	protected YggdrasilService backend;
 
 	@Autowired
 	protected ResponseSerializer serializer;

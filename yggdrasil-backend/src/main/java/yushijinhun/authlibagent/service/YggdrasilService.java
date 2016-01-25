@@ -1,11 +1,12 @@
-package yushijinhun.authlibagent.web.yggdrasil.api;
+package yushijinhun.authlibagent.service;
 
 import java.util.UUID;
 import yushijinhun.authlibagent.util.AccessPolicy;
+import yushijinhun.authlibagent.web.yggdrasil.api.ForbiddenOperationException;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.api.response.GameProfileResponse;
 
-public interface WebBackend {
+public interface YggdrasilService {
 
 	AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException;
 
