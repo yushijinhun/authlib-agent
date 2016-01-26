@@ -56,6 +56,12 @@ export BACKEND_SHOW_ERROR_CAUSE=true
 # 是否将错误的stack trace发送给客户端(管理服务)
 export BACKEND_SHOW_STACKTRACE=true
 
+# 是否允许通过管理服务下载用于签名的密钥
+export BACKEND_ALLOW_DOWNLOAD_KEY=true
+
+# 是否允许通过管理服务上传签名密钥
+export BACKEND_ALLOW_UPLOAD_KEY=true
+
 
 ## 其它设置
 

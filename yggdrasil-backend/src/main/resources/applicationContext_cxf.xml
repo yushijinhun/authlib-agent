@@ -19,9 +19,11 @@
 			<ref bean="accountResource" />
 			<ref bean="profileResource" />
 			<ref bean="ruleResource" />
+			<ref bean="keyResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />
+			<ref bean="octetStreamProvider" />
 			<ref bean="applicationExceptionHandler" />
 		</jaxrs:providers>
 		<jaxrs:properties>

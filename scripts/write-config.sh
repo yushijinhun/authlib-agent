@@ -31,3 +31,5 @@ echo 'expire.token.scantime='$BACKEND_TOKEN_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'expire.serverid.scantime='$BACKEND_SERVERID_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'security.showErrorCause='$BACKEND_SHOW_ERROR_CAUSE >> $BACKEND_CONF
 echo 'security.showStacktrace='$BACKEND_SHOW_STACKTRACE >> $BACKEND_CONF
+echo 'security.allowDownloadPrivateKey='$BACKEND_ALLOW_DOWNLOAD_KEY >> $BACKEND_CONF
+echo 'security.allowUploadPrivateKey='$BACKEND_ALLOW_UPLOAD_KEY >> $BACKEND_CONF
