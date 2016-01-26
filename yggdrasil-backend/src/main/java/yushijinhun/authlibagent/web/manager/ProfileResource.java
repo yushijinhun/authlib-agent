@@ -13,9 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import yushijinhun.authlibagent.model.TextureModel;
+import yushijinhun.authlibagent.util.ResourceUtils;
 
 @Path("/profiles")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceUtils.APPLICATION_JSON_UTF8)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ProfileResource {
 

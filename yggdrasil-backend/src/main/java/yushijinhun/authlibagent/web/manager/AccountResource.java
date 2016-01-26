@@ -11,9 +11,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import yushijinhun.authlibagent.util.ResourceUtils;
 
 @Path("/accounts")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceUtils.APPLICATION_JSON_UTF8)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AccountResource {
 
