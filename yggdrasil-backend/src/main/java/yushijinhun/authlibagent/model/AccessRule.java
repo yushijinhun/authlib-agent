@@ -7,7 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 @Entity
 public class AccessRule implements Serializable {
 
@@ -18,6 +21,7 @@ public class AccessRule implements Serializable {
 	private String host;
 	private AccessPolicy policy;
 
+	@XmlElement
 	@Id
 	@Column(nullable = false, unique = true)
 	public String getHost() {
@@ -28,6 +32,7 @@ public class AccessRule implements Serializable {
 		this.host = host;
 	}
 
+	@XmlElement
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	public AccessPolicy getPolicy() {

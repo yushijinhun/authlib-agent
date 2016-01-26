@@ -18,6 +18,7 @@
 		<jaxrs:serviceBeans>
 			<ref bean="accountResource" />
 			<ref bean="profileResource" />
+			<ref bean="ruleResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />
