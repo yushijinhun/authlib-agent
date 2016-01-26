@@ -1,6 +1,7 @@
 package yushijinhun.authlibagent.web.manager;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import static java.util.stream.Collectors.toSet;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
@@ -23,10 +25,14 @@ import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
+import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 
 @Transactional
 @Component("accountResource")
-public class AccountResourceImpl extends ResourceBase implements AccountResource {
+public class AccountResourceImpl implements AccountResource {
+
+	@Autowired
+	protected SessionFactory sessionFactory;
 
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
@@ -195,6 +201,15 @@ public class AccountResourceImpl extends ResourceBase implements AccountResource
 		UUID selectedProfile = getAccountSelectedProfile(account);
 		info.setSelectedProfile(selectedProfile == null ? "" : selectedProfile.toString());
 		return info;
+	}
+
+	private Account lookupAccount(String id) {
+		Session session = sessionFactory.getCurrentSession();
+		Account account = session.get(Account.class, id);
+		if (account == null) {
+			throw new NotFoundException();
+		}
+		return account;
 	}
 
 }

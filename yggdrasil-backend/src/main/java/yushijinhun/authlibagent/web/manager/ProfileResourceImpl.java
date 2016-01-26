@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
@@ -20,10 +23,14 @@ import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
+import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 
 @Transactional
 @Component("profileResource")
-public class ProfileResourceImpl extends ResourceBase implements ProfileResource {
+public class ProfileResourceImpl implements ProfileResource {
+
+	@Autowired
+	protected SessionFactory sessionFactory;
 
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
@@ -225,6 +232,15 @@ public class ProfileResourceImpl extends ResourceBase implements ProfileResource
 		if (profile.getName() == null) {
 			throw new BadRequestException("name cannot be null");
 		}
+	}
+
+	private GameProfile lookupProfile(UUID uuid) {
+		Session session = sessionFactory.getCurrentSession();
+		GameProfile profile = session.get(GameProfile.class, uuid.toString());
+		if (profile == null) {
+			throw new NotFoundException();
+		}
+		return profile;
 	}
 
 }

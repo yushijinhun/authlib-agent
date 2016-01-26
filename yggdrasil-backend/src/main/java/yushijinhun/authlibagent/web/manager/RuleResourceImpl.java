@@ -6,15 +6,21 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.model.AccessRule;
 import static org.hibernate.criterion.Restrictions.eq;
+import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 
 @Transactional
 @Component("ruleResource")
-public class RuleResourceImpl extends ResourceBase implements RuleResource {
+public class RuleResourceImpl implements RuleResource {
+
+	@Autowired
+	protected SessionFactory sessionFactory;
 
 	@Override
 	public Collection<AccessRule> getRules(AccessPolicy policy) {
