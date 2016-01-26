@@ -5,15 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import yushijinhun.authlibagent.util.KeyUtils;
 
 @Component
 public class SignatureServiceImpl implements SignatureService {
@@ -35,26 +33,18 @@ public class SignatureServiceImpl implements SignatureService {
 			}
 			binKey = IOUtils.toByteArray(in);
 		} catch (IOException e) {
-			LOGGER.warn("an i/o exception occurred when loading local key", e);
+			LOGGER.warn("an i/o exception occurred when loading private key", e);
 			return;
 		}
 
-		PrivateKey key;
+		RSAPrivateKey newkey;
 		try {
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(binKey);
-			key = keyFactory.generatePrivate(keySpec);
+			newkey = KeyUtils.fromPKCS8(binKey);
 		} catch (GeneralSecurityException e) {
-			LOGGER.warn("unable to construct rsa private key", e);
+			LOGGER.warn("cannot construct rsa private key", e);
 			return;
 		}
-
-		if (key instanceof RSAPrivateKey) {
-			setKey((RSAPrivateKey) key);
-		} else {
-			LOGGER.warn("unable to cast " + key + " to a rsa private key");
-			return;
-		}
+		setKey(newkey);
 	}
 
 	@Override
