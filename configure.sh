@@ -54,7 +54,7 @@ export BACKEND_SERVERID_EXPIRE_SCAN=60000
 export BACKEND_SHOW_ERROR_CAUSE=true
 
 # 是否将错误的stack trace发送给客户端(管理服务)
-export BACKEND_SHOW_STACKTRACE=true
+export BACKEND_SHOW_STACKTRACE=false
 
 # 是否允许通过管理服务下载用于签名的密钥
 export BACKEND_ALLOW_DOWNLOAD_KEY=true
