@@ -28,6 +28,12 @@ export BACKEND_ALLOW_SELECTING_PROFILES=true
 # mojang的验证服务不会这么做
 export BACKEND_INCLUDE_PROFILES_IN_REFRESH=true
 
+# 如果用户只有一个角色, 是否自动帮用户选择该角色
+export BACKEND_AUTO_SELECTED_UNIQUE_PROFILE=true
+
+# 是否在每次登录前清除选择的角色
+export BACKEND_CLEAR_SELECTED_PROFILE_IN_LOGIN=true
+
 # 对于hasJoinedServer请求的默认访问策略
 # ALLOW=允许, DENY=阻止
 export BACKEND_DEFAULT_ACCESS_POLICY=ALLOW

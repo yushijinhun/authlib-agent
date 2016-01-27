@@ -24,6 +24,8 @@ echo '# auto-generated backend config' > $BACKEND_CONF
 echo '# '`date` >> $BACKEND_CONF
 echo 'feature.allowSelectingProfile='$BACKEND_ALLOW_SELECTING_PROFILES >> $BACKEND_CONF
 echo 'feature.includeProfilesInRefresh='$BACKEND_INCLUDE_PROFILES_IN_REFRESH >> $BACKEND_CONF
+echo 'feature.autoSelectedUniqueProfile='$BACKEND_AUTO_SELECTED_UNIQUE_PROFILE >> $BACKEND_CONF
+echo 'feature.clearSelectedProfileInLogin='$BACKEND_CLEAR_SELECTED_PROFILE_IN_LOGIN >> $BACKEND_CONF
 echo 'access.policy.default='$BACKEND_DEFAULT_ACCESS_POLICY >> $BACKEND_CONF
 echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.serverid.time='$BACKEND_SERVERID_EXPIRE_TIME >> $BACKEND_CONF

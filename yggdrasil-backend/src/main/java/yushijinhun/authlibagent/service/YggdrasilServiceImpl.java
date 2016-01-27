@@ -43,6 +43,12 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Value("#{config['feature.includeProfilesInRefresh']}")
 	private boolean includeProfilesInRefresh;
 
+	@Value("#{config['feature.autoSelectedUniqueProfile']}")
+	private boolean autoSelectedUniqueProfile;
+
+	@Value("#{config['feature.clearSelectedProfileInLogin']}")
+	private boolean clearSelectedProfileInLogin;
+
 	@Value("#{config['access.policy.default']}")
 	private String defaultPolicy;
 
@@ -50,6 +56,20 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Override
 	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
 		Account account = loginService.loginWithPassword(username, password);
+
+		Session session = sessionFactory.getCurrentSession();
+		if (clearSelectedProfileInLogin) {
+			account.setSelectedProfile(null);
+		}
+		if (autoSelectedUniqueProfile && account.getProfiles().size() == 1) {
+			account.setSelectedProfile(account.getProfiles().iterator().next());
+		}
+		session.update(account);
+
+		if (account.getSelectedProfile() != null && account.getSelectedProfile().isBanned()) {
+			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
+		}
+
 		Token token = loginService.createToken(account, clientToken);
 		return createAuthenticateResponse(account, token, true);
 	}
@@ -65,8 +85,8 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
 		Account account = loginService.loginWithToken(accessToken, clientToken);
 
-		// select profile
 		if (profileUUID != null) {
+			// select profile
 			if (!allowSelectingProfile) {
 				throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
 			}
@@ -82,7 +102,11 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 			account.setSelectedProfile(profile);
 			session.update(account);
+		} else if (account.getSelectedProfile() != null && account.getSelectedProfile().isBanned()) {
+			// check if current profile is banned
+			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
+
 		Token token = loginService.createToken(account, clientToken);
 		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}
