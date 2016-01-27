@@ -77,6 +77,9 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			if (profile == null || !profile.getOwner().equals(account)) {
 				throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
 			}
+			if (profile.isBanned()) {
+				throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
+			}
 
 			account.setSelectedProfile(profile);
 			session.update(account);
