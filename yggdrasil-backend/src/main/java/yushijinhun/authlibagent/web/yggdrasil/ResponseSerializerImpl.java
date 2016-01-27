@@ -6,9 +6,12 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.model.PlayerTexture;
 import yushijinhun.authlibagent.service.SignatureService;
@@ -16,8 +19,13 @@ import yushijinhun.authlibagent.service.SignatureService;
 @Component
 public class ResponseSerializerImpl implements ResponseSerializer {
 
+	private static final Logger LOGGER = LogManager.getFormatterLogger();
+
 	@Autowired
 	private SignatureService signatureService;
+
+	@Value("#{config['feature.optionalSignature']}")
+	private boolean optionalSignature;
 
 	@Override
 	public JSONArray serializeMap(Map<String, String> map, boolean sign) {
@@ -27,15 +35,17 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 			entry.put("name", k);
 			entry.put("value", v);
 			if (sign) {
-				byte[] signature;
 				try {
-					signature = signatureService.sign(v.getBytes("UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					throw new IllegalStateException("utf-8 not supported", e);
-				} catch (GeneralSecurityException e) {
-					throw new IllegalStateException("unable to sign", e);
+					byte[] signature = signatureService.sign(v.getBytes("UTF-8"));
+					entry.put("signature", Base64.getEncoder().encodeToString(signature));
+				} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+					if (optionalSignature) {
+						// ignore
+						LOGGER.debug("unable to sign, skipping", e);
+					} else {
+						throw new IllegalStateException("unable to sign", e);
+					}
 				}
-				entry.put("signature", Base64.getEncoder().encodeToString(signature));
 			}
 			entries.put(entry);
 		});

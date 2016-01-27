@@ -34,6 +34,10 @@ export BACKEND_AUTO_SELECTED_UNIQUE_PROFILE=true
 # 是否在每次登录前清除选择的角色
 export BACKEND_CLEAR_SELECTED_PROFILE_IN_LOGIN=true
 
+# 是否允许在数字签名失败时, 不将签名发送给客户端
+# 如果为false, 在签名失败时会抛出一个异常
+export BACKEND_OPTIONAL_SIGNATURE=true
+
 # 对于hasJoinedServer请求的默认访问策略
 # ALLOW=允许, DENY=阻止
 export BACKEND_DEFAULT_ACCESS_POLICY=ALLOW

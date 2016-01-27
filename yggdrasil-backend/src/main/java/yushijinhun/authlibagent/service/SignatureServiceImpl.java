@@ -7,6 +7,7 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
+import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,10 +21,7 @@ public class SignatureServiceImpl implements SignatureService {
 
 	private volatile RSAPrivateKey key;
 
-	public SignatureServiceImpl() {
-		loadLocalKey();
-	}
-
+	@PostConstruct
 	private void loadLocalKey() {
 		byte[] binKey;
 		try (InputStream in = getClass().getResourceAsStream("/signature_key.der")) {
