@@ -185,7 +185,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	public GameProfileResponse lookupProfile(String name) {
 		Session session = sessionFactory.getCurrentSession();
 		@SuppressWarnings("unchecked")
-		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).list();
+		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).setCacheable(true).list();
 		if (profiles.isEmpty()) {
 			return null;
 		} else {

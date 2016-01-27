@@ -36,3 +36,6 @@ echo 'security.showErrorCause='$BACKEND_SHOW_ERROR_CAUSE >> $BACKEND_CONF
 echo 'security.showStacktrace='$BACKEND_SHOW_STACKTRACE >> $BACKEND_CONF
 echo 'security.allowDownloadPrivateKey='$BACKEND_ALLOW_DOWNLOAD_KEY >> $BACKEND_CONF
 echo 'security.allowUploadPrivateKey='$BACKEND_ALLOW_UPLOAD_KEY >> $BACKEND_CONF
+echo 'cache.maxOnHeap='$BACKEND_CACHE_MAX_ON_HEAP >> $BACKEND_CONF
+echo 'cache.maxOffHeap='$BACKEND_CACHE_MAX_OFF_HEAP >> $BACKEND_CONF
+

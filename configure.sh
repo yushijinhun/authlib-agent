@@ -72,8 +72,14 @@ export BACKEND_ALLOW_DOWNLOAD_KEY=true
 # 是否允许通过管理服务上传签名密钥
 export BACKEND_ALLOW_UPLOAD_KEY=true
 
+# 堆上缓存的最大大小
+export BACKEND_CACHE_MAX_ON_HEAP=400M
+
+# 离堆缓存的最大大小
+export BACKEND_CACHE_MAX_OFF_HEAP=2G
 
 ## 其它设置
 
 # 用于数字签名的RSA密钥的长度
 export KEY_BITS=2048
+

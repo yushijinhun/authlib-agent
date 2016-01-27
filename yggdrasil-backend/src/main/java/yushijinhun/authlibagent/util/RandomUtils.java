@@ -11,7 +11,7 @@ public class RandomUtils {
 
 	static {
 		try {
-			rnd = SecureRandom.getInstance("NativePRNGBlocking");
+			rnd = SecureRandom.getInstance("NativePRNGNonBlocking");
 		} catch (NoSuchAlgorithmException e) {
 			rnd = new SecureRandom();
 		}

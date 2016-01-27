@@ -1,0 +1,14 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="yggdrasilCache" monitoring="autodetect" maxBytesLocalHeap="${cache.maxOnHeap}" maxBytesLocalOffHeap="${cache.maxOffHeap}">
+	<diskStore path="java.io.tmpdir" />
+
+	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="300" overflowToDisk="true" />
+
+	<cache name="org.hibernate.cache.internal.StandardQueryCache" maxElementsInMemory="10000" eternal="false" overflowToDisk="false" timeToIdleSeconds="1800" timeToLiveSeconds="1800"/>
+	<cache name="org.hibernate.cache.spi.UpdateTimestampsCache" maxElementsInMemory="10000" eternal="true" overflowToDisk="false"/>
+
+	<cache name="yushijinhun.authlibagent.model.ServerId" maxElementsInMemory="10000" eternal="false" overflowToDisk="true" timeToIdleSeconds="${expire.serverid.time}" timeToLiveSeconds="${expire.serverid.time}" />
+	<cache name="yushijinhun.authlibagent.model.Token" maxElementsInMemory="10000" eternal="false" overflowToDisk="true" timeToIdleSeconds="${expire.token.time}" timeToLiveSeconds="${expire.token.time}" />
+	<cache name="yushijinhun.authlibagent.model.Account" maxElementsInMemory="10000" eternal="false" overflowToDisk="false" timeToIdleSeconds="120" timeToLiveSeconds="120" />
+	<cache name="yushijinhun.authlibagent.model.GameProfile" maxElementsInMemory="10000" eternal="false" overflowToDisk="false" timeToIdleSeconds="120" timeToLiveSeconds="120" />
+	<cache name="yushijinhun.authlibagent.model.AccessRule" maxElementsInMemory="10000" eternal="false" overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="3600" />
+</ehcache>

@@ -50,7 +50,7 @@ public class AccountResourceImpl implements AccountResource {
 		Session session = sessionFactory.getCurrentSession();
 		if (accessToken == null && clientToken == null) {
 			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Account.class).add(accountConjunction).setProjection(property("id")).list();
+			List<String> ids = session.createCriteria(Account.class).add(accountConjunction).setProjection(property("id")).setCacheable(true).list();
 			return ids;
 
 		} else {
@@ -69,7 +69,7 @@ public class AccountResourceImpl implements AccountResource {
 			}
 
 			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Token.class).add(tokenConjunction).createCriteria("owner").add(accountConjunction).setProjection(property("id")).list();
+			List<String> ids = session.createCriteria(Token.class).add(tokenConjunction).createCriteria("owner").add(accountConjunction).setProjection(property("id")).setCacheable(true).list();
 			Set<String> result = new HashSet<>(ids);
 			return result;
 		}

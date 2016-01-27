@@ -71,7 +71,7 @@ public class ProfileResourceImpl implements ProfileResource {
 			}
 
 			@SuppressWarnings("unchecked")
-			List<String> uuids = session.createCriteria(GameProfile.class).add(conjunction).setProjection(property("uuid")).list();
+			List<String> uuids = session.createCriteria(GameProfile.class).add(conjunction).setProjection(property("uuid")).setCacheable(true).list();
 			return uuids;
 		} else if (serverId.isEmpty()) {
 			throw new BadRequestException("serverId is empty");
@@ -182,7 +182,7 @@ public class ProfileResourceImpl implements ProfileResource {
 
 				// check name conflict
 				Session session = sessionFactory.getCurrentSession();
-				GameProfile conflictProfile = (GameProfile) session.createCriteria(GameProfile.class).add(eq("name", name)).uniqueResult();
+				GameProfile conflictProfile = (GameProfile) session.createCriteria(GameProfile.class).add(eq("name", name)).setCacheable(true).uniqueResult();
 				if (conflictProfile != null) {
 					throw new ConflictException("name conflict with profile " + conflictProfile.getUuid());
 				}

@@ -30,7 +30,7 @@ public class RuleResourceImpl implements RuleResource {
 			criteria.add(eq("policy", policy));
 		}
 		@SuppressWarnings("unchecked")
-		List<AccessRule> result = criteria.list();
+		List<AccessRule> result = criteria.setCacheable(true).list();
 		return result;
 	}
 
