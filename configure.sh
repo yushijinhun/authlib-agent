@@ -26,7 +26,7 @@ export BACKEND_ALLOW_SELECTING_PROFILES=true
 
 # 是否在refresh请求中包含角色列表
 # mojang的验证服务不会这么做
-export BACKEND_INCLUDE_PROFILES_IN_REFRESH=false
+export BACKEND_INCLUDE_PROFILES_IN_REFRESH=true
 
 # 对于hasJoinedServer请求的默认访问策略
 # ALLOW=允许, DENY=阻止
