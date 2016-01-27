@@ -118,7 +118,17 @@ public class ProfileResourceImpl implements ProfileResource {
 
 	@Override
 	public void deleteProfile(UUID uuid) {
-		sessionFactory.getCurrentSession().delete(lookupProfile(uuid));
+		GameProfile profile = lookupProfile(uuid);
+
+		// if it's a selected profile, we need to unselect it first
+		Account owner = profile.getOwner();
+		if (profile.equals(owner.getSelectedProfile())) {
+			owner.setSelectedProfile(null);
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+		session.update(owner);
+		session.delete(profile);
 	}
 
 	@Override
