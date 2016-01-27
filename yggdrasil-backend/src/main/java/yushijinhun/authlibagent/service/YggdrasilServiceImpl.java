@@ -64,7 +64,6 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Override
 	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
 		Account account = loginService.loginWithToken(accessToken, clientToken);
-		Token token = loginService.createToken(account, clientToken);
 
 		// select profile
 		if (profileUUID != null) {
@@ -84,7 +83,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			account.setSelectedProfile(profile);
 			session.update(account);
 		}
-
+		Token token = loginService.createToken(account, clientToken);
 		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}
 
