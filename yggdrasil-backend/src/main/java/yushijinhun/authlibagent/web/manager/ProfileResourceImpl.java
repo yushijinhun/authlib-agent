@@ -24,6 +24,7 @@ import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
+import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 
 @Transactional
 @Component("profileResource")
@@ -97,7 +98,7 @@ public class ProfileResourceImpl implements ProfileResource {
 	public ProfileInfo createProfile(ProfileInfo info) {
 		requireNonNullBody(info);
 		if (info.getUuid() == null) {
-			throw new BadRequestException("uuid cannot be null");
+			info.setUuid(randomUUID());
 		}
 
 		Session session = sessionFactory.getCurrentSession();
