@@ -1,19 +1,15 @@
 package yushijinhun.authlibagent.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -31,7 +27,6 @@ public class GameProfile implements Serializable {
 	private String skin = null;
 	private String cape = null;
 	private TextureModel textureModel = TextureModel.STEVE;
-	private Set<ServerId> serverIds = new HashSet<>();
 
 	@Id
 	@Column(nullable = false, unique = true)
@@ -95,15 +90,6 @@ public class GameProfile implements Serializable {
 
 	public void setTextureModel(TextureModel textureModel) {
 		this.textureModel = textureModel;
-	}
-
-	@OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public Set<ServerId> getServerIds() {
-		return serverIds;
-	}
-
-	public void setServerIds(Set<ServerId> serverIds) {
-		this.serverIds = serverIds;
 	}
 
 	@Override

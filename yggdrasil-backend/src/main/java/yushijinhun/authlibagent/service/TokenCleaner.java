@@ -13,7 +13,6 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.Token;
 import static org.hibernate.criterion.Restrictions.lt;
 
@@ -84,14 +83,18 @@ public class TokenCleaner {
 	@Value("#{config['expire.token.time']}")
 	private long tokenExpireTime;
 
-	@Value("#{config['expire.serverid.time']}")
-	private long serveridExpireTime;
-
 	@Value("#{config['expire.token.scantime']}")
 	private long tokenScanTime;
 
+	/* XXX: move this to a right place
+	
+	@Value("#{config['expire.serverid.time']}")
+	private long serveridExpireTime;
+	
 	@Value("#{config['expire.serverid.scantime']}")
 	private long serveridScanTime;
+	
+	*/
 
 	private Timer timer;
 
@@ -101,9 +104,6 @@ public class TokenCleaner {
 
 		// token
 		timer.scheduleAtFixedRate(new CleanTask(Token.class, "createTime", tokenExpireTime), tokenScanTime, tokenScanTime);
-
-		// server id
-		timer.scheduleAtFixedRate(new CleanTask(ServerId.class, "createTime", serveridExpireTime), serveridScanTime, serveridScanTime);
 	}
 
 	@PreDestroy

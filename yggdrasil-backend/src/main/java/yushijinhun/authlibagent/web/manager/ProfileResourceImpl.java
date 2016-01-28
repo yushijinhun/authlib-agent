@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
-import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.TextureModel;
+import yushijinhun.authlibagent.service.ServerIdRepository;
 import static org.hibernate.criterion.Restrictions.conjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
@@ -32,6 +32,9 @@ public class ProfileResourceImpl implements ProfileResource {
 
 	@Autowired
 	protected SessionFactory sessionFactory;
+
+	@Autowired
+	private ServerIdRepository serveridRepo;
 
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
@@ -77,9 +80,9 @@ public class ProfileResourceImpl implements ProfileResource {
 		} else if (serverId.isEmpty()) {
 			throw new BadRequestException("serverId is empty");
 		} else {
-			ServerId verifyid = session.get(ServerId.class, serverId);
-			if (verifyid != null) {
-				GameProfile profile = verifyid.getProfile();
+			UUID profileUUID = serveridRepo.getOwner(serverId);
+			if (profileUUID != null) {
+				GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 				if ((name == null || name.equals(profile.getName())) &&
 						(owner == null || owner.equals(profile.getOwner().getId())) &&
 						(banned == null || banned.equals(profile.isBanned())) &&

@@ -16,7 +16,6 @@ import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.model.AccessRule;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
-import yushijinhun.authlibagent.model.ServerId;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
@@ -36,6 +35,9 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Autowired
 	private LoginService loginService;
+
+	@Autowired
+	private ServerIdRepository serveridRepo;
 
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
@@ -151,25 +153,23 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
 
-		ServerId verifyid = new ServerId();
-		verifyid.setServerId(serverid);
-		verifyid.setProfile(profile);
-		verifyid.setCreateTime(System.currentTimeMillis());
-		session.save(verifyid);
+		serveridRepo.createServerId(serverid, profileUUID);
 	}
 
 	@Transactional
 	@Override
 	public GameProfileResponse hasJoinServer(String playername, String serverid) {
 		Session session = sessionFactory.getCurrentSession();
-		ServerId verifyid = session.get(ServerId.class, serverid);
-		if (verifyid != null) {
-			GameProfile profile = verifyid.getProfile();
-			if (profile.getName().equals(playername)) {
-				session.delete(verifyid);
+
+		UUID profileUUID = serveridRepo.getOwner(serverid);
+		if (profileUUID != null) {
+			GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
+			if (profile != null && playername.equals(profile.getName())) {
+				serveridRepo.deleteServerId(serverid);
 				return createGameProfileResponse(profile, true);
 			}
 		}
+
 		return null;
 	}
 
