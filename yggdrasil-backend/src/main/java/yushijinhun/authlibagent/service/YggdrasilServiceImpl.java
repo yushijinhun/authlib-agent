@@ -73,7 +73,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
 
-		Token token = loginService.createToken(account, clientToken);
+		Token token = loginService.createToken(username, clientToken);
 		return createAuthenticateResponse(account, token, true);
 	}
 
@@ -110,7 +110,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
 
-		Token token = loginService.createToken(account, clientToken);
+		Token token = loginService.createToken(account.getId(), clientToken);
 		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}
 
@@ -135,8 +135,8 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Transactional
 	@Override
 	public void signout(String username, String password) throws ForbiddenOperationException {
-		Account account = loginService.loginWithPassword(username, password);
-		loginService.revokeAllTokens(account);
+		loginService.loginWithPassword(username, password);
+		loginService.revokeAllTokens(username);
 	}
 
 	@Transactional

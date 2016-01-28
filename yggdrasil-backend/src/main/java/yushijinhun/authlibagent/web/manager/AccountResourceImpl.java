@@ -3,16 +3,18 @@ package yushijinhun.authlibagent.web.manager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.service.PasswordAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import static java.util.stream.Collectors.toSet;
 import static org.hibernate.criterion.Restrictions.conjunction;
+import static org.hibernate.criterion.Restrictions.disjunction;
 import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
@@ -32,6 +35,9 @@ import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 public class AccountResourceImpl implements AccountResource {
 
 	@Autowired
+	private TokenRepository tokenRepo;
+
+	@Autowired
 	protected SessionFactory sessionFactory;
 
 	@Autowired
@@ -39,40 +45,101 @@ public class AccountResourceImpl implements AccountResource {
 
 	@Override
 	public Collection<String> getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
-		Conjunction accountConjunction = conjunction();
+		if (accessToken == null && clientToken == null) {
+			// no need for query redis
+			return queryAccountsByProperties(banned, twitchToken);
+		} else {
+			// need to query redis
+			Set<String> redisResult = queryAccountsByToken(accessToken, clientToken);
+			if (banned == null && twitchToken == null) {
+				// no need to query database
+				return redisResult;
+			} else {
+				if (redisResult.isEmpty()) {
+					// no result, no need to query database
+					return redisResult;
+				} else {
+					// redis query result UNION database query result
+					return queryAccountsByPropertiesInRange(banned, twitchToken, redisResult);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Queries accounts by the properties of themselves.
+	 * 
+	 * @param banned null for not query
+	 * @param twitchToken null for not query, empty for no token
+	 * @return a set of id
+	 */
+	private Collection<String> queryAccountsByProperties(Boolean banned, String twitchToken) {
+		return queryAccountsByCriterion(buildAccountsPropertiesConjunction(banned, twitchToken));
+	}
+
+	/**
+	 * Queries accounts by tokens.
+	 * 
+	 * @param accessToken null for not query, cannot be empty
+	 * @param clientToken null for not query, cannot be empty
+	 * @return a set of id
+	 */
+	private Set<String> queryAccountsByToken(String accessToken, String clientToken) {
+		if (accessToken != null) {
+			Token result = tokenRepo.get(accessToken);
+			if (result != null && clientToken != null && !clientToken.equals(result.getClientToken())) {
+				return Collections.emptySet();
+			} else {
+				return result == null ? Collections.emptySet() : Collections.singleton(result.getOwner());
+			}
+		} else {
+			return tokenRepo.getByClientToken(clientToken).stream().map(Token::getOwner).collect(toSet());
+		}
+	}
+
+	/**
+	 * Queries accounts by the properties of themselves in the given range.
+	 * 
+	 * @param banned null for not query
+	 * @param twitchToken null for not query, empty for no token
+	 * @param range the account range
+	 * @return a set of id
+	 */
+	private Collection<String> queryAccountsByPropertiesInRange(Boolean banned, String twitchToken, Set<String> range) {
+		Conjunction propertiesConjunction = buildAccountsPropertiesConjunction(banned, twitchToken);
+		Disjunction accountsDisjunction = disjunction();
+		range.forEach(id -> accountsDisjunction.add(eq("id", id)));
+		return queryAccountsByCriterion(conjunction(propertiesConjunction, accountsDisjunction));
+	}
+
+	/**
+	 * Queries accounts by criterion.
+	 * 
+	 * @param criterion criterion
+	 * @return a set of id
+	 */
+	private Collection<String> queryAccountsByCriterion(Criterion criterion) {
+		@SuppressWarnings("unchecked")
+		List<String> ids = sessionFactory.getCurrentSession().createCriteria(Account.class).add(criterion).setProjection(property("id")).setCacheable(true).list();
+		return ids;
+	}
+
+	/**
+	 * Builds a conjunction by the properties of accounts.
+	 * 
+	 * @param banned null for not query
+	 * @param twitchToken null for not query, empty for no token
+	 * @return conjunction
+	 */
+	private Conjunction buildAccountsPropertiesConjunction(Boolean banned, String twitchToken) {
+		Conjunction conjunction = conjunction();
 		if (banned != null) {
-			accountConjunction.add(eq("banned", banned));
+			conjunction.add(eq("banned", banned));
 		}
 		if (twitchToken != null) {
-			accountConjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
+			conjunction.add(eqOrIsNull("twitchToken", emptyToNull(twitchToken)));
 		}
-
-		Session session = sessionFactory.getCurrentSession();
-		if (accessToken == null && clientToken == null) {
-			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Account.class).add(accountConjunction).setProjection(property("id")).setCacheable(true).list();
-			return ids;
-
-		} else {
-			Conjunction tokenConjunction = conjunction();
-			if (accessToken != null) {
-				if (accessToken.isEmpty()) {
-					throw new BadRequestException("accessToken is empty");
-				}
-				tokenConjunction.add(eq("accessToken", accessToken));
-			}
-			if (clientToken != null) {
-				if (clientToken.isEmpty()) {
-					throw new BadRequestException("clientToken is empty");
-				}
-				tokenConjunction.add(eq("clientToken", clientToken));
-			}
-
-			@SuppressWarnings("unchecked")
-			List<String> ids = session.createCriteria(Token.class).add(tokenConjunction).createCriteria("owner").add(accountConjunction).setProjection(property("id")).setCacheable(true).list();
-			Set<String> result = new HashSet<>(ids);
-			return result;
-		}
+		return conjunction;
 	}
 
 	@Override

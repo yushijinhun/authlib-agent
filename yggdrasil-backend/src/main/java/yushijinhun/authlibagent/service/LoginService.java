@@ -45,17 +45,17 @@ public interface LoginService {
 	 * @param clientToken clientToken，如果为null，则随机生成一个
 	 * @return 新的token
 	 */
-	Token createToken(Account account, String clientToken);
+	Token createToken(String account, String clientToken);
 
 	/**
 	 * 创建一个token。
 	 * <p>
-	 * 该方法同{@link #createToken(Account, String)}，但clientToken为随机生成的。
+	 * 该方法同{@link #createToken(String, String)}，但clientToken为随机生成的。
 	 * 
 	 * @param account 账号
 	 * @return token
 	 */
-	Token createToken(Account account);
+	Token createToken(String account);
 
 	/**
 	 * 吊销token。
@@ -81,7 +81,7 @@ public interface LoginService {
 	 * 
 	 * @param account 账号
 	 */
-	void revokeAllTokens(Account account);
+	void revokeAllTokens(String account);
 
 	/**
 	 * 验证该token是否有效。

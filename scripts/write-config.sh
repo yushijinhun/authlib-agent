@@ -29,7 +29,6 @@ echo 'feature.clearSelectedProfileInLogin='$BACKEND_CLEAR_SELECTED_PROFILE_IN_LO
 echo 'feature.optionalSignature='$BACKEND_OPTIONAL_SIGNATURE >> $BACKEND_CONF
 echo 'access.policy.default='$BACKEND_DEFAULT_ACCESS_POLICY >> $BACKEND_CONF
 echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
-echo 'expire.token.scantime='$BACKEND_TOKEN_EXPIRE_SCAN >> $BACKEND_CONF
 echo 'expire.serverid.time='$BACKEND_SERVERID_EXPIRE_TIME >> $BACKEND_CONF
 echo 'security.showErrorCause='$BACKEND_SHOW_ERROR_CAUSE >> $BACKEND_CONF
 echo 'security.showStacktrace='$BACKEND_SHOW_STACKTRACE >> $BACKEND_CONF

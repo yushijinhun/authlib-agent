@@ -26,7 +26,6 @@ public class Account implements Serializable {
 	private boolean banned;
 	private Set<GameProfile> profiles = new HashSet<>();
 	private GameProfile selectedProfile;
-	private Set<Token> tokens = new HashSet<>();
 
 	// third-part tokens
 	private String twitchToken;
@@ -75,15 +74,6 @@ public class Account implements Serializable {
 
 	public void setSelectedProfile(GameProfile selectedProfile) {
 		this.selectedProfile = selectedProfile;
-	}
-
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public Set<Token> getTokens() {
-		return tokens;
-	}
-
-	public void setTokens(Set<Token> tokens) {
-		this.tokens = tokens;
 	}
 
 	public String getTwitchToken() {

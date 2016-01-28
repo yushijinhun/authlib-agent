@@ -42,13 +42,9 @@ export BACKEND_OPTIONAL_SIGNATURE=true
 # ALLOW=允许, DENY=阻止
 export BACKEND_DEFAULT_ACCESS_POLICY=ALLOW
 
-# accessToken过期的时间(ms)
-# 默认为259200000(3天)
-export BACKEND_TOKEN_EXPIRE_TIME=259200000
-
-# 每次检查accessToken是否过期的间隔时间(ms)
-# 默认为86400000(1天)
-export BACKEND_TOKEN_EXPIRE_SCAN=86400000
+# accessToken过期的时间(s)
+# 默认为259200(3天)
+export BACKEND_TOKEN_EXPIRE_TIME=259200
 
 # serverId过期的时间(s)
 export BACKEND_SERVERID_EXPIRE_TIME=30

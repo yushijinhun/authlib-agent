@@ -2,28 +2,16 @@ package yushijinhun.authlibagent.model;
 
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Entity
 public class Token implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String accessToken;
 	private String clientToken;
-	private Account owner;
+	private String owner;
 	private long createTime;
 
-	@Id
-	@Column(nullable = false, unique = true)
 	public String getAccessToken() {
 		return accessToken;
 	}
@@ -32,7 +20,6 @@ public class Token implements Serializable {
 		this.accessToken = accessToken;
 	}
 
-	@Column(nullable = false)
 	public String getClientToken() {
 		return clientToken;
 	}
@@ -41,13 +28,11 @@ public class Token implements Serializable {
 		this.clientToken = clientToken;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
-	@JoinColumn
-	public Account getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 
-	public void setOwner(Account owner) {
+	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 

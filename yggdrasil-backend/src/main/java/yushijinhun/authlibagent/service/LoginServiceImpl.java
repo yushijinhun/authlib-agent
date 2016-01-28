@@ -1,20 +1,17 @@
 package yushijinhun.authlibagent.service;
 
-import java.util.List;
 import java.util.Objects;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
-import static org.hibernate.criterion.Restrictions.eq;
 import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
-import static org.hibernate.criterion.Restrictions.and;
 
-@Transactional
 @Component
 public class LoginServiceImpl implements LoginService {
 
@@ -23,11 +20,15 @@ public class LoginServiceImpl implements LoginService {
 	private static final String MSG_ACCOUNT_BANNED = "Account has been banned.";
 
 	@Autowired
+	private TokenRepository tokenRepo;
+
+	@Autowired
 	private SessionFactory sessionFactory;
 
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
 
+	@Transactional
 	@Override
 	public Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
 		if (username == null || password == null) {
@@ -46,63 +47,51 @@ public class LoginServiceImpl implements LoginService {
 		return account;
 	}
 
+	@Transactional
 	@Override
 	public Account loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException {
 		if (accessToken == null || clientToken == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
-
-		Token token = verifyToken(accessToken, clientToken);
-		Account account = token.getOwner();
-		if (account.isBanned()) {
-			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
-		}
-
-		return account;
+		return loginWithToken(verifyToken(accessToken, clientToken));
 	}
 
+	@Transactional
 	@Override
 	public Account loginWithToken(String accessToken) throws ForbiddenOperationException {
 		if (accessToken == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
+		return loginWithToken(verifyToken(accessToken));
+	}
 
-		Token token = verifyToken(accessToken);
-		Account account = token.getOwner();
-		if (account.isBanned()) {
+	private Account loginWithToken(Token token) throws ForbiddenOperationException {
+		Account account = sessionFactory.getCurrentSession().get(Account.class, token.getOwner());
+		if (account == null || account.isBanned()) {
 			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 		}
-
 		return account;
 	}
 
 	@Override
-	public Token createToken(Account account, String clientToken) {
+	public Token createToken(String account, String clientToken) {
 		Objects.requireNonNull(account);
 		if (clientToken == null) {
 			clientToken = randomToken();
 		}
 
-		Session session = sessionFactory.getCurrentSession();
-
-		// delete old token
-		@SuppressWarnings("unchecked")
-		List<Token> oldTokens = session.createCriteria(Token.class).add(and(eq("clientToken", clientToken), eq("owner", account))).list();
-		oldTokens.forEach(session::delete);
-
-		// create new token
 		Token token = new Token();
 		token.setAccessToken(randomToken());
 		token.setClientToken(clientToken);
 		token.setOwner(account);
 		token.setCreateTime(System.currentTimeMillis());
-		session.save(token);
 
+		tokenRepo.put(token);
 		return token;
 	}
 
 	@Override
-	public Token createToken(Account account) {
+	public Token createToken(String account) {
 		return createToken(account, null);
 	}
 
@@ -112,9 +101,8 @@ public class LoginServiceImpl implements LoginService {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 
-		Session session = sessionFactory.getCurrentSession();
-		Token token = verifyToken(accessToken, clientToken);
-		session.delete(token);
+		verifyToken(accessToken, clientToken);
+		tokenRepo.delete(accessToken);
 	}
 
 	@Override
@@ -123,17 +111,14 @@ public class LoginServiceImpl implements LoginService {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 
-		Session session = sessionFactory.getCurrentSession();
-		Token token = verifyToken(accessToken);
-		session.delete(token);
+		verifyToken(accessToken);
+		tokenRepo.delete(accessToken);
 	}
 
 	@Override
-	public void revokeAllTokens(Account account) {
+	public void revokeAllTokens(String account) {
 		Objects.requireNonNull(account);
-
-		Session session = sessionFactory.getCurrentSession();
-		account.getTokens().forEach(session::delete);
+		tokenRepo.deleteByAccount(account);
 	}
 
 	@Override
@@ -141,10 +126,8 @@ public class LoginServiceImpl implements LoginService {
 		if (accessToken == null || clientToken == null) {
 			return false;
 		}
-
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
-		return token != null && token.getClientToken().equals(clientToken);
+		Token token = tokenRepo.get(accessToken);
+		return token != null && clientToken.equals(token.getClientToken());
 	}
 
 	@Override
@@ -152,9 +135,7 @@ public class LoginServiceImpl implements LoginService {
 		if (accessToken == null) {
 			return false;
 		}
-
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
+		Token token = tokenRepo.get(accessToken);
 		return token != null;
 	}
 
@@ -163,8 +144,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	private Token verifyToken(String accessToken, String clientToken) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
+		Token token = tokenRepo.get(accessToken);
 		if (token == null || !token.getClientToken().equals(clientToken)) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
@@ -172,8 +152,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	private Token verifyToken(String accessToken) throws ForbiddenOperationException {
-		Session session = sessionFactory.getCurrentSession();
-		Token token = session.get(Token.class, accessToken);
+		Token token = tokenRepo.get(accessToken);
 		if (token == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
