@@ -6,7 +6,7 @@
 	<cache name="org.hibernate.cache.internal.StandardQueryCache" eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="1800" />
 	<cache name="org.hibernate.cache.spi.UpdateTimestampsCache" eternal="true" />
 
-	<cache name="yushijinhun.authlibagent.service.ServerIdRepository" eternal="false" timeToIdleSeconds="${expire.serverid.time}" timeToLiveSeconds="${expire.serverid.time}" />
+	<cache name="yushijinhun.authlibagent.dao.ServerIdRepository" eternal="false" timeToIdleSeconds="${expire.serverid.time}" timeToLiveSeconds="${expire.serverid.time}" />
 
 	<cache name="yushijinhun.authlibagent.model.Token" eternal="false" timeToIdleSeconds="${expire.token.time}" timeToLiveSeconds="${expire.token.time}" />
 	<cache name="yushijinhun.authlibagent.model.Account" eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="1800" />

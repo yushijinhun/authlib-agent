@@ -36,4 +36,11 @@ echo 'security.showStacktrace='$BACKEND_SHOW_STACKTRACE >> $BACKEND_CONF
 echo 'security.allowDownloadPrivateKey='$BACKEND_ALLOW_DOWNLOAD_KEY >> $BACKEND_CONF
 echo 'security.allowUploadPrivateKey='$BACKEND_ALLOW_UPLOAD_KEY >> $BACKEND_CONF
 echo 'cache.maxOnHeap='$BACKEND_CACHE_MAX_ON_HEAP >> $BACKEND_CONF
+echo 'redis.host='$BACKEND_REDIS_HOST >> $BACKEND_CONF
+echo 'redis.port='$BACKEND_REDIS_PORT >> $BACKEND_CONF
+echo 'redis.password='$BACKEND_REDIS_PASSWORD >> $BACKEND_CONF
+echo 'redis.maxIdle='$BACKEND_REDIS_MAX_IDLE >> $BACKEND_CONF
+echo 'redis.maxTotal='$BACKEND_REDIS_MAX_TOTAL >> $BACKEND_CONF
+echo 'redis.maxWaitMillis='$BACKEND_REDIS_MAX_WAIT_MILLIS >> $BACKEND_CONF
+echo 'redis.testOnBorrow='$BACKEND_REDIS_TEST_ON_BORROW >> $BACKEND_CONF
 

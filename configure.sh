@@ -70,6 +70,28 @@ export BACKEND_ALLOW_UPLOAD_KEY=true
 # 堆上缓存的最大大小
 export BACKEND_CACHE_MAX_ON_HEAP=400M
 
+# redis服务器地址
+export BACKEND_REDIS_HOST='localhost'
+
+# redis服务端口
+export BACKEND_REDIS_PORT=6379
+
+# redis密码
+export BACKEND_REDIS_PASSWORD='yggdrasil_backend_redis'
+
+# jedis链接池的maxIdle
+export BACKEND_REDIS_MAX_IDLE=300
+
+# jedis链接池的maxTotal
+export BACKEND_REDIS_MAX_TOTAL=300
+
+# jedis链接池的maxWaitMillis
+export BACKEND_REDIS_MAX_WAIT_MILLIS=1000
+
+# jedis链接池的testOnBorrow
+export BACKEND_REDIS_TEST_ON_BORROW=true
+
+
 ## 其它设置
 
 # 用于数字签名的RSA密钥的长度

@@ -1,4 +1,4 @@
-package yushijinhun.authlibagent.service;
+package yushijinhun.authlibagent.dao;
 
 import java.util.UUID;
 
