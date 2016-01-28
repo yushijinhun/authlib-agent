@@ -84,7 +84,6 @@ public class LoginServiceImpl implements LoginService {
 		token.setAccessToken(randomToken());
 		token.setClientToken(clientToken);
 		token.setOwner(account);
-		token.setCreateTime(System.currentTimeMillis());
 
 		tokenRepo.put(token);
 		return token;

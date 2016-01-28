@@ -10,7 +10,6 @@ public class Token implements Serializable {
 	private String accessToken;
 	private String clientToken;
 	private String owner;
-	private long createTime;
 
 	public String getAccessToken() {
 		return accessToken;
@@ -34,14 +33,6 @@ public class Token implements Serializable {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
-	}
-
-	public long getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(long createTime) {
-		this.createTime = createTime;
 	}
 
 	@Override
