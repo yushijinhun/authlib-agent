@@ -50,13 +50,8 @@ export BACKEND_TOKEN_EXPIRE_TIME=259200000
 # 默认为86400000(1天)
 export BACKEND_TOKEN_EXPIRE_SCAN=86400000
 
-# serverId过期的时间(ms)
-# 默认为60000(1分钟)
-export BACKEND_SERVERID_EXPIRE_TIME=60000
-
-# 每次检查serverId是否过期的间隔时间(ms)
-# 默认为60000(1分钟)
-export BACKEND_SERVERID_EXPIRE_SCAN=60000
+# serverId过期的时间(s)
+export BACKEND_SERVERID_EXPIRE_TIME=30
 
 # 是否将错误原因发送给客户端(yggdrasil服务)
 # 所谓原因即为java错误链的cause
@@ -74,9 +69,6 @@ export BACKEND_ALLOW_UPLOAD_KEY=true
 
 # 堆上缓存的最大大小
 export BACKEND_CACHE_MAX_ON_HEAP=400M
-
-# 离堆缓存的最大大小
-export BACKEND_CACHE_MAX_OFF_HEAP=2G
 
 ## 其它设置
 

@@ -86,16 +86,6 @@ public class TokenCleaner {
 	@Value("#{config['expire.token.scantime']}")
 	private long tokenScanTime;
 
-	/* XXX: move this to a right place
-	
-	@Value("#{config['expire.serverid.time']}")
-	private long serveridExpireTime;
-	
-	@Value("#{config['expire.serverid.scantime']}")
-	private long serveridScanTime;
-	
-	*/
-
 	private Timer timer;
 
 	@PostConstruct
