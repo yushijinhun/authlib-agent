@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.ServerIdRepository;
+import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.model.AccessRule;
 import yushijinhun.authlibagent.model.Account;
@@ -39,6 +40,9 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Autowired
 	private ServerIdRepository serveridRepo;
+
+	@Autowired
+	private TokenRepository tokenRepo;
 
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
@@ -110,6 +114,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
 
+		tokenRepo.delete(accessToken);
 		Token token = loginService.createToken(account.getId(), clientToken);
 		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}

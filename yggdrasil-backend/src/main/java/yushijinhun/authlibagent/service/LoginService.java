@@ -38,8 +38,6 @@ public interface LoginService {
 
 	/**
 	 * 创建一个token。
-	 * <p>
-	 * 创建新的token后，原来和该账号和该clientToken对应的token将失效。
 	 * 
 	 * @param account 账号
 	 * @param clientToken clientToken，如果为null，则随机生成一个
