@@ -125,6 +125,7 @@ public class AuthlibTransformer extends Transformer {
 
 		}
 
+		// authlib
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new NamedTransformUnit("yggdrasil_publickey_transformer") {
 
 			abstract class AbstractPublickeyTransformer extends ClassVisitor {
@@ -335,5 +336,8 @@ public class AuthlibTransformer extends Transformer {
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_validate_transformer", "<clinit>", "https://authserver.mojang.com/validate", apiYggdrasilValidate));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_invalidate_transformer", "<clinit>", "https://authserver.mojang.com/invalidate", apiYgggdrasilInvalidate));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication", new LdcTransformUnit("yggdrasil_signout_transformer", "<clinit>", "https://authserver.mojang.com/signout", apiYggdarsilSignout));
+
+		// bungeecord
+		addTransformUnit("net.md_5.bungee.connection.InitialHandler", new LdcTransformUnit("bungeecord_has_joined_server_transformer", "handle", "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=", apiHasJoinServer + "?username="));
 	}
 }
