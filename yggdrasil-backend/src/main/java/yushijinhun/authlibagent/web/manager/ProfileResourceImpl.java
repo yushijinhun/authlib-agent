@@ -40,11 +40,11 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
 		if (name != null && name.isEmpty()) {
-				throw new BadRequestException("name is empty");
+			throw new BadRequestException("name is empty");
 		}
 
 		if (owner != null && owner.isEmpty()) {
-				throw new BadRequestException("owner is empty");
+			throw new BadRequestException("owner is empty");
 		}
 
 		Session session = sessionFactory.getCurrentSession();
@@ -114,6 +114,12 @@ public class ProfileResourceImpl implements ProfileResource {
 		GameProfile profile = new GameProfile();
 		fillProfileInfo(profile, info);
 		session.save(profile);
+
+		// expire the account cache
+		Account account = profile.getOwner();
+		account.getProfiles().add(profile);
+		session.update(account);
+
 		return createProfileInfo(profile);
 	}
 
@@ -126,7 +132,14 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Transactional
 	@Override
 	public void deleteProfile(UUID uuid) {
-		sessionFactory.getCurrentSession().delete(lookupProfile(uuid));
+		Session session = sessionFactory.getCurrentSession();
+
+		GameProfile profile = lookupProfile(uuid);
+		Account account = profile.getOwner();
+		account.getProfiles().remove(profile);
+		// expire the account cache
+		session.update(account);
+		session.delete(profile);
 	}
 
 	@Transactional
