@@ -26,7 +26,6 @@ import static com.google.common.base.Strings.nullToEmpty;
 import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 
-@Transactional
 @Component("profileResource")
 public class ProfileResourceImpl implements ProfileResource {
 
@@ -36,6 +35,7 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Autowired
 	private ServerIdRepository serveridRepo;
 
+	@Transactional(readOnly = true)
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
 		if (name != null && name.isEmpty()) {
@@ -97,6 +97,7 @@ public class ProfileResourceImpl implements ProfileResource {
 
 	}
 
+	@Transactional
 	@Override
 	public ProfileInfo createProfile(ProfileInfo info) {
 		requireNonNullBody(info);
@@ -115,11 +116,13 @@ public class ProfileResourceImpl implements ProfileResource {
 		return createProfileInfo(profile);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public ProfileInfo getProfileInfo(UUID uuid) {
 		return createProfileInfo(lookupProfile(uuid));
 	}
 
+	@Transactional
 	@Override
 	public void deleteProfile(UUID uuid) {
 		GameProfile profile = lookupProfile(uuid);
@@ -135,6 +138,7 @@ public class ProfileResourceImpl implements ProfileResource {
 		session.delete(profile);
 	}
 
+	@Transactional
 	@Override
 	public ProfileInfo updateOrCreateProfile(UUID uuid, ProfileInfo info) {
 		requireNonNullBody(info);
@@ -151,6 +155,7 @@ public class ProfileResourceImpl implements ProfileResource {
 		return createProfileInfo(profile);
 	}
 
+	@Transactional
 	@Override
 	public ProfileInfo updateProfile(UUID uuid, ProfileInfo info) {
 		requireNonNullBody(info);

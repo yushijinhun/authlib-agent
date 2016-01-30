@@ -30,7 +30,6 @@ import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 
-@Transactional
 @Component("accountResource")
 public class AccountResourceImpl implements AccountResource {
 
@@ -43,6 +42,7 @@ public class AccountResourceImpl implements AccountResource {
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
 
+	@Transactional(readOnly = true)
 	@Override
 	public Collection<String> getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
 		if (accessToken == null && clientToken == null) {
@@ -142,6 +142,7 @@ public class AccountResourceImpl implements AccountResource {
 		return conjunction;
 	}
 
+	@Transactional
 	@Override
 	public AccountInfo createAccount(AccountInfo info) {
 		requireNonNullBody(info);
@@ -160,16 +161,19 @@ public class AccountResourceImpl implements AccountResource {
 		return createAccountInfo(account);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public AccountInfo getAccountInfo(String id) {
 		return createAccountInfo(lookupAccount(id));
 	}
 
+	@Transactional
 	@Override
 	public void deleteAccount(String id) {
 		sessionFactory.getCurrentSession().delete(lookupAccount(id));
 	}
 
+	@Transactional
 	@Override
 	public AccountInfo updateOrCreateAccount(String id, AccountInfo info) {
 		requireNonNullBody(info);
@@ -186,6 +190,7 @@ public class AccountResourceImpl implements AccountResource {
 		return createAccountInfo(account);
 	}
 
+	@Transactional
 	@Override
 	public AccountInfo updateAccount(String id, AccountInfo info) {
 		requireNonNullBody(info);

@@ -22,6 +22,7 @@ public class RuleResourceImpl implements RuleResource {
 	@Autowired
 	protected SessionFactory sessionFactory;
 
+	@Transactional(readOnly = true)
 	@Override
 	public Collection<AccessRule> getRules(AccessPolicy policy) {
 		Session session = sessionFactory.getCurrentSession();
@@ -34,6 +35,7 @@ public class RuleResourceImpl implements RuleResource {
 		return result;
 	}
 
+	@Transactional
 	@Override
 	public AccessRule createRule(AccessRule rule) {
 		requireNonNullBody(rule);
@@ -53,11 +55,13 @@ public class RuleResourceImpl implements RuleResource {
 		return rule;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public AccessRule getRule(String host) {
 		return lookupRule(host);
 	}
 
+	@Transactional
 	@Override
 	public AccessRule createOrUpdateRule(String host, AccessRule info) {
 		requireNonNullBody(info);
@@ -74,6 +78,7 @@ public class RuleResourceImpl implements RuleResource {
 		return rule;
 	}
 
+	@Transactional
 	@Override
 	public AccessRule updateRule(String host, AccessRule info) {
 		requireNonNullBody(info);
@@ -85,6 +90,7 @@ public class RuleResourceImpl implements RuleResource {
 		return rule;
 	}
 
+	@Transactional
 	@Override
 	public void deleteRule(String host) {
 		sessionFactory.getCurrentSession().delete(lookupRule(host));

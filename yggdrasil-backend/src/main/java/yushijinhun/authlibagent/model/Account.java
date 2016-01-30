@@ -57,7 +57,8 @@ public class Account implements Serializable {
 		this.banned = banned;
 	}
 
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	public Set<GameProfile> getProfiles() {
 		return profiles;
 	}
@@ -66,7 +67,7 @@ public class Account implements Serializable {
 		this.profiles = profiles;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn
 	public GameProfile getSelectedProfile() {
 		return selectedProfile;

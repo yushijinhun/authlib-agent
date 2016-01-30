@@ -65,13 +65,18 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		Account account = loginService.loginWithPassword(username, password);
 
 		Session session = sessionFactory.getCurrentSession();
-		if (clearSelectedProfileInLogin) {
+		if (autoSelectedUniqueProfile && account.getProfiles().size() == 1) { // select the unique profile
+			GameProfile uniqueProfile = account.getProfiles().iterator().next();
+			if (!uniqueProfile.equals(account.getSelectedProfile())) {
+				// the current selected profile(must be null) is not the unique profile
+				account.setSelectedProfile(uniqueProfile);
+				session.update(account);
+			}
+			// otherwise, the current selected profile is already the unique profile, nothing need to be changed
+		} else if (clearSelectedProfileInLogin && account.getSelectedProfile() != null) {
 			account.setSelectedProfile(null);
+			session.update(account);
 		}
-		if (autoSelectedUniqueProfile && account.getProfiles().size() == 1) {
-			account.setSelectedProfile(account.getProfiles().iterator().next());
-		}
-		session.update(account);
 
 		if (account.getSelectedProfile() != null && account.getSelectedProfile().isBanned()) {
 			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
