@@ -2,6 +2,7 @@ package yushijinhun.authlibagent.dao;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -36,6 +37,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 	 * "A"+accessToken -> <hash>{
 	 * 	"c": clientToken
 	 * 	"o": owner
+	 *     "p": selectedProfile
 	 * }
 	 * 
 	 * b) 对clientToken->Tokens的存储:
@@ -63,6 +65,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 	private static final String PREFIX_EXPIRE = "X";
 	private static final String KEY_CLIENT_TOKEN = "c";
 	private static final String KEY_OWNER = "o";
+	private static final String KEY_SELECTED_PROFILE = "p";
 
 	@Autowired
 	private RedisMessageListenerContainer container;
@@ -144,6 +147,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 		token.setAccessToken(accessToken);
 		token.setClientToken(values.get(KEY_CLIENT_TOKEN));
 		token.setOwner(values.get(KEY_OWNER));
+		String selectedProfile = values.get(KEY_SELECTED_PROFILE);
+		token.setSelectedProfile(selectedProfile.isEmpty() ? null : UUID.fromString(selectedProfile));
 		return token;
 	}
 
@@ -169,6 +174,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 		Map<String, String> values = new HashMap<>();
 		values.put(KEY_CLIENT_TOKEN, clientToken);
 		values.put(KEY_OWNER, owner);
+		UUID selectedProfile = token.getSelectedProfile();
+		values.put(KEY_SELECTED_PROFILE, selectedProfile == null ? "" : selectedProfile.toString());
 
 		int accountTokens = setOps.size(accountKey).intValue();
 		if (accountTokens > maxTokensPerAccounts) {
@@ -176,20 +183,24 @@ public class TokenRepositoryImpl implements TokenRepository {
 
 			// remove $extraTokensToDelete more tokens every time,
 			int tokensToDelete = accountTokens - maxTokensPerAccounts + extraTokensToDelete;
-			for (String expiredAccessToken : setOps.randomMembers(accountKey, tokensToDelete)) {
-				delete(expiredAccessToken);
+			for (int i = 0; i < tokensToDelete; i++) {
+				String expiredAccessToken = setOps.pop(accountKey);
+				if (expiredAccessToken != null) {
+					String expiredClientToken = hashOps.get(keyAccessToken(expiredAccessToken), KEY_CLIENT_TOKEN);
+					if (expiredClientToken != null) {
+						setOps.remove(keyClientToken(expiredClientToken), expiredAccessToken);
+					}
+					template.delete(keyExpire(expiredAccessToken));
+					template.delete(keyAccessToken(expiredAccessToken));
+				}
 			}
 		}
 
-		// add token
+		valOps.set(expireKey, "");
+		template.expire(expireKey, tokenExpireTime, TimeUnit.SECONDS);
 		hashOps.putAll(keyAccessToken(accessToken), values);
-
-		// link
 		setOps.add(keyClientToken(clientToken), accessToken);
 		setOps.add(accountKey, accessToken);
-		valOps.set(expireKey, "");
-
-		template.expire(expireKey, tokenExpireTime, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -199,12 +210,9 @@ public class TokenRepositoryImpl implements TokenRepository {
 			return;
 		}
 
-		// unlink
-		setOps.remove(keyClientToken(values.get(KEY_CLIENT_TOKEN)), accessToken);
 		setOps.remove(keyAccount(values.get(KEY_OWNER)), accessToken);
+		setOps.remove(keyClientToken(values.get(KEY_CLIENT_TOKEN)), accessToken);
 		template.delete(keyExpire(accessToken));
-
-		// delete token
 		template.delete(keyAccessToken(accessToken));
 	}
 
@@ -216,10 +224,10 @@ public class TokenRepositoryImpl implements TokenRepository {
 			return;
 		}
 
-		// unlink expire keys
-		template.delete(accessTokens.stream().map(this::keyExpire).collect(toSet()));
 		// unlink account -> accessTokens
 		template.delete(accountKey);
+		// unlink expire keys
+		template.delete(accessTokens.stream().map(this::keyExpire).collect(toSet()));
 		// unlink clientToken -> accessTokens
 		for (String accessToken : accessTokens) {
 			String clientToken = hashOps.get(keyAccessToken(accessToken), KEY_CLIENT_TOKEN);

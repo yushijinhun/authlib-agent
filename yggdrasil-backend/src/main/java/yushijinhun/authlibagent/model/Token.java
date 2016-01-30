@@ -2,6 +2,7 @@ package yushijinhun.authlibagent.model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Token implements Serializable {
 
@@ -10,6 +11,7 @@ public class Token implements Serializable {
 	private String accessToken;
 	private String clientToken;
 	private String owner;
+	private UUID selectedProfile;
 
 	public String getAccessToken() {
 		return accessToken;
@@ -33,6 +35,14 @@ public class Token implements Serializable {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	public UUID getSelectedProfile() {
+		return selectedProfile;
+	}
+
+	public void setSelectedProfile(UUID selectedProfile) {
+		this.selectedProfile = selectedProfile;
 	}
 
 	@Override

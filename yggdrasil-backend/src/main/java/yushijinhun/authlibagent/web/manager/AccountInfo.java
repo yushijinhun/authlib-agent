@@ -35,11 +35,6 @@ public class AccountInfo implements Serializable {
 	 */
 	private Set<UUID> profiles;
 
-	/**
-	 * Null by default, empty for no selected profile, use UUID.fromString() to decode this
-	 */
-	private String selectedProfile;
-
 	@XmlElement
 	public String getId() {
 		return id;
@@ -84,15 +79,6 @@ public class AccountInfo implements Serializable {
 
 	public void setProfiles(Set<UUID> profiles) {
 		this.profiles = profiles;
-	}
-
-	@XmlElement
-	public String getSelectedProfile() {
-		return selectedProfile;
-	}
-
-	public void setSelectedProfile(String selectedProfile) {
-		this.selectedProfile = selectedProfile;
 	}
 
 }

@@ -7,6 +7,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.Account;
@@ -42,7 +43,7 @@ public class AccountResourceImpl implements AccountResource {
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public Collection<String> getAccounts(String accessToken, String clientToken, Boolean banned, String twitchToken) {
 		if (accessToken == null && clientToken == null) {
@@ -161,7 +162,7 @@ public class AccountResourceImpl implements AccountResource {
 		return createAccountInfo(account);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AccountInfo getAccountInfo(String id) {
 		return createAccountInfo(lookupAccount(id));
@@ -171,6 +172,7 @@ public class AccountResourceImpl implements AccountResource {
 	@Override
 	public void deleteAccount(String id) {
 		sessionFactory.getCurrentSession().delete(lookupAccount(id));
+		tokenRepo.deleteByAccount(id);
 	}
 
 	@Transactional
@@ -231,25 +233,6 @@ public class AccountResourceImpl implements AccountResource {
 			// changing the profiles is not allowed
 			throw new ConflictException("profiles conflict");
 		}
-
-		if (info.getSelectedProfile() != null) {
-			UUID newSelectedProfile = info.getSelectedProfile().isEmpty() ? null : UUID.fromString(info.getSelectedProfile());
-			if (newSelectedProfile != getAccountSelectedProfile(account)) {
-				if (newSelectedProfile == null) {
-					account.setSelectedProfile(null);
-				} else {
-					Session session = sessionFactory.getCurrentSession();
-					GameProfile profile = session.get(GameProfile.class, newSelectedProfile.toString());
-					if (profile == null) {
-						throw new BadRequestException(String.format("profile %s not exists", newSelectedProfile));
-					}
-					if (!account.equals(profile.getOwner())) {
-						throw new ConflictException(String.format("the owner of %s is %s, not %s", newSelectedProfile, profile.getOwner().getId(), account.getId()));
-					}
-					account.setSelectedProfile(profile);
-				}
-			}
-		}
 	}
 
 	private Set<UUID> getAccountProfiles(Account account) {
@@ -258,20 +241,12 @@ public class AccountResourceImpl implements AccountResource {
 		return profiles == null ? Collections.emptySet() : profiles.stream().map(p -> UUID.fromString(p.getUuid())).collect(toSet());
 	}
 
-	private UUID getAccountSelectedProfile(Account account) {
-		GameProfile profile = account.getSelectedProfile();
-		// profile will be null if the account is in transient status
-		return profile == null ? null : UUID.fromString(profile.getUuid());
-	}
-
 	private AccountInfo createAccountInfo(Account account) {
 		AccountInfo info = new AccountInfo();
 		info.setId(account.getId());
 		info.setBanned(account.isBanned());
 		info.setTwitchToken(nullToEmpty(account.getTwitchToken()));
 		info.setProfiles(getAccountProfiles(account));
-		UUID selectedProfile = getAccountSelectedProfile(account);
-		info.setSelectedProfile(selectedProfile == null ? "" : selectedProfile.toString());
 		return info;
 	}
 

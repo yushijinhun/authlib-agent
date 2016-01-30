@@ -11,6 +11,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.ServerIdRepository;
 import yushijinhun.authlibagent.dao.TokenRepository;
@@ -19,6 +20,7 @@ import yushijinhun.authlibagent.model.AccessRule;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.Token;
+import yushijinhun.authlibagent.util.TokenAuthResult;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
 import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 import static org.hibernate.criterion.Restrictions.eq;
@@ -53,75 +55,66 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Value("#{config['feature.autoSelectedUniqueProfile']}")
 	private boolean autoSelectedUniqueProfile;
 
-	@Value("#{config['feature.clearSelectedProfileInLogin']}")
-	private boolean clearSelectedProfileInLogin;
-
 	@Value("#{config['access.policy.default']}")
 	private String defaultPolicy;
 
-	@Transactional
 	@Override
 	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
 		Account account = loginService.loginWithPassword(username, password);
+		UUID selectedProfileUUID = null;
+		GameProfile selectedProfile = null;
 
-		Session session = sessionFactory.getCurrentSession();
 		if (autoSelectedUniqueProfile && account.getProfiles().size() == 1) { // select the unique profile
-			GameProfile uniqueProfile = account.getProfiles().iterator().next();
-			if (!uniqueProfile.equals(account.getSelectedProfile())) {
-				// the current selected profile(must be null) is not the unique profile
-				account.setSelectedProfile(uniqueProfile);
-				session.update(account);
+			selectedProfile = account.getProfiles().iterator().next();
+			if (selectedProfile.isBanned()) {
+				throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 			}
-			// otherwise, the current selected profile is already the unique profile, nothing need to be changed
-		} else if (clearSelectedProfileInLogin && account.getSelectedProfile() != null) {
-			account.setSelectedProfile(null);
-			session.update(account);
+			selectedProfileUUID = UUID.fromString(selectedProfile.getUuid());
 		}
 
-		if (account.getSelectedProfile() != null && account.getSelectedProfile().isBanned()) {
-			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
-		}
-
-		Token token = loginService.createToken(username, clientToken);
-		return createAuthenticateResponse(account, token, true);
+		Token token = loginService.createToken(username, selectedProfileUUID, clientToken);
+		return createAuthenticateResponse(account, token, selectedProfile, true);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AuthenticateResponse refresh(String accessToken, String clientToken) throws ForbiddenOperationException {
 		return selectProfile(accessToken, clientToken, null);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
-		Account account = loginService.loginWithToken(accessToken, clientToken);
+		TokenAuthResult result = loginService.loginWithToken(accessToken, clientToken);
+
+		UUID selectedProfileUUID = result.getToken().getSelectedProfile();
 
 		if (profileUUID != null) {
 			// select profile
 			if (!allowSelectingProfile) {
 				throw new IllegalArgumentException(MSG_SELECTING_PROFILE_NOT_SUPPORTED);
 			}
+			selectedProfileUUID = profileUUID;
+		}
 
+		GameProfile selectedProfile = null;
+		if (selectedProfileUUID != null) {
+			// check if the selected profile is banned
 			Session session = sessionFactory.getCurrentSession();
-			GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
-			if (profile == null || !profile.getOwner().equals(account)) {
+			selectedProfile = session.get(GameProfile.class, selectedProfileUUID.toString());
+			if (selectedProfile == null) {
 				throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
 			}
-			if (profile.isBanned()) {
+			if (selectedProfile.isBanned()) {
 				throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 			}
-
-			account.setSelectedProfile(profile);
-			session.update(account);
-		} else if (account.getSelectedProfile() != null && account.getSelectedProfile().isBanned()) {
-			// check if current profile is banned
-			throw new ForbiddenOperationException(MSG_PROFILE_BANNED);
 		}
 
 		tokenRepo.delete(accessToken);
-		Token token = loginService.createToken(account.getId(), clientToken);
-		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
+
+		Account account = result.getAccount();
+		Token token = loginService.createToken(account.getId(), selectedProfileUUID, clientToken);
+		return createAuthenticateResponse(account, token, selectedProfile, includeProfilesInRefresh);
 	}
 
 	@Override
@@ -145,12 +138,12 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		loginService.revokeAllTokens(username);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public void joinServer(String accessToken, UUID profileUUID, String serverid) throws ForbiddenOperationException {
 		Session session = sessionFactory.getCurrentSession();
 
-		Account account = loginService.loginWithToken(accessToken);
+		Account account = loginService.loginWithToken(accessToken).getAccount();
 		GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 		if (profile == null || !account.equals(profile.getOwner())) {
 			throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
@@ -163,7 +156,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		serveridRepo.createServerId(serverid, profileUUID);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public GameProfileResponse hasJoinServer(String playername, String serverid) {
 		Session session = sessionFactory.getCurrentSession();
@@ -180,14 +173,14 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		return null;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public GameProfileResponse lookupProfile(UUID profileUUID) {
 		Session session = sessionFactory.getCurrentSession();
 		return createGameProfileResponse(session.get(GameProfile.class, profileUUID.toString()), true);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public GameProfileResponse lookupProfile(String name) {
 		Session session = sessionFactory.getCurrentSession();
@@ -200,7 +193,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		}
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AccessPolicy getServerAccessPolicy(String host) {
 		Session session = sessionFactory.getCurrentSession();
@@ -251,8 +244,8 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		return properties;
 	}
 
-	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, boolean withProfiles) {
-		GameProfileResponse selectedProfile = createGameProfileResponse(account.getSelectedProfile(), false);
+	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, GameProfile selectedProfileObj, boolean withProfiles) {
+		GameProfileResponse selectedProfile = createGameProfileResponse(selectedProfileObj, false);
 		GameProfileResponse[] profiles = withProfiles ? createGameProfileResponses(account.getProfiles(), false) : null;
 		String userid = getUserid(account);
 		Map<String, String> properties = getUserProperties(account);

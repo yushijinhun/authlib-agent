@@ -31,9 +31,6 @@ export BACKEND_INCLUDE_PROFILES_IN_REFRESH=true
 # 如果用户只有一个角色, 是否自动帮用户选择该角色
 export BACKEND_AUTO_SELECTED_UNIQUE_PROFILE=true
 
-# 是否在每次登录前清除选择的角色
-export BACKEND_CLEAR_SELECTED_PROFILE_IN_LOGIN=true
-
 # 是否允许在数字签名失败时, 不将签名发送给客户端
 # 如果为false, 在签名失败时会抛出一个异常
 export BACKEND_OPTIONAL_SIGNATURE=true
@@ -80,12 +77,6 @@ export BACKEND_REDIS_MAX_IDLE=300
 
 # jedis链接池的maxTotal
 export BACKEND_REDIS_MAX_TOTAL=300
-
-# jedis链接池的maxWaitMillis
-export BACKEND_REDIS_MAX_WAIT_MILLIS=1000
-
-# jedis链接池的testOnBorrow
-export BACKEND_REDIS_TEST_ON_BORROW=true
 
 # 每个账户所同时最多能有的token个数.
 # 如果申请token时发现已经达到该限制,

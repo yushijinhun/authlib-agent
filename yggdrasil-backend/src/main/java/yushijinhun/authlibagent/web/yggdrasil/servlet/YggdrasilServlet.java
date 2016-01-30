@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,8 @@ import yushijinhun.authlibagent.web.yggdrasil.ResponseSerializer;
 abstract public class YggdrasilServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private final Logger LOGGER = LogManager.getFormatterLogger(getClass());
 
 	@Autowired
 	protected YggdrasilService backend;
@@ -55,6 +59,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 			respCode = getConfiguredErrorCode(e.getClass());
 			if (respCode == -1) {
 				respCode = 500;
+				LOGGER.warn("unexcept exception", e);
 			}
 
 			String errorName = lookupErrorName(e);

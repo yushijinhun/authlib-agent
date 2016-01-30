@@ -12,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.ServerIdRepository;
 import yushijinhun.authlibagent.model.Account;
@@ -35,15 +36,15 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Autowired
 	private ServerIdRepository serveridRepo;
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
 		if (name != null && name.isEmpty()) {
-				throw new BadRequestException("name is empty");
+			throw new BadRequestException("name is empty");
 		}
 
 		if (owner != null && owner.isEmpty()) {
-				throw new BadRequestException("owner is empty");
+			throw new BadRequestException("owner is empty");
 		}
 
 		Session session = sessionFactory.getCurrentSession();
@@ -113,10 +114,16 @@ public class ProfileResourceImpl implements ProfileResource {
 		GameProfile profile = new GameProfile();
 		fillProfileInfo(profile, info);
 		session.save(profile);
+
+		// expire the account cache
+		Account account = profile.getOwner();
+		account.getProfiles().add(profile);
+		session.update(account);
+
 		return createProfileInfo(profile);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public ProfileInfo getProfileInfo(UUID uuid) {
 		return createProfileInfo(lookupProfile(uuid));
@@ -125,16 +132,13 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Transactional
 	@Override
 	public void deleteProfile(UUID uuid) {
-		GameProfile profile = lookupProfile(uuid);
-
-		// if it's a selected profile, we need to unselect it first
-		Account owner = profile.getOwner();
-		if (profile.equals(owner.getSelectedProfile())) {
-			owner.setSelectedProfile(null);
-		}
-
 		Session session = sessionFactory.getCurrentSession();
-		session.update(owner);
+
+		GameProfile profile = lookupProfile(uuid);
+		Account account = profile.getOwner();
+		account.getProfiles().remove(profile);
+		// expire the account cache
+		session.update(account);
 		session.delete(profile);
 	}
 

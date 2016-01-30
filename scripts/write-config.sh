@@ -25,7 +25,6 @@ echo '# '`date` >> $BACKEND_CONF
 echo 'feature.allowSelectingProfile='$BACKEND_ALLOW_SELECTING_PROFILES >> $BACKEND_CONF
 echo 'feature.includeProfilesInRefresh='$BACKEND_INCLUDE_PROFILES_IN_REFRESH >> $BACKEND_CONF
 echo 'feature.autoSelectedUniqueProfile='$BACKEND_AUTO_SELECTED_UNIQUE_PROFILE >> $BACKEND_CONF
-echo 'feature.clearSelectedProfileInLogin='$BACKEND_CLEAR_SELECTED_PROFILE_IN_LOGIN >> $BACKEND_CONF
 echo 'feature.optionalSignature='$BACKEND_OPTIONAL_SIGNATURE >> $BACKEND_CONF
 echo 'access.policy.default='$BACKEND_DEFAULT_ACCESS_POLICY >> $BACKEND_CONF
 echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
@@ -42,6 +41,3 @@ echo 'redis.port='$BACKEND_REDIS_PORT >> $BACKEND_CONF
 echo 'redis.password='$BACKEND_REDIS_PASSWORD >> $BACKEND_CONF
 echo 'redis.maxIdle='$BACKEND_REDIS_MAX_IDLE >> $BACKEND_CONF
 echo 'redis.maxTotal='$BACKEND_REDIS_MAX_TOTAL >> $BACKEND_CONF
-echo 'redis.maxWaitMillis='$BACKEND_REDIS_MAX_WAIT_MILLIS >> $BACKEND_CONF
-echo 'redis.testOnBorrow='$BACKEND_REDIS_TEST_ON_BORROW >> $BACKEND_CONF
-
