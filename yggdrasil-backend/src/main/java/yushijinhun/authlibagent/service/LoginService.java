@@ -1,7 +1,9 @@
 package yushijinhun.authlibagent.service;
 
+import java.util.UUID;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
+import yushijinhun.authlibagent.util.TokenAuthResult;
 
 public interface LoginService {
 
@@ -23,7 +25,7 @@ public interface LoginService {
 	 * @return 账号
 	 * @throws ForbiddenOperationException 如果token有误，或者该用户被禁止登录
 	 */
-	Account loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException;
+	TokenAuthResult loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException;
 
 	/**
 	 * 通过token登录。
@@ -34,26 +36,28 @@ public interface LoginService {
 	 * @return 账号
 	 * @throws ForbiddenOperationException 如果token有误，或者该用户被禁止登录
 	 */
-	Account loginWithToken(String accessToken) throws ForbiddenOperationException;
+	TokenAuthResult loginWithToken(String accessToken) throws ForbiddenOperationException;
 
 	/**
 	 * 创建一个token。
 	 * 
 	 * @param account 账号
+	 * @param selectedProfile 选中的profile
 	 * @param clientToken clientToken，如果为null，则随机生成一个
 	 * @return 新的token
 	 */
-	Token createToken(String account, String clientToken);
+	Token createToken(String account, UUID selectedProfile, String clientToken);
 
 	/**
 	 * 创建一个token。
 	 * <p>
-	 * 该方法同{@link #createToken(String, String)}，但clientToken为随机生成的。
+	 * 该方法同{@link #createToken(String, UUID,String)}，但clientToken为随机生成的。
 	 * 
 	 * @param account 账号
+	 * @param selectedProfile 选中的profile
 	 * @return token
 	 */
-	Token createToken(String account);
+	Token createToken(String account, UUID selectedProfile);
 
 	/**
 	 * 吊销token。

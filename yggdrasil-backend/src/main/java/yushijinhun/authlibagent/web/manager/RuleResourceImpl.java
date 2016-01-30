@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.model.AccessPolicy;
 import yushijinhun.authlibagent.model.AccessRule;
@@ -22,7 +23,7 @@ public class RuleResourceImpl implements RuleResource {
 	@Autowired
 	protected SessionFactory sessionFactory;
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public Collection<AccessRule> getRules(AccessPolicy policy) {
 		Session session = sessionFactory.getCurrentSession();
@@ -55,7 +56,7 @@ public class RuleResourceImpl implements RuleResource {
 		return rule;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AccessRule getRule(String host) {
 		return lookupRule(host);

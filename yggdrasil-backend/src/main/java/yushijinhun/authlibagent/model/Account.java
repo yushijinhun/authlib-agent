@@ -9,9 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -25,7 +23,6 @@ public class Account implements Serializable {
 	private String password;
 	private boolean banned;
 	private Set<GameProfile> profiles = new HashSet<>();
-	private GameProfile selectedProfile;
 
 	// third-part tokens
 	private String twitchToken;
@@ -65,16 +62,6 @@ public class Account implements Serializable {
 
 	public void setProfiles(Set<GameProfile> profiles) {
 		this.profiles = profiles;
-	}
-
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn
-	public GameProfile getSelectedProfile() {
-		return selectedProfile;
-	}
-
-	public void setSelectedProfile(GameProfile selectedProfile) {
-		this.selectedProfile = selectedProfile;
 	}
 
 	public String getTwitchToken() {

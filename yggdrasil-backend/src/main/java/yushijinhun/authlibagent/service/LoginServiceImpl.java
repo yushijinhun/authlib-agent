@@ -1,14 +1,17 @@
 package yushijinhun.authlibagent.service;
 
 import java.util.Objects;
+import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.Account;
 import yushijinhun.authlibagent.model.Token;
+import yushijinhun.authlibagent.util.TokenAuthResult;
 import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
 
@@ -28,7 +31,7 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
 		if (username == null || password == null) {
@@ -47,34 +50,34 @@ public class LoginServiceImpl implements LoginService {
 		return account;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public Account loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException {
+	public TokenAuthResult loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException {
 		if (accessToken == null || clientToken == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 		return loginWithToken(verifyToken(accessToken, clientToken));
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public Account loginWithToken(String accessToken) throws ForbiddenOperationException {
+	public TokenAuthResult loginWithToken(String accessToken) throws ForbiddenOperationException {
 		if (accessToken == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 		return loginWithToken(verifyToken(accessToken));
 	}
 
-	private Account loginWithToken(Token token) throws ForbiddenOperationException {
+	private TokenAuthResult loginWithToken(Token token) throws ForbiddenOperationException {
 		Account account = sessionFactory.getCurrentSession().get(Account.class, token.getOwner());
 		if (account == null || account.isBanned()) {
 			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 		}
-		return account;
+		return new TokenAuthResult(account, token);
 	}
 
 	@Override
-	public Token createToken(String account, String clientToken) {
+	public Token createToken(String account, UUID selectedProfile, String clientToken) {
 		Objects.requireNonNull(account);
 		if (clientToken == null) {
 			clientToken = randomToken();
@@ -84,14 +87,15 @@ public class LoginServiceImpl implements LoginService {
 		token.setAccessToken(randomToken());
 		token.setClientToken(clientToken);
 		token.setOwner(account);
+		token.setSelectedProfile(selectedProfile);
 
 		tokenRepo.put(token);
 		return token;
 	}
 
 	@Override
-	public Token createToken(String account) {
-		return createToken(account, null);
+	public Token createToken(String account, UUID selectedProfile) {
+		return createToken(account, selectedProfile, null);
 	}
 
 	@Override

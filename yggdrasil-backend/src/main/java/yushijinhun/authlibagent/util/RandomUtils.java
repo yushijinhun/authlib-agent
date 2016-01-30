@@ -1,21 +1,12 @@
 package yushijinhun.authlibagent.util;
 
 import static yushijinhun.authlibagent.util.HexUtils.*;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.UUID;
 
 public class RandomUtils {
 
-	private static SecureRandom rnd;
-
-	static {
-		try {
-			rnd = SecureRandom.getInstance("NativePRNGNonBlocking");
-		} catch (NoSuchAlgorithmException e) {
-			rnd = new SecureRandom();
-		}
-	}
+	private static SecureRandom rnd = new SecureRandom();
 
 	public static SecureRandom getSecureRandom() {
 		return rnd;
