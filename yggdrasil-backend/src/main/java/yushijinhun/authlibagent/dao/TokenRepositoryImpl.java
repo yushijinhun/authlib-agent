@@ -83,6 +83,12 @@ public class TokenRepositoryImpl implements TokenRepository {
 	@Value("#{config['expire.token.time']}")
 	private long tokenExpireTime;
 
+	@Value("#{config['security.maxTokensPerAccounts']}")
+	private int maxTokensPerAccounts;
+
+	@Value("#{config['security.extraTokensToDelete']}")
+	private int extraTokensToDelete;
+
 	private MessageListener expiredListener;
 
 	@PostConstruct
@@ -127,6 +133,9 @@ public class TokenRepositoryImpl implements TokenRepository {
 
 	@Override
 	public Token get(String accessToken) {
+		// notify the accessToken to be expired
+		valOps.get(keyExpire(accessToken));
+
 		Map<String, String> values = hashOps.entries(keyAccessToken(accessToken));
 		if (values == null || values.isEmpty()) {
 			return null;
@@ -155,17 +164,29 @@ public class TokenRepositoryImpl implements TokenRepository {
 		String owner = token.getOwner();
 
 		String expireKey = keyExpire(accessToken);
+		String accountKey = keyAccount(owner);
 
 		Map<String, String> values = new HashMap<>();
 		values.put(KEY_CLIENT_TOKEN, clientToken);
 		values.put(KEY_OWNER, owner);
+
+		int accountTokens = setOps.size(accountKey).intValue();
+		if (accountTokens > maxTokensPerAccounts) {
+			// token limit reached
+
+			// remove $extraTokensToDelete more tokens every time,
+			int tokensToDelete = accountTokens - maxTokensPerAccounts + extraTokensToDelete;
+			for (String expiredAccessToken : setOps.randomMembers(accountKey, tokensToDelete)) {
+				delete(expiredAccessToken);
+			}
+		}
 
 		// add token
 		hashOps.putAll(keyAccessToken(accessToken), values);
 
 		// link
 		setOps.add(keyClientToken(clientToken), accessToken);
-		setOps.add(keyAccount(owner), accessToken);
+		setOps.add(accountKey, accessToken);
 		valOps.set(expireKey, "");
 
 		template.expire(expireKey, tokenExpireTime, TimeUnit.SECONDS);

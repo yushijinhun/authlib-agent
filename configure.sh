@@ -87,6 +87,14 @@ export BACKEND_REDIS_MAX_WAIT_MILLIS=1000
 # jedis链接池的testOnBorrow
 export BACKEND_REDIS_TEST_ON_BORROW=true
 
+# 每个账户所同时最多能有的token个数.
+# 如果申请token时发现已经达到该限制,
+# 则会吊销过去的token.
+export BACKEND_MAX_TOKENS_PER_ACCOUNT=10
+
+# 每次用户token达到限制时, 要多吊销的token个数
+export BACKEND_EXTRA_TOKENS_TO_DELETE=3
+
 
 ## 其它设置
 

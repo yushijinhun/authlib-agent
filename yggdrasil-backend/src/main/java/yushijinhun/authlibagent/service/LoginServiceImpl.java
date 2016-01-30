@@ -28,7 +28,7 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
 		if (username == null || password == null) {
@@ -47,7 +47,7 @@ public class LoginServiceImpl implements LoginService {
 		return account;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public Account loginWithToken(String accessToken, String clientToken) throws ForbiddenOperationException {
 		if (accessToken == null || clientToken == null) {
@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
 		return loginWithToken(verifyToken(accessToken, clientToken));
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public Account loginWithToken(String accessToken) throws ForbiddenOperationException {
 		if (accessToken == null) {

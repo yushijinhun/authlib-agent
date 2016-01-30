@@ -119,32 +119,28 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		return createAuthenticateResponse(account, token, includeProfilesInRefresh);
 	}
 
-	@Transactional
 	@Override
 	public boolean validate(String accessToken, String clientToken) {
 		return loginService.isTokenAvailable(accessToken, clientToken);
 	}
 
-	@Transactional
 	@Override
 	public boolean validate(String accessToken) {
 		return loginService.isTokenAvailable(accessToken);
 	}
 
-	@Transactional
 	@Override
 	public void invalidate(String accessToken, String clientToken) throws ForbiddenOperationException {
 		loginService.revokeToken(accessToken, clientToken);
 	}
 
-	@Transactional
 	@Override
 	public void signout(String username, String password) throws ForbiddenOperationException {
 		loginService.loginWithPassword(username, password);
 		loginService.revokeAllTokens(username);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public void joinServer(String accessToken, UUID profileUUID, String serverid) throws ForbiddenOperationException {
 		Session session = sessionFactory.getCurrentSession();
@@ -162,7 +158,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		serveridRepo.createServerId(serverid, profileUUID);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public GameProfileResponse hasJoinServer(String playername, String serverid) {
 		Session session = sessionFactory.getCurrentSession();
@@ -179,14 +175,14 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		return null;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public GameProfileResponse lookupProfile(UUID profileUUID) {
 		Session session = sessionFactory.getCurrentSession();
 		return createGameProfileResponse(session.get(GameProfile.class, profileUUID.toString()), true);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public GameProfileResponse lookupProfile(String name) {
 		Session session = sessionFactory.getCurrentSession();
@@ -199,7 +195,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		}
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public AccessPolicy getServerAccessPolicy(String host) {
 		Session session = sessionFactory.getCurrentSession();
