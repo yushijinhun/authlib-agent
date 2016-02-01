@@ -17,7 +17,7 @@ public class AuthenticateServlet extends YggdrasilPostServlet {
 		String clientToken = req.optString("clientToken", null);
 
 		AuthenticateResponse auth = backend.authenticate(username, password, clientToken);
-		return serializer.serializeAuthenticateResponse(auth);
+		return serializer.serializeAuthenticateResponse(auth, true);
 	}
 
 }

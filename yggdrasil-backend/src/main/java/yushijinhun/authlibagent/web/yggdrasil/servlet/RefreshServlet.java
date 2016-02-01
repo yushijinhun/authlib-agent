@@ -5,12 +5,16 @@ import java.util.UUID;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
 
 @WebServlet("/yggdrasil/refresh")
 public class RefreshServlet extends YggdrasilPostServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Value("#{config['feature.includeProfilesInRefresh']}")
+	private boolean includeProfilesInRefresh;
 
 	@Override
 	protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception {
@@ -29,7 +33,7 @@ public class RefreshServlet extends YggdrasilPostServlet {
 			auth = backend.selectProfile(accessToken, clientToken, newProfile);
 		}
 
-		return serializer.serializeAuthenticateResponse(auth);
+		return serializer.serializeAuthenticateResponse(auth, includeProfilesInRefresh);
 	}
 
 }

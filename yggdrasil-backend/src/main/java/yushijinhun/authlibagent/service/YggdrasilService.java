@@ -2,8 +2,8 @@ package yushijinhun.authlibagent.service;
 
 import java.util.UUID;
 import yushijinhun.authlibagent.model.AccessPolicy;
+import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
-import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 
 public interface YggdrasilService {
 
@@ -23,11 +23,11 @@ public interface YggdrasilService {
 
 	void joinServer(String accessToken, UUID profile, String serverid) throws ForbiddenOperationException;
 
-	GameProfileResponse hasJoinServer(String playername, String serverid);
+	GameProfile hasJoinServer(String playername, String serverid);
 
-	GameProfileResponse lookupProfile(UUID profile);
+	GameProfile lookupProfile(UUID profile);
 
-	GameProfileResponse lookupProfile(String name);
+	GameProfile lookupProfile(String name);
 
 	AccessPolicy getServerAccessPolicy(String host);
 

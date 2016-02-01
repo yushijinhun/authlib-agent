@@ -4,8 +4,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.model.AccessPolicy;
+import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.service.ForbiddenOperationException;
-import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 
 @WebServlet("/yggdrasil/hasjoinserver")
 public class HasJoinServerServlet extends YggdrasilGetServlet {
@@ -22,7 +22,7 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 			throw new ForbiddenOperationException("Blocked host");
 		}
 
-		GameProfileResponse profile = backend.hasJoinServer(username, serverId);
+		GameProfile profile = backend.hasJoinServer(username, serverId);
 
 		if (profile == null) {
 			return null;

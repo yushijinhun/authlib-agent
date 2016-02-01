@@ -2,6 +2,8 @@ package yushijinhun.authlibagent.web.yggdrasil;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
+import yushijinhun.authlibagent.model.GameProfile;
 
 public class AuthenticateResponse implements Serializable {
 
@@ -9,12 +11,12 @@ public class AuthenticateResponse implements Serializable {
 
 	private String clientToken;
 	private String accessToken;
-	private GameProfileResponse selectedProfile;
-	private GameProfileResponse[] profiles;
+	private GameProfile selectedProfile;
+	private Set<GameProfile> profiles;
 	private String userid;
 	private Map<String, String> properties;
 
-	public AuthenticateResponse(String clientToken, String accessToken, GameProfileResponse selectedProfile, GameProfileResponse[] profiles, String userid, Map<String, String> properties) {
+	public AuthenticateResponse(String clientToken, String accessToken, GameProfile selectedProfile, Set<GameProfile> profiles, String userid, Map<String, String> properties) {
 		this.clientToken = clientToken;
 		this.accessToken = accessToken;
 		this.selectedProfile = selectedProfile;
@@ -39,19 +41,19 @@ public class AuthenticateResponse implements Serializable {
 		this.accessToken = accessToken;
 	}
 
-	public GameProfileResponse getSelectedProfile() {
+	public GameProfile getSelectedProfile() {
 		return selectedProfile;
 	}
 
-	public void setSelectedProfile(GameProfileResponse selectedProfile) {
+	public void setSelectedProfile(GameProfile selectedProfile) {
 		this.selectedProfile = selectedProfile;
 	}
 
-	public GameProfileResponse[] getProfiles() {
+	public Set<GameProfile> getProfiles() {
 		return profiles;
 	}
 
-	public void setProfiles(GameProfileResponse[] profiles) {
+	public void setProfiles(Set<GameProfile> profiles) {
 		this.profiles = profiles;
 	}
 

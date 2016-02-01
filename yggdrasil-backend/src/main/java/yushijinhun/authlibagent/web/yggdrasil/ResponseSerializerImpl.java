@@ -1,6 +1,5 @@
 package yushijinhun.authlibagent.web.yggdrasil;
 
-import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import yushijinhun.authlibagent.model.PlayerTexture;
+import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.service.SignatureService;
 
 @Component
@@ -53,9 +52,9 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 	}
 
 	@Override
-	public JSONObject serializeGameProfile(GameProfileResponse profile, boolean withProperties) {
+	public JSONObject serializeGameProfile(GameProfile profile, boolean withProperties) {
 		JSONObject json = new JSONObject();
-		json.put("id", unsign(profile.getUUID()));
+		json.put("id", profile.getUuid());
 		json.put("name", profile.getName());
 
 		if (withProperties) {
@@ -65,7 +64,7 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 		return json;
 	}
 
-	private Map<String, String> getProfileProperties(GameProfileResponse profile) {
+	private Map<String, String> getProfileProperties(GameProfile profile) {
 		Map<String, String> properties = new HashMap<>();
 		try {
 			properties.put("textures", Base64.getEncoder().encodeToString(toTexturePayload(profile).toString().getBytes("UTF-8")));
@@ -75,22 +74,21 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 		return properties;
 	}
 
-	private JSONObject toTexturePayload(GameProfileResponse profile) {
+	private JSONObject toTexturePayload(GameProfile profile) {
 		JSONObject payload = new JSONObject();
 		payload.put("timestamp", System.currentTimeMillis());
-		payload.put("profileId", unsign(profile.getUUID()));
+		payload.put("profileId", profile.getUuid());
 		payload.put("profileName", profile.getName());
 		payload.put("isPublic", true);
 
 		JSONObject textureEntries = new JSONObject();
-		PlayerTexture texture = profile.getTexture();
-		Map<String, String> textureProperties = toTextureProperties(texture);
-		if (texture.getSkin() != null)
-			textureEntries.put("SKIN", toTextureEntry(texture.getSkin(), textureProperties));
-		if (texture.getCape() != null)
-			textureEntries.put("CAPE", toTextureEntry(texture.getCape(), textureProperties));
-		if (texture.getElytra() != null)
-			textureEntries.put("ELYTRA", toTextureEntry(texture.getElytra(), textureProperties));
+		Map<String, String> textureProperties = toTextureProperties(profile);
+		if (profile.getSkin() != null)
+			textureEntries.put("SKIN", toTextureEntry(profile.getSkin(), textureProperties));
+		if (profile.getCape() != null)
+			textureEntries.put("CAPE", toTextureEntry(profile.getCape(), textureProperties));
+		if (profile.getElytra() != null)
+			textureEntries.put("ELYTRA", toTextureEntry(profile.getElytra(), textureProperties));
 
 		payload.put("textures", textureEntries);
 		return payload;
@@ -103,14 +101,14 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 		return entry;
 	}
 
-	private Map<String, String> toTextureProperties(PlayerTexture texture) {
+	private Map<String, String> toTextureProperties(GameProfile texture) {
 		Map<String, String> properties = new HashMap<>();
-		properties.put("model", texture.getModel().getModelName());
+		properties.put("model", texture.getTextureModel().getModelName());
 		return properties;
 	}
 
 	@Override
-	public JSONObject serializeAuthenticateResponse(AuthenticateResponse auth) {
+	public JSONObject serializeAuthenticateResponse(AuthenticateResponse auth, boolean withProfiles) {
 		JSONObject resp = new JSONObject();
 		resp.put("accessToken", auth.getAccessToken());
 		resp.put("clientToken", auth.getClientToken());
@@ -119,9 +117,9 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 			resp.put("selectedProfile", serializeGameProfile(auth.getSelectedProfile(), false));
 		}
 
-		if (auth.getProfiles() != null) {
+		if (withProfiles && auth.getProfiles() != null) {
 			JSONArray profilesResp = new JSONArray();
-			for (GameProfileResponse profile : auth.getProfiles()) {
+			for (GameProfile profile : auth.getProfiles()) {
 				profilesResp.put(serializeGameProfile(profile, false));
 			}
 			resp.put("availableProfiles", profilesResp);

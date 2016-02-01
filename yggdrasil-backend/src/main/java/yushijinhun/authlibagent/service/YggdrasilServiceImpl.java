@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,9 +21,7 @@ import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.util.TokenAuthResult;
 import yushijinhun.authlibagent.web.yggdrasil.AuthenticateResponse;
-import yushijinhun.authlibagent.web.yggdrasil.GameProfileResponse;
 import static org.hibernate.criterion.Restrictions.eq;
-import static yushijinhun.authlibagent.util.UUIDUtils.toUUID;
 import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
 
 @Component
@@ -49,9 +46,6 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Value("#{config['feature.allowSelectingProfile']}")
 	private boolean allowSelectingProfile;
 
-	@Value("#{config['feature.includeProfilesInRefresh']}")
-	private boolean includeProfilesInRefresh;
-
 	@Value("#{config['feature.autoSelectedUniqueProfile']}")
 	private boolean autoSelectedUniqueProfile;
 
@@ -73,7 +67,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		}
 
 		Token token = loginService.createToken(username, selectedProfileUUID, clientToken);
-		return createAuthenticateResponse(account, token, selectedProfile, true);
+		return createAuthenticateResponse(account, token, selectedProfile);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -114,7 +108,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 		Account account = result.getAccount();
 		Token token = loginService.createToken(account.getId(), selectedProfileUUID, clientToken);
-		return createAuthenticateResponse(account, token, selectedProfile, includeProfilesInRefresh);
+		return createAuthenticateResponse(account, token, selectedProfile);
 	}
 
 	@Override
@@ -158,7 +152,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public GameProfileResponse hasJoinServer(String playername, String serverid) {
+	public GameProfile hasJoinServer(String playername, String serverid) {
 		Session session = sessionFactory.getCurrentSession();
 
 		UUID profileUUID = serveridRepo.getOwner(serverid);
@@ -166,7 +160,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			GameProfile profile = session.get(GameProfile.class, profileUUID.toString());
 			if (profile != null && playername.equals(profile.getName())) {
 				serveridRepo.deleteServerId(serverid);
-				return createGameProfileResponse(profile, true);
+				return profile;
 			}
 		}
 
@@ -175,21 +169,21 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public GameProfileResponse lookupProfile(UUID profileUUID) {
+	public GameProfile lookupProfile(UUID profileUUID) {
 		Session session = sessionFactory.getCurrentSession();
-		return createGameProfileResponse(session.get(GameProfile.class, profileUUID.toString()), true);
+		return session.get(GameProfile.class, profileUUID.toString());
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public GameProfileResponse lookupProfile(String name) {
+	public GameProfile lookupProfile(String name) {
 		Session session = sessionFactory.getCurrentSession();
 		@SuppressWarnings("unchecked")
 		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).setCacheable(true).list();
 		if (profiles.isEmpty()) {
 			return null;
 		} else {
-			return createGameProfileResponse(profiles.get(0), true);
+			return profiles.get(0);
 		}
 	}
 
@@ -207,22 +201,6 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		} else {
 			return rule.getPolicy();
 		}
-	}
-
-	private GameProfileResponse createGameProfileResponse(GameProfile profile, boolean withTexture) {
-		if (profile == null) {
-			return null;
-		}
-		return new GameProfileResponse(toUUID(profile.getUuid()), profile.getName(), withTexture ? profile.getTexture() : null);
-	}
-
-	private GameProfileResponse[] createGameProfileResponses(Set<GameProfile> profiles, boolean withTexture) {
-		GameProfileResponse[] responses = new GameProfileResponse[profiles.size()];
-		int index = 0;
-		for (GameProfile profile : profiles) {
-			responses[index++] = createGameProfileResponse(profile, withTexture);
-		}
-		return responses;
 	}
 
 	private String getUserid(Account account) {
@@ -244,12 +222,10 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		return properties;
 	}
 
-	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, GameProfile selectedProfileObj, boolean withProfiles) {
-		GameProfileResponse selectedProfile = createGameProfileResponse(selectedProfileObj, false);
-		GameProfileResponse[] profiles = withProfiles ? createGameProfileResponses(account.getProfiles(), false) : null;
+	private AuthenticateResponse createAuthenticateResponse(Account account, Token token, GameProfile selectedProfileObj) {
 		String userid = getUserid(account);
 		Map<String, String> properties = getUserProperties(account);
-		return new AuthenticateResponse(token.getClientToken(), token.getAccessToken(), selectedProfile, profiles, userid, properties);
+		return new AuthenticateResponse(token.getClientToken(), token.getAccessToken(), selectedProfileObj, account.getProfiles(), userid, properties);
 	}
 
 }

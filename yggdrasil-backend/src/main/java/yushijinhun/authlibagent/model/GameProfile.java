@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -117,19 +116,6 @@ public class GameProfile implements Serializable {
 			return Objects.equals(getUuid(), another.getUuid());
 		}
 		return false;
-	}
-
-	@Transient
-	public PlayerTexture getTexture() {
-		return new PlayerTexture(textureModel, skin, cape, elytra);
-	}
-
-	@Transient
-	public void setTexture(PlayerTexture texture) {
-		textureModel = texture.getModel();
-		skin = texture.getSkin();
-		cape = texture.getCape();
-		elytra = texture.getElytra();
 	}
 
 }
