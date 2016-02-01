@@ -15,7 +15,7 @@ public enum TextureModel {
 	/**
 	 * Alex（细胳膊）皮肤
 	 */
-	ALEX("alex");
+	ALEX("slim");
 
 	private String modelName;
 

@@ -86,9 +86,9 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 		if (profile.getSkin() != null)
 			textureEntries.put("SKIN", toTextureEntry(profile.getSkin(), textureProperties));
 		if (profile.getCape() != null)
-			textureEntries.put("CAPE", toTextureEntry(profile.getCape(), textureProperties));
+			textureEntries.put("CAPE", toTextureEntry(profile.getCape(), null));
 		if (profile.getElytra() != null)
-			textureEntries.put("ELYTRA", toTextureEntry(profile.getElytra(), textureProperties));
+			textureEntries.put("ELYTRA", toTextureEntry(profile.getElytra(), null));
 
 		payload.put("textures", textureEntries);
 		return payload;
@@ -97,7 +97,8 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 	private JSONObject toTextureEntry(String url, Map<String, String> properties) {
 		JSONObject entry = new JSONObject();
 		entry.put("url", url);
-		entry.put("metadata", properties);
+		if (properties != null)
+			entry.put("metadata", properties);
 		return entry;
 	}
 
