@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AuthlibAgent {
@@ -16,6 +17,7 @@ public class AuthlibAgent {
 
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
+			LOGGER.addHandler(new FileHandler("authlibagent.log"));
 			init(instrumentation);
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
@@ -26,6 +28,7 @@ public class AuthlibAgent {
 
 	private static void init(Instrumentation instrumentation) {
 		Properties properties = readProperties();
+		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		byte[] yggdrasilPublickey = readPublicKey();
 		String apiYggdrasilAuthenticate = properties.getProperty("transform.yggdrasil.authenticate");
 		String apiYggdrasilRefresh = properties.getProperty("transform.yggdrasil.refresh");
@@ -36,7 +39,6 @@ public class AuthlibAgent {
 		String apiJoinServer = properties.getProperty("transform.session.joinserver");
 		String apiHasJoinServer = properties.getProperty("transform.session.hasjoinserver");
 		String apiProfilesLookup = properties.getProperty("transform.api.profiles");
-		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		String[] skinWhitelist = null;
 		String skinWhitelistRaw = properties.getProperty("transform.skin.whitelistdomains");
 		if (skinWhitelistRaw != null) {
