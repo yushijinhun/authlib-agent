@@ -15,6 +15,7 @@ public class PlayerTexture implements Serializable {
 	private TextureModel model;
 	private String skin;
 	private String cape;
+	private String elytra;
 
 	/**
 	 * 创建一个PlayerTexture。
@@ -22,12 +23,14 @@ public class PlayerTexture implements Serializable {
 	 * @param model 模型类型
 	 * @param skin 皮肤的url，如果没有则为null
 	 * @param cape 披风的url，如果没有则为null
+	 * @param elytra 翅鞘(?)的url, 如果没有则为null
 	 */
-	public PlayerTexture(TextureModel model, String skin, String cape) {
+	public PlayerTexture(TextureModel model, String skin, String cape, String elytra) {
 		Objects.requireNonNull(model);
 		this.model = model;
 		this.skin = skin;
 		this.cape = cape;
+		this.elytra = elytra;
 	}
 
 	/**
@@ -55,6 +58,14 @@ public class PlayerTexture implements Serializable {
 	 */
 	public String getCape() {
 		return cape;
+	}
+
+	public String getElytra() {
+		return elytra;
+	}
+
+	public void setElytra(String elytra) {
+		this.elytra = elytra;
 	}
 
 	@Override

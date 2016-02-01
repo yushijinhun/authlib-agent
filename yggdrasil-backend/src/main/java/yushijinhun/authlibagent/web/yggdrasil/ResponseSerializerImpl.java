@@ -89,6 +89,8 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 			textureEntries.put("SKIN", toTextureEntry(texture.getSkin(), textureProperties));
 		if (texture.getCape() != null)
 			textureEntries.put("CAPE", toTextureEntry(texture.getCape(), textureProperties));
+		if (texture.getElytra() != null)
+			textureEntries.put("ELYTRA", toTextureEntry(texture.getElytra(), textureProperties));
 
 		payload.put("textures", textureEntries);
 		return payload;

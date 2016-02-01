@@ -27,6 +27,7 @@ public class GameProfile implements Serializable {
 	private boolean banned = false;
 	private String skin = null;
 	private String cape = null;
+	private String elytra = null;
 	private TextureModel textureModel = TextureModel.STEVE;
 
 	@Id
@@ -83,6 +84,14 @@ public class GameProfile implements Serializable {
 		this.cape = cape;
 	}
 
+	public String getElytra() {
+		return elytra;
+	}
+
+	public void setElytra(String elytra) {
+		this.elytra = elytra;
+	}
+
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	public TextureModel getTextureModel() {
@@ -112,7 +121,7 @@ public class GameProfile implements Serializable {
 
 	@Transient
 	public PlayerTexture getTexture() {
-		return new PlayerTexture(textureModel, skin, cape);
+		return new PlayerTexture(textureModel, skin, cape, elytra);
 	}
 
 	@Transient
@@ -120,6 +129,7 @@ public class GameProfile implements Serializable {
 		textureModel = texture.getModel();
 		skin = texture.getSkin();
 		cape = texture.getCape();
+		elytra = texture.getElytra();
 	}
 
 }
