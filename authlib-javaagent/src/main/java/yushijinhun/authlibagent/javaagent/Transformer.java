@@ -105,7 +105,7 @@ public class Transformer implements ClassFileTransformer {
 				LOGGER.info("transform unit " + unit);
 				ClassWriter classwriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 				ClassVisitor modifier = unit.transform(classwriter);
-				classreader.accept(modifier, ClassReader.SKIP_DEBUG);
+				classreader.accept(modifier, 0);
 				currentClass = classwriter.toByteArray();
 				classreader = new ClassReader(currentClass);
 				changed = true;
