@@ -21,7 +21,7 @@ import yushijinhun.authlibagent.util.ResourceUtils;
 public interface ProfileResource {
 
 	@GET
-	Collection<String> getProfiles(@QueryParam("name") String name, @QueryParam("owner") String owner, @QueryParam("banned") Boolean banned, @QueryParam("skin") String skin, @QueryParam("cape") String cape, @QueryParam("model") TextureModel model, @QueryParam("serverId") String serverId);
+	Collection<String> getProfiles(@QueryParam("name") String name, @QueryParam("owner") String owner, @QueryParam("banned") Boolean banned, @QueryParam("skin") String skin, @QueryParam("cape") String cape, @QueryParam("elytra") String elytra, @QueryParam("model") TextureModel model, @QueryParam("serverId") String serverId);
 
 	@POST
 	ProfileInfo createProfile(ProfileInfo profile);

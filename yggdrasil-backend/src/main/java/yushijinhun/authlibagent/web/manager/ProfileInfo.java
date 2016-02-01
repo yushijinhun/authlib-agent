@@ -26,6 +26,11 @@ public class ProfileInfo implements Serializable {
 	 */
 	private String cape;
 
+	/**
+	 * Null by default, empty for no elytra
+	 */
+	private String elytra;
+
 	private TextureModel model;
 
 	@XmlElement
@@ -80,6 +85,15 @@ public class ProfileInfo implements Serializable {
 
 	public void setCape(String cape) {
 		this.cape = cape;
+	}
+
+	@XmlElement
+	public String getElytra() {
+		return elytra;
+	}
+
+	public void setElytra(String elytra) {
+		this.elytra = elytra;
 	}
 
 	@XmlElement

@@ -38,7 +38,7 @@ public class ProfileResourceImpl implements ProfileResource {
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, TextureModel model, String serverId) {
+	public Collection<String> getProfiles(String name, String owner, Boolean banned, String skin, String cape, String elytra, TextureModel model, String serverId) {
 		if (name != null && name.isEmpty()) {
 			throw new BadRequestException("name is empty");
 		}
@@ -71,6 +71,10 @@ public class ProfileResourceImpl implements ProfileResource {
 				conjunction.add(eqOrIsNull("cape", emptyToNull(cape)));
 			}
 
+			if (elytra != null) {
+				conjunction.add(eqOrIsNull("elytra", emptyToNull(elytra)));
+			}
+
 			if (model != null) {
 				conjunction.add(eq("textureModel", model));
 			}
@@ -89,6 +93,7 @@ public class ProfileResourceImpl implements ProfileResource {
 						(banned == null || banned.equals(profile.isBanned())) &&
 						(skin == null || Objects.equals(emptyToNull(skin), profile.getSkin())) &&
 						(cape == null || Objects.equals(emptyToNull(cape), profile.getCape())) &&
+						(elytra == null || Objects.equals(emptyToNull(elytra), profile.getElytra())) &&
 						(model == null || model.equals(profile.getTextureModel()))) {
 					return Collections.singleton(profile.getUuid());
 				}
@@ -179,6 +184,7 @@ public class ProfileResourceImpl implements ProfileResource {
 		info.setBanned(profile.isBanned());
 		info.setSkin(nullToEmpty(profile.getSkin()));
 		info.setCape(nullToEmpty(profile.getCape()));
+		info.setElytra(nullToEmpty(profile.getElytra()));
 		info.setModel(profile.getTextureModel());
 		return info;
 	}
@@ -243,6 +249,10 @@ public class ProfileResourceImpl implements ProfileResource {
 
 		if (info.getCape() != null) {
 			profile.setCape(emptyToNull(info.getCape()));
+		}
+
+		if (info.getElytra() != null) {
+			profile.setElytra(emptyToNull(info.getElytra()));
 		}
 
 		if (info.getModel() != null) {
