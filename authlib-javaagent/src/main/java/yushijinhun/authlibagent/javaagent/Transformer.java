@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -18,8 +19,6 @@ import org.objectweb.asm.ClassWriter;
 import yushijinhun.authlibagent.javaagent.TransformUnit.TransformCheckCallback;
 
 public class Transformer implements ClassFileTransformer {
-
-	private static final Logger LOGGER = Logger.getLogger("authlibagent.transformer");
 
 	private static class TransformCheckCallbackImpl implements TransformCheckCallback {
 
@@ -31,6 +30,8 @@ public class Transformer implements ClassFileTransformer {
 		}
 
 	}
+
+	protected final Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
 	private Map<String, Collection<TransformUnit>> units = new ConcurrentHashMap<>();
 	private boolean debugMode;
@@ -49,8 +50,17 @@ public class Transformer implements ClassFileTransformer {
 		}
 	}
 
-	public void setDebugMode(boolean debugMode) {
-		this.debugMode = debugMode;
+	public synchronized void debugOn(){
+		if (debugMode){
+			return;
+		}
+		debugMode=true;
+		try {
+			logger.addHandler(new FileHandler("authlibagent.log"));
+		} catch (SecurityException | IOException e) {
+			logger.severe("failed to add file handler" + e);
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -59,10 +69,10 @@ public class Transformer implements ClassFileTransformer {
 			try {
 				Collection<TransformUnit> classunits = units.get(className);
 				if (classunits != null) {
-					LOGGER.info("try to transform " + className);
+					logger.info("try to transform " + className);
 					byte[] output = transformClass(classunits, classfileBuffer);
 					if (output != null) {
-						LOGGER.info("transform " + className);
+						logger.info("transform " + className);
 						if (debugMode) {
 							debugSaveModifiedClass(output, className);
 						}
@@ -70,7 +80,7 @@ public class Transformer implements ClassFileTransformer {
 					}
 				}
 			} catch (Throwable e) {
-				LOGGER.info("failed to transform " + className);
+				logger.severe("failed to transform " + className);
 				e.printStackTrace();
 			}
 		}
@@ -82,7 +92,7 @@ public class Transformer implements ClassFileTransformer {
 		try (OutputStream out = new FileOutputStream(className + "_modified.class")) {
 			out.write(classBuffer);
 		} catch (IOException e) {
-			LOGGER.warning("failed to save modified class " + className + "　: " + e);
+			logger.warning("failed to save modified class " + className + "　: " + e);
 			e.printStackTrace();
 		}
 	}
@@ -102,7 +112,7 @@ public class Transformer implements ClassFileTransformer {
 				classreader.accept(checker, ClassReader.SKIP_DEBUG);
 			}
 			if (callback.isAllowed) {
-				LOGGER.info("transform unit " + unit);
+				logger.info("transform unit " + unit);
 				ClassWriter classwriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 				ClassVisitor modifier = unit.transform(classwriter);
 				classreader.accept(modifier, 0);

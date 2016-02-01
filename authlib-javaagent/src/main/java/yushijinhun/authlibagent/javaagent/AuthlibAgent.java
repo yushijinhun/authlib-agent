@@ -7,17 +7,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AuthlibAgent {
 
-	private static final Logger LOGGER = Logger.getLogger("authlibagent.setup");
+	private static final Logger LOGGER = Logger.getLogger(AuthlibAgent.class.getCanonicalName());
 	private static final int MAX_KEY_LENGTH = Short.MAX_VALUE;
 
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
-			LOGGER.addHandler(new FileHandler("authlibagent.log"));
 			init(instrumentation);
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
@@ -46,7 +44,9 @@ public class AuthlibAgent {
 		}
 
 		AuthlibTransformer transformer = new AuthlibTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
-		transformer.setDebugMode(debugMode);
+		if (debugMode) {
+			transformer.debugOn();
+		}
 
 		instrumentation.addTransformer(transformer);
 	}
