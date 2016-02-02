@@ -16,7 +16,7 @@ public class AuthlibAgent {
 
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
-			init(instrumentation);
+			init(arg, instrumentation);
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
 			LOGGER.info("failed to initialize transformer: " + e);
@@ -24,7 +24,7 @@ public class AuthlibAgent {
 		}
 	}
 
-	private static void init(Instrumentation instrumentation) {
+	private static void init(String arg, Instrumentation instrumentation) {
 		Properties properties = readProperties();
 		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		byte[] yggdrasilPublickey = readPublicKey();
@@ -43,7 +43,13 @@ public class AuthlibAgent {
 			skinWhitelist = skinWhitelistRaw.split("\\|");
 		}
 
-		AuthlibTransformer transformer = new AuthlibTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
+		AuthlibTransformer transformer;
+		if ("exhaustive".equals(arg)) {
+			transformer = new ExhaustiveTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
+		} else {
+			transformer = new AuthlibTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
+		}
+
 		if (debugMode) {
 			transformer.debugOn();
 		}

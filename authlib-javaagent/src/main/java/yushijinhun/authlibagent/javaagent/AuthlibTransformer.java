@@ -2,17 +2,17 @@ package yushijinhun.authlibagent.javaagent;
 
 public class AuthlibTransformer extends Transformer {
 
-	private String apiYggdrasilAuthenticate;
-	private String apiYggdrasilRefresh;
-	private String apiYggdrasilValidate;
-	private String apiYgggdrasilInvalidate;
-	private String apiYggdarsilSignout;
-	private String apiFillGameProfile;
-	private String apiJoinServer;
-	private String apiHasJoinServer;
-	private String apiProfilesLookup;
-	private String[] skinWhitelist;
-	private byte[] yggdrasilPublickey;
+	protected String apiYggdrasilAuthenticate;
+	protected String apiYggdrasilRefresh;
+	protected String apiYggdrasilValidate;
+	protected String apiYgggdrasilInvalidate;
+	protected String apiYggdarsilSignout;
+	protected String apiFillGameProfile;
+	protected String apiJoinServer;
+	protected String apiHasJoinServer;
+	protected String apiProfilesLookup;
+	protected String[] skinWhitelist;
+	protected byte[] yggdrasilPublickey;
 
 	public AuthlibTransformer(String apiYggdrasilAuthenticate, String apiYggdrasilRefresh, String apiYggdrasilValidate, String apiYgggdrasilInvalidate, String apiYggdarsilSignout, String apiFillGameProfile, String apiJoinServer, String apiHasJoinServer, String apiProfilesLookup, String[] skinWhitelist, byte[] yggdrasilPublickey) {
 		this.apiYggdrasilAuthenticate = apiYggdrasilAuthenticate;
@@ -30,7 +30,7 @@ public class AuthlibTransformer extends Transformer {
 		setup();
 	}
 
-	private void setup() {
+	protected void setup() {
 		// authlib
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new YggdrasilPublicKeyTransformUnit("yggdrasil_publickey_transformer", yggdrasilPublickey));
 		addTransformUnit("com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService", new LdcTransformUnit("fill_game_profile_transformer", "fillGameProfile", "https://sessionserver.mojang.com/session/minecraft/profile/", apiFillGameProfile));

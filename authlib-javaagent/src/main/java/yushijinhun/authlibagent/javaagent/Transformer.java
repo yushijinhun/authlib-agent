@@ -20,7 +20,7 @@ import yushijinhun.authlibagent.javaagent.TransformUnit.TransformCheckCallback;
 
 public class Transformer implements ClassFileTransformer {
 
-	private static class TransformCheckCallbackImpl implements TransformCheckCallback {
+	protected static class TransformCheckCallbackImpl implements TransformCheckCallback {
 
 		boolean isAllowed = false;
 
@@ -33,8 +33,8 @@ public class Transformer implements ClassFileTransformer {
 
 	protected final Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
-	private Map<String, Collection<TransformUnit>> units = new ConcurrentHashMap<>();
-	private boolean debugMode;
+	protected Map<String, Collection<TransformUnit>> units = new ConcurrentHashMap<>();
+	protected boolean debugMode;
 
 	protected void addTransformUnit(String className, TransformUnit unit) {
 		Objects.requireNonNull(className);
@@ -87,7 +87,7 @@ public class Transformer implements ClassFileTransformer {
 		return null;
 	}
 
-	private void debugSaveModifiedClass(byte[] classBuffer, String className) {
+	protected void debugSaveModifiedClass(byte[] classBuffer, String className) {
 		className = className.replace('/', '.');
 		try (OutputStream out = new FileOutputStream(className + "_modified.class")) {
 			out.write(classBuffer);
@@ -97,7 +97,7 @@ public class Transformer implements ClassFileTransformer {
 		}
 	}
 
-	private byte[] transformClass(Collection<TransformUnit> classunits, byte[] classbuffer) {
+	protected byte[] transformClass(Collection<TransformUnit> classunits, byte[] classbuffer) {
 		if (units == null) {
 			return null;
 		}
