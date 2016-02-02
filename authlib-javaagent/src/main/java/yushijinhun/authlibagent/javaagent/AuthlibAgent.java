@@ -43,8 +43,17 @@ public class AuthlibAgent {
 			skinWhitelist = skinWhitelistRaw.split("\\|");
 		}
 
+		boolean exhaustive = true;
+		if ("+exhaustive".equals(arg)) {
+			exhaustive = true;
+		} else if ("-exhaustive".equals(arg)) {
+			exhaustive = false;
+		} else if (arg != null && !arg.isEmpty()) {
+			LOGGER.warning("Unknown option: " + arg);
+		}
+
 		AuthlibTransformer transformer;
-		if ("exhaustive".equals(arg)) {
+		if (exhaustive) {
 			transformer = new ExhaustiveTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
 		} else {
 			transformer = new AuthlibTransformer(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
