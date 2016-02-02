@@ -6,7 +6,7 @@ source ./configure.sh
 echo Generating RSA key pair...
 ./scripts/generate-key.sh
 cp ./privatekey.der ./yggdrasil-backend/src/main/resources/signature_key.der
-cp ./publickey.der ./authlib-javaagent/src/main/resources/yggdrasil_session_pubkey.der
+cp ./publickey.der ./authlib-javaagent/src/main/resources/new_yggdrasil_session_pubkey.der
 
 echo Writing configurations...
 export AGENT_CONF=./authlib-javaagent/config.properties

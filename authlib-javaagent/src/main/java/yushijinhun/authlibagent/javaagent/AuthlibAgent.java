@@ -64,7 +64,7 @@ public class AuthlibAgent {
 
 	private static byte[] readPublicKey() {
 		byte[] key;
-		try (InputStream in = AuthlibAgent.class.getResourceAsStream("/yggdrasil_session_pubkey.der")) {
+		try (InputStream in = AuthlibAgent.class.getResourceAsStream("/new_yggdrasil_session_pubkey.der")) {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			byte[] buffer = new byte[8192];
 			int read;
