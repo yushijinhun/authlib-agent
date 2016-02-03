@@ -166,7 +166,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	private boolean isTokenAvailable(Token token) {
-		return token.getLastRefreshTime() + tokenPreExpireTime > System.currentTimeMillis();
+		return token.getLastRefreshTime() + tokenPreExpireTime * 1000 > System.currentTimeMillis();
 	}
 
 	private static String randomToken() {

@@ -166,7 +166,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 		}
 
 		long createTime = Long.parseLong(values.get(KEY_CREATE_TIME));
-		if (createTime + tokenMaxLivingTime < System.currentTimeMillis()) {
+		if (createTime + tokenMaxLivingTime * 1000 < System.currentTimeMillis()) {
 			// reached max living time
 			delete(accessToken);
 			return null;
