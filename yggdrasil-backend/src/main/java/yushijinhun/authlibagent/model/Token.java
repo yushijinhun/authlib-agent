@@ -12,6 +12,8 @@ public class Token implements Serializable {
 	private String clientToken;
 	private String owner;
 	private UUID selectedProfile;
+	private long lastRefreshTime;
+	private long createTime;
 
 	public String getAccessToken() {
 		return accessToken;
@@ -43,6 +45,22 @@ public class Token implements Serializable {
 
 	public void setSelectedProfile(UUID selectedProfile) {
 		this.selectedProfile = selectedProfile;
+	}
+
+	public long getLastRefreshTime() {
+		return lastRefreshTime;
+	}
+
+	public void setLastRefreshTime(long lastRefreshTime) {
+		this.lastRefreshTime = lastRefreshTime;
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
 	}
 
 	@Override

@@ -39,9 +39,17 @@ export BACKEND_OPTIONAL_SIGNATURE=true
 # ALLOW=允许, DENY=阻止
 export BACKEND_DEFAULT_ACCESS_POLICY=ALLOW
 
-# accessToken过期的时间(s)
+# accessToken从(重)分配到过期的时间(s)
+# 默认为604800(7天)
+export BACKEND_TOKEN_EXPIRE_TIME=604800
+
+# accessToken从(重)分配到validate返回false的时间(s)
 # 默认为259200(3天)
-export BACKEND_TOKEN_EXPIRE_TIME=259200
+export BACKEND_TOKEN_EXPIRE_PRE=259200
+
+# accessToken从第一次分配起最长存活的时间
+# 默认为2592000(30天)
+export BACKEND_TOKEN_MAX_LIVING_TIME=2592000
 
 # serverId过期的时间(s)
 export BACKEND_SERVERID_EXPIRE_TIME=30

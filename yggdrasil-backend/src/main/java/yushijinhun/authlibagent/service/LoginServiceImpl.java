@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,10 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private PasswordAlgorithm passwordAlgorithm;
+
+	// Unit: second
+	@Value("#{config['expire.token.pre']}")
+	private long tokenPreExpireTime;
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
@@ -78,6 +83,11 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public Token createToken(String account, UUID selectedProfile, String clientToken) {
+		return createToken(account, selectedProfile, clientToken, System.currentTimeMillis());
+	}
+
+	@Override
+	public Token createToken(String account, UUID selectedProfile, String clientToken, long createTime) {
 		Objects.requireNonNull(account);
 		if (clientToken == null) {
 			clientToken = randomToken();
@@ -88,14 +98,11 @@ public class LoginServiceImpl implements LoginService {
 		token.setClientToken(clientToken);
 		token.setOwner(account);
 		token.setSelectedProfile(selectedProfile);
+		token.setLastRefreshTime(System.currentTimeMillis());
+		token.setCreateTime(createTime);
 
 		tokenRepo.put(token);
 		return token;
-	}
-
-	@Override
-	public Token createToken(String account, UUID selectedProfile) {
-		return createToken(account, selectedProfile, null);
 	}
 
 	@Override
@@ -130,7 +137,7 @@ public class LoginServiceImpl implements LoginService {
 			return false;
 		}
 		Token token = tokenRepo.get(accessToken);
-		return token != null && clientToken.equals(token.getClientToken());
+		return token != null && isTokenAvailable(token) && clientToken.equals(token.getClientToken());
 	}
 
 	@Override
@@ -139,11 +146,7 @@ public class LoginServiceImpl implements LoginService {
 			return false;
 		}
 		Token token = tokenRepo.get(accessToken);
-		return token != null;
-	}
-
-	private static String randomToken() {
-		return unsign(randomUUID());
+		return token != null && isTokenAvailable(token);
 	}
 
 	private Token verifyToken(String accessToken, String clientToken) throws ForbiddenOperationException {
@@ -160,6 +163,14 @@ public class LoginServiceImpl implements LoginService {
 			throw new ForbiddenOperationException(MSG_INVALID_TOKEN);
 		}
 		return token;
+	}
+
+	private boolean isTokenAvailable(Token token) {
+		return token.getLastRefreshTime() + tokenPreExpireTime > System.currentTimeMillis();
+	}
+
+	private static String randomToken() {
+		return unsign(randomUUID());
 	}
 
 }

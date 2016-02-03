@@ -107,7 +107,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 		tokenRepo.delete(accessToken);
 
 		Account account = result.getAccount();
-		Token token = loginService.createToken(account.getId(), selectedProfileUUID, clientToken);
+		Token token = loginService.createToken(account.getId(), selectedProfileUUID, clientToken, result.getToken().getCreateTime());
 		return createAuthenticateResponse(account, token, selectedProfile);
 	}
 

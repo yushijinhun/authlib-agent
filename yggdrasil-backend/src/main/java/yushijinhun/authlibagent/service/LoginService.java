@@ -39,7 +39,7 @@ public interface LoginService {
 	TokenAuthResult loginWithToken(String accessToken) throws ForbiddenOperationException;
 
 	/**
-	 * 创建一个token。
+	 * 创建一个token, 一般在新创建token时调用该方法.
 	 * 
 	 * @param account 账号
 	 * @param selectedProfile 选中的profile
@@ -49,15 +49,15 @@ public interface LoginService {
 	Token createToken(String account, UUID selectedProfile, String clientToken);
 
 	/**
-	 * 创建一个token。
-	 * <p>
-	 * 该方法同{@link #createToken(String, UUID,String)}，但clientToken为随机生成的。
+	 * 创建一个token, 一般在重分配token时调用该方法.
 	 * 
 	 * @param account 账号
 	 * @param selectedProfile 选中的profile
-	 * @return token
+	 * @param clientToken clientToken，如果为null，则随机生成一个
+	 * @param createTime token的createTime
+	 * @return 新的token
 	 */
-	Token createToken(String account, UUID selectedProfile);
+	Token createToken(String account, UUID selectedProfile, String clientToken, long createTime);
 
 	/**
 	 * 吊销token。
@@ -86,7 +86,7 @@ public interface LoginService {
 	void revokeAllTokens(String account);
 
 	/**
-	 * 验证该token是否有效。
+	 * 验证该token是否有效, 当token处于暂时失效时, 该方法返回false.
 	 * 
 	 * @param accessToken accessToken
 	 * @param clientToken clientToken
@@ -95,7 +95,7 @@ public interface LoginService {
 	boolean isTokenAvailable(String accessToken, String clientToken);
 
 	/**
-	 * 验证该token是否有效。
+	 * 验证该token是否有效, 当token处于暂时失效时, 该方法返回false.
 	 * 
 	 * @param accessToken accessToken
 	 * @return 如果有效则为true，无效则false

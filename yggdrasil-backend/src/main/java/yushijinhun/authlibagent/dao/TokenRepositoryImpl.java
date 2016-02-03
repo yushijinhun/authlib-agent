@@ -38,6 +38,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 	 * 	"c": clientToken
 	 * 	"o": owner
 	 *     "p": selectedProfile
+	 *  	"t": lastRefreshTime
+	 *  	"a": createTime // 即通过authenticate请求创建时的时间, 不会因为refresh重置
 	 * }
 	 * 
 	 * b) 对clientToken->Tokens的存储:
@@ -51,11 +53,24 @@ public class TokenRepositoryImpl implements TokenRepository {
 	 * ]
 	 * 
 	 * d) 用于对accessToken进行过期处理的存储:
-	 *  // expire: $expire.token.time
+	 *  // expire: $tokenExpireTime
 	 *  "X"+accessToken->""
 	 * 
 	 * 当redis通知一个d)的过期事件时, 则移除a),b), c)中的映射.
 	 */
+
+	/* 
+	* Token 生命周期:
+	* 
+	* |----1. 有效----|----2. 暂时失效----|3. 无效
+	* |------------------------------------------------------>Time
+	* 
+	* 当一个token被创建时, 将处于有效状态.
+	* 经过$tokenPreExpireTime秒后, token状态转为暂时失效,
+	* 此时进行validate请求返回false, 但仍可以refresh, 经refresh之后分配新的token将处于有效状态.
+	* 如果不进行refresh, 该token将在创建后$tokenExpireTime秒后失效.
+	* 当一个token自通过authenticate创建后, 经过$tokenMaxLivingTime之秒后(refresh不会重置该值), 也将自动失效.
+	*/
 
 	private static final Logger LOGGER = LogManager.getFormatterLogger();
 
@@ -66,6 +81,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 	private static final String KEY_CLIENT_TOKEN = "c";
 	private static final String KEY_OWNER = "o";
 	private static final String KEY_SELECTED_PROFILE = "p";
+	private static final String KEY_LAST_REFRESH_TIME = "t";
+	private static final String KEY_CREATE_TIME = "a";
 
 	@Autowired
 	private RedisMessageListenerContainer container;
@@ -85,6 +102,10 @@ public class TokenRepositoryImpl implements TokenRepository {
 	// Unit: second
 	@Value("#{config['expire.token.time']}")
 	private long tokenExpireTime;
+
+	// Unit: second
+	@Value("#{config['expire.token.maxLiving']}")
+	private long tokenMaxLivingTime;
 
 	@Value("#{config['security.maxTokensPerAccounts']}")
 	private int maxTokensPerAccounts;
@@ -143,10 +164,20 @@ public class TokenRepositoryImpl implements TokenRepository {
 		if (values == null || values.isEmpty()) {
 			return null;
 		}
+
+		long createTime = Long.parseLong(values.get(KEY_CREATE_TIME));
+		if (createTime + tokenMaxLivingTime < System.currentTimeMillis()) {
+			// reached max living time
+			delete(accessToken);
+			return null;
+		}
+
 		Token token = new Token();
 		token.setAccessToken(accessToken);
 		token.setClientToken(values.get(KEY_CLIENT_TOKEN));
 		token.setOwner(values.get(KEY_OWNER));
+		token.setLastRefreshTime(Long.parseLong(values.get(KEY_LAST_REFRESH_TIME)));
+		token.setCreateTime(createTime);
 		String selectedProfile = values.get(KEY_SELECTED_PROFILE);
 		token.setSelectedProfile(selectedProfile.isEmpty() ? null : UUID.fromString(selectedProfile));
 		return token;
@@ -174,6 +205,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 		Map<String, String> values = new HashMap<>();
 		values.put(KEY_CLIENT_TOKEN, clientToken);
 		values.put(KEY_OWNER, owner);
+		values.put(KEY_LAST_REFRESH_TIME, String.valueOf(token.getLastRefreshTime()));
+		values.put(KEY_CREATE_TIME, String.valueOf(token.getCreateTime()));
 		UUID selectedProfile = token.getSelectedProfile();
 		values.put(KEY_SELECTED_PROFILE, selectedProfile == null ? "" : selectedProfile.toString());
 
