@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.service.SignatureService;
+import static yushijinhun.authlibagent.util.UUIDUtils.unsign;
 
 @Component
 public class ResponseSerializerImpl implements ResponseSerializer {
@@ -54,7 +55,7 @@ public class ResponseSerializerImpl implements ResponseSerializer {
 	@Override
 	public JSONObject serializeGameProfile(GameProfile profile, boolean withProperties) {
 		JSONObject json = new JSONObject();
-		json.put("id", profile.getUuid());
+		json.put("id", unsign(profile.getUuid()));
 		json.put("name", profile.getName());
 
 		if (withProperties) {

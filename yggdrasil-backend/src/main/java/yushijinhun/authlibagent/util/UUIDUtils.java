@@ -8,6 +8,10 @@ public final class UUIDUtils {
 		return uuid.toString().replace("-", "");
 	}
 
+	public static String unsign(String uuid) {
+		return uuid.replace("-", "");
+	}
+
 	public static UUID toUUID(String uuid) {
 		if (uuid.length() == 36) {
 			return UUID.fromString(uuid);
