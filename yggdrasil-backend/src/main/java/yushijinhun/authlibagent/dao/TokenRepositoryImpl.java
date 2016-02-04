@@ -166,7 +166,9 @@ public class TokenRepositoryImpl implements TokenRepository {
 		}
 
 		long createTime = Long.parseLong(values.get(KEY_CREATE_TIME));
-		if (createTime + tokenMaxLivingTime * 1000 < System.currentTimeMillis()) {
+		long lastRefreshTime = Long.parseLong(values.get(KEY_LAST_REFRESH_TIME));
+		long now = System.currentTimeMillis();
+		if (createTime + tokenMaxLivingTime * 1000 < now || lastRefreshTime + tokenExpireTime * 1000 < now) {
 			// reached max living time
 			delete(accessToken);
 			return null;
@@ -176,7 +178,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 		token.setAccessToken(accessToken);
 		token.setClientToken(values.get(KEY_CLIENT_TOKEN));
 		token.setOwner(values.get(KEY_OWNER));
-		token.setLastRefreshTime(Long.parseLong(values.get(KEY_LAST_REFRESH_TIME)));
+		token.setLastRefreshTime(lastRefreshTime);
 		token.setCreateTime(createTime);
 		String selectedProfile = values.get(KEY_SELECTED_PROFILE);
 		token.setSelectedProfile(selectedProfile.isEmpty() ? null : UUID.fromString(selectedProfile));
