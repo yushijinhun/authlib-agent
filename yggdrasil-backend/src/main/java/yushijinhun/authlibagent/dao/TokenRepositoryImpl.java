@@ -57,6 +57,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 	 *  "X"+accessToken->""
 	 * 
 	 * 当redis通知一个d)的过期事件时, 则移除a),b), c)中的映射.
+	 * 同时, 为了防止redis删除了d)但没有通知客户端, 每经过$tokenExpireScanCycle秒,
+	 * 将自动遍历所有token, 测试过期.
 	 */
 
 	/* 
@@ -107,6 +109,10 @@ public class TokenRepositoryImpl implements TokenRepository {
 	@Value("#{config['expire.token.maxLiving']}")
 	private long tokenMaxLivingTime;
 
+	// Unit: second
+	@Value("#{config['expire.token.scanCycle']}")
+	private long tokenExpireScanCycle;
+
 	@Value("#{config['security.maxTokensPerAccounts']}")
 	private int maxTokensPerAccounts;
 
@@ -114,6 +120,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 	private int extraTokensToDelete;
 
 	private MessageListener expiredListener;
+
+	private Thread expireScanThread;
 
 	@PostConstruct
 	private void registerExpiredEventListener() {
@@ -155,22 +163,35 @@ public class TokenRepositoryImpl implements TokenRepository {
 		container.removeMessageListener(expiredListener);
 	}
 
+	@PostConstruct
+	private void startExpireScanThread() {
+		expireScanThread = new Thread(() -> {
+			while (true) {
+				try {
+					Thread.sleep(tokenExpireScanCycle * 1000);
+				} catch (InterruptedException e) {
+					return;
+				}
+
+				template.keys(PREFIX_ACCESS_TOKEN + "*").forEach(this::testExpire);
+			}
+		});
+		expireScanThread.setDaemon(true);
+		expireScanThread.start();
+	}
+
+	@PreDestroy
+	private void stopExpireScanThread() {
+		expireScanThread.interrupt();
+	}
+
 	@Override
 	public Token get(String accessToken) {
 		// notify the accessToken to be expired
 		valOps.get(keyExpire(accessToken));
 
 		Map<String, String> values = hashOps.entries(keyAccessToken(accessToken));
-		if (values == null || values.isEmpty()) {
-			return null;
-		}
-
-		long createTime = Long.parseLong(values.get(KEY_CREATE_TIME));
-		long lastRefreshTime = Long.parseLong(values.get(KEY_LAST_REFRESH_TIME));
-		long now = System.currentTimeMillis();
-		if (createTime + tokenMaxLivingTime * 1000 < now || lastRefreshTime + tokenExpireTime * 1000 < now) {
-			// reached max living time
-			delete(accessToken);
+		if (values == null || values.isEmpty() || testExpire(accessToken, values)) {
 			return null;
 		}
 
@@ -178,8 +199,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 		token.setAccessToken(accessToken);
 		token.setClientToken(values.get(KEY_CLIENT_TOKEN));
 		token.setOwner(values.get(KEY_OWNER));
-		token.setLastRefreshTime(lastRefreshTime);
-		token.setCreateTime(createTime);
+		token.setLastRefreshTime(Long.parseLong(values.get(KEY_LAST_REFRESH_TIME)));
+		token.setCreateTime(Long.parseLong(values.get(KEY_CREATE_TIME)));
 		String selectedProfile = values.get(KEY_SELECTED_PROFILE);
 		token.setSelectedProfile(selectedProfile.isEmpty() ? null : UUID.fromString(selectedProfile));
 		return token;
@@ -279,6 +300,26 @@ public class TokenRepositoryImpl implements TokenRepository {
 			return Collections.emptySet();
 		}
 		return accessTokens.stream().map(this::get).collect(toSet());
+	}
+
+	private boolean testExpire(String accessToken) {
+		Map<String, String> values = hashOps.entries(keyAccessToken(accessToken));
+		if (values == null || values.isEmpty()) {
+			return false;
+		}
+		return testExpire(accessToken, values);
+	}
+
+	private boolean testExpire(String accessToken, Map<String, String> values) {
+		long createTime = Long.parseLong(values.get(KEY_CREATE_TIME));
+		long lastRefreshTime = Long.parseLong(values.get(KEY_LAST_REFRESH_TIME));
+		long now = System.currentTimeMillis();
+		if (createTime + tokenMaxLivingTime * 1000 < now || lastRefreshTime + tokenExpireTime * 1000 < now) {
+			// reached max living time
+			delete(accessToken);
+			return true;
+		}
+		return false;
 	}
 
 	private String keyAccessToken(String accessToken) {

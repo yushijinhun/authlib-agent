@@ -51,6 +51,10 @@ export BACKEND_TOKEN_EXPIRE_PRE=259200
 # 默认为2592000(30天)
 export BACKEND_TOKEN_MAX_LIVING_TIME=2592000
 
+# 每隔多少时间就对所有token进行一次完全的过期检查, 单位:s
+# 默认86400(1天)
+export BACKEND_TOKEN_EXPIRE_SCAN_CYCLE=86400
+
 # serverId过期的时间(s)
 export BACKEND_SERVERID_EXPIRE_TIME=30
 
