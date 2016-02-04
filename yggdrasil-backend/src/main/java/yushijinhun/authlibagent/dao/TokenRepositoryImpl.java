@@ -173,7 +173,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 					return;
 				}
 
-				template.keys(PREFIX_ACCESS_TOKEN + "*").forEach(this::testExpire);
+				template.keys(PREFIX_ACCESS_TOKEN + "*").stream().map(k -> k.substring(PREFIX_EXPIRE.length())).forEach(this::testExpire);
 			}
 		});
 		expireScanThread.setDaemon(true);
