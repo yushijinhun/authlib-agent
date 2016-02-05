@@ -17,6 +17,7 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 		String username = req.getParameter("username");
 		String serverId = req.getParameter("serverId");
 
+		LOGGER.info(getIpAddress(req));
 		// check access
 		if (backend.getServerAccessPolicy(getIpAddress(req)) == AccessPolicy.DENY) {
 			throw new ForbiddenOperationException("Blocked host");
@@ -33,7 +34,7 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 
 	private String getIpAddress(HttpServletRequest req) {
 		String forwardIps = req.getHeader("X-Forwarded-For");
-		if (forwardIps != null && !forwardIps.isEmpty() && !"unknown".equalsIgnoreCase(forwardIps)) {
+		if (forwardIps != null && !forwardIps.isEmpty()) {
 			int idxComma = forwardIps.indexOf(',');
 			if (idxComma == -1) {
 				return forwardIps;
