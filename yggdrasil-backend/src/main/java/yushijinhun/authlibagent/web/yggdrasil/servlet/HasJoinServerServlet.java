@@ -18,7 +18,7 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 		String serverId = req.getParameter("serverId");
 
 		// check access
-		if (backend.getServerAccessPolicy(req.getRemoteAddr()) == AccessPolicy.DENY) {
+		if (backend.getServerAccessPolicy(getIpAddress(req)) == AccessPolicy.DENY) {
 			throw new ForbiddenOperationException("Blocked host");
 		}
 
@@ -29,6 +29,19 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 		} else {
 			return serializer.serializeGameProfile(profile, true);
 		}
+	}
+
+	private String getIpAddress(HttpServletRequest req) {
+		String forwardIps = req.getHeader("X-Forwarded-For");
+		if (forwardIps != null && !forwardIps.isEmpty() && !"unknown".equalsIgnoreCase(forwardIps)) {
+			int idxComma = forwardIps.indexOf(',');
+			if (idxComma == -1) {
+				return forwardIps;
+			} else {
+				return forwardIps.substring(0, idxComma);
+			}
+		}
+		return req.getRemoteAddr();
 	}
 
 }
