@@ -17,7 +17,6 @@ public class HasJoinServerServlet extends YggdrasilGetServlet {
 		String username = req.getParameter("username");
 		String serverId = req.getParameter("serverId");
 
-		LOGGER.info(getIpAddress(req));
 		// check access
 		if (backend.getServerAccessPolicy(getIpAddress(req)) == AccessPolicy.DENY) {
 			throw new ForbiddenOperationException("Blocked host");
