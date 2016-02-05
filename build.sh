@@ -15,7 +15,7 @@ export BACKEND_CONF=./yggdrasil-backend/config.properties
 ./scripts/write-config.sh
 
 echo Building...
-mvn clean install
+mvn clean package
 
 echo
 
