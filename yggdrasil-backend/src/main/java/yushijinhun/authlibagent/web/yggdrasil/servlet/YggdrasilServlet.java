@@ -19,7 +19,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Logger LOGGER = LogManager.getFormatterLogger(getClass());
+	protected final Logger LOGGER = LogManager.getFormatterLogger(getClass());
 
 	@Autowired
 	protected YggdrasilService backend;
