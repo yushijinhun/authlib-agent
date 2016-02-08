@@ -16,7 +16,7 @@ public class ProfileSearchServlet extends YggdrasilPostServlet {
 		JSONArray profilesResp = new JSONArray();
 		for (Object o : req) {
 			String name = (String) o;
-			profilesResp.put(serializer.serializeGameProfile(backend.lookupProfile(name), true));
+			profilesResp.put(serializer.serializeGameProfile(backend.lookupProfile(name), false));
 		}
 		resp.put("profiles", profilesResp);
 		return resp;
