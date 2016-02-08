@@ -20,7 +20,7 @@ public class OctetStreamProvider implements MessageBodyReader<byte[]>, MessageBo
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-		return mediaType.getType().equals("application") && mediaType.getSubtype().equals("subtype") && byte[].class.equals(type);
+		return mediaType.getType().equals("application") && mediaType.getSubtype().equals("octet-stream") && byte[].class.equals(type);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class OctetStreamProvider implements MessageBodyReader<byte[]>, MessageBo
 
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-		return mediaType.getType().equals("application") && mediaType.getSubtype().equals("subtype") && byte[].class.equals(type);
+		return mediaType.getType().equals("application") && mediaType.getSubtype().equals("octet-stream") && byte[].class.equals(type);
 	}
 
 	@Override
