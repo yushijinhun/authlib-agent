@@ -183,6 +183,14 @@ public class TokenRepositoryImpl implements TokenRepository {
 	@PreDestroy
 	private void stopExpireScanThread() {
 		expireScanThread.interrupt();
+
+		// wait the thread to terminate
+		try {
+			expireScanThread.join();
+		} catch (InterruptedException e) {
+			// restore interrupted status
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	@Override
