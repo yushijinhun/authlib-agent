@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import yushijinhun.authlibagent.model.GameProfile;
 
 @WebServlet("/yggdrasil/profilerepo/minecraft")
 public class ProfileSearchServlet extends YggdrasilPostServlet {
@@ -16,7 +17,10 @@ public class ProfileSearchServlet extends YggdrasilPostServlet {
 		JSONArray profilesResp = new JSONArray();
 		for (Object o : req) {
 			String name = (String) o;
-			profilesResp.put(serializer.serializeGameProfile(backend.lookupProfile(name), false));
+			GameProfile profile = backend.lookupProfile(name);
+			if (profile != null) {
+				profilesResp.put(serializer.serializeGameProfile(profile, false));
+			}
 		}
 		resp.put("profiles", profilesResp);
 		return resp;
