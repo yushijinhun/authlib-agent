@@ -67,7 +67,9 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 
 					if (callback.isAllowed || modified) {
 						byte[] output = classwriter.toByteArray();
-						debugSaveModifiedClass(output, className);
+						if (debugMode) {
+							debugSaveModifiedClass(output, className);
+						}
 						return classwriter.toByteArray();
 					}
 				}
