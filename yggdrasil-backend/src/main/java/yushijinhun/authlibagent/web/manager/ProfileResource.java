@@ -17,12 +17,12 @@ import yushijinhun.authlibagent.util.ResourceUtils;
 
 @Path("/profiles")
 @Produces(ResourceUtils.APPLICATION_JSON_UTF8)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface ProfileResource {
 
 	@GET
 	Collection<String> getProfiles(@QueryParam("name") String name, @QueryParam("owner") String owner, @QueryParam("banned") Boolean banned, @QueryParam("skin") String skin, @QueryParam("cape") String cape, @QueryParam("elytra") String elytra, @QueryParam("model") TextureModel model, @QueryParam("serverId") String serverId);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	ProfileInfo createProfile(ProfileInfo profile);
 
@@ -34,10 +34,12 @@ public interface ProfileResource {
 	@Path("{uuid}")
 	void deleteProfile(@PathParam("uuid") UUID uuid);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("{uuid}")
 	ProfileInfo updateOrCreateProfile(@PathParam("uuid") UUID uuid, ProfileInfo profile);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	@Path("{uuid}")
 	ProfileInfo updateProfile(@PathParam("uuid") UUID uuid, ProfileInfo profile);

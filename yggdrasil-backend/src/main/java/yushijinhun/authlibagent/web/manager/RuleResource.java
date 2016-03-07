@@ -23,6 +23,7 @@ public interface RuleResource {
 	@GET
 	Collection<AccessRule> getRules(@QueryParam("policy") AccessPolicy policy);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	AccessRule createRule(AccessRule rule);
 
@@ -30,10 +31,12 @@ public interface RuleResource {
 	@Path("{host}")
 	AccessRule getRule(@PathParam("host") String host);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("{host}")
 	AccessRule createOrUpdateRule(@PathParam("host") String host, AccessRule rule);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	@Path("{host}")
 	AccessRule updateRule(@PathParam("host") String host, AccessRule rule);

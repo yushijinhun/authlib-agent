@@ -15,12 +15,12 @@ import yushijinhun.authlibagent.util.ResourceUtils;
 
 @Path("/accounts")
 @Produces(ResourceUtils.APPLICATION_JSON_UTF8)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface AccountResource {
 
 	@GET
 	Collection<String> getAccounts(@QueryParam("accessToken") String accessToken, @QueryParam("clientToken") String clientToken, @QueryParam("banned") Boolean banned, @QueryParam("twitchToken") String twitchToken);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	AccountInfo createAccount(AccountInfo account);
 
@@ -32,10 +32,12 @@ public interface AccountResource {
 	@Path("{id}")
 	void deleteAccount(@PathParam("id") String id);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("{id}")
 	AccountInfo updateOrCreateAccount(@PathParam("id") String id, AccountInfo account);
 
+	@Consumes(MediaType.APPLICATION_JSON)
 	@POST
 	@Path("{id}")
 	AccountInfo updateAccount(@PathParam("id") String id, AccountInfo account);
