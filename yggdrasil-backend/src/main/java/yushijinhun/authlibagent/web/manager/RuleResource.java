@@ -17,7 +17,6 @@ import yushijinhun.authlibagent.util.ResourceUtils;
 
 @Path("/rules")
 @Produces(ResourceUtils.APPLICATION_JSON_UTF8)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface RuleResource {
 
 	@GET
