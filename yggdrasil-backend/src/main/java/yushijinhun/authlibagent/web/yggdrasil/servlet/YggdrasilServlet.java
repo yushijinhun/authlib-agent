@@ -43,7 +43,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 	protected void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 		int respCode;
-		JSONObject jsonResp;
+		Object jsonResp;
 		try {
 			jsonResp = process(req);
 			if (jsonResp == null) {
@@ -66,12 +66,13 @@ abstract public class YggdrasilServlet extends HttpServlet {
 			String message = e.getMessage();
 			String cause = showErrorCause ? lookupErrorName(e.getCause()) : null;
 
-			jsonResp = new JSONObject();
-			jsonResp.put("error", errorName);
+			JSONObject errJson = new JSONObject();
+			errJson.put("error", errorName);
 			if (message != null)
-				jsonResp.put("errorMessage", message);
+				errJson.put("errorMessage", message);
 			if (cause != null)
-				jsonResp.put("cause", cause);
+				errJson.put("cause", cause);
+			jsonResp = errJson;
 		}
 
 		resp.setStatus(respCode);
@@ -81,7 +82,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 		}
 	}
 
-	abstract protected JSONObject process(HttpServletRequest req) throws Exception;
+	abstract protected Object process(HttpServletRequest req) throws Exception;
 
 	private String lookupErrorName(Throwable e) {
 		if (e == null) {

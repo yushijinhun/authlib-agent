@@ -22,7 +22,7 @@ abstract public class YggdrasilPostServlet extends YggdrasilServlet {
 	}
 
 	@Override
-	protected JSONObject process(HttpServletRequest req) throws Exception {
+	protected Object process(HttpServletRequest req) throws Exception {
 		String contentType = req.getContentType();
 		if (contentType == null || !contentType.startsWith("application/json")) {
 			throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
@@ -46,11 +46,11 @@ abstract public class YggdrasilPostServlet extends YggdrasilServlet {
 		}
 	}
 
-	protected JSONObject process(JSONObject req, HttpServletRequest rawReq) throws Exception {
+	protected Object process(JSONObject req, HttpServletRequest rawReq) throws Exception {
 		throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
 	}
 
-	protected JSONObject process(JSONArray req, HttpServletRequest rawReq) throws Exception {
+	protected Object process(JSONArray req, HttpServletRequest rawReq) throws Exception {
 		throw new UnsupportedMediaTypeException(MSG_REQUEST_FORMAT_INVALID);
 	}
 
