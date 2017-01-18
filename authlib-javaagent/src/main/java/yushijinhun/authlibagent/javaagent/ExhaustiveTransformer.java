@@ -13,8 +13,8 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 
 	private String[] nonTransformablePackages = new String[] { "java.", "javax.", "com.sun.", "com.oracle.", "jdk.", "sun.", "org.apache.", "com.google.", "oracle.", "com.oracle.", "com.paulscode.", "io.netty.", "org.lwjgl.", "net.java.", "org.w3c.", "javassist" };
 
-	public ExhaustiveTransformer(String apiYggdrasilAuthenticate, String apiYggdrasilRefresh, String apiYggdrasilValidate, String apiYgggdrasilInvalidate, String apiYggdarsilSignout, String apiFillGameProfile, String apiJoinServer, String apiHasJoinServer, String apiProfilesLookup, String[] skinWhitelist, byte[] yggdrasilPublickey) {
-		super(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey);
+	public ExhaustiveTransformer(String apiYggdrasilAuthenticate, String apiYggdrasilRefresh, String apiYggdrasilValidate, String apiYgggdrasilInvalidate, String apiYggdarsilSignout, String apiFillGameProfile, String apiJoinServer, String apiHasJoinServer, String apiProfilesLookup, String[] skinWhitelist, byte[] yggdrasilPublickey, String apiUsername2Profile) {
+		super(apiYggdrasilAuthenticate, apiYggdrasilRefresh, apiYggdrasilValidate, apiYgggdrasilInvalidate, apiYggdarsilSignout, apiFillGameProfile, apiJoinServer, apiHasJoinServer, apiProfilesLookup, skinWhitelist, yggdrasilPublickey, apiUsername2Profile);
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 
 	@Override
 	public byte[] transform(ClassLoader loader, final String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-		if (className != null)
+		if (className != null) {
 			try {
 				byte[] bytecode = classfileBuffer;
 				boolean modified = false;
@@ -39,12 +39,12 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 					ClassReader classreader = new ClassReader(bytecode);
 					ClassWriter classwriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 					final TransformCheckCallbackImpl callback = new TransformCheckCallbackImpl();
-					classreader.accept(new ClassVisitor(Opcodes.ASM4, classwriter) {
+					classreader.accept(new ClassVisitor(Opcodes.ASM5, classwriter) {
 
 						@Override
 						public MethodVisitor visitMethod(int access, final String name, String desc, String signature, String[] exceptions) {
 							MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-							return new MethodVisitor(Opcodes.ASM4, mv) {
+							return new MethodVisitor(Opcodes.ASM5, mv) {
 
 								@Override
 								public void visitLdcInsn(Object cst) {
@@ -77,7 +77,7 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 				logger.severe("failed to transform " + className);
 				e.printStackTrace();
 			}
-
+		}
 		return null;
 	}
 
@@ -97,6 +97,7 @@ public class ExhaustiveTransformer extends AuthlibTransformer {
 		str = str.replaceAll("https://sessionserver.mojang.com/session/minecraft/join", apiJoinServer);
 		str = str.replaceAll("https://sessionserver.mojang.com/session/minecraft/hasJoined", apiHasJoinServer);
 		str = str.replaceAll("https://api.mojang.com/profiles/", apiProfilesLookup);
+		str = str.replaceAll("https://api.mojang.com/users/profiles/minecraft/", apiUsername2Profile);
 		str = str.replaceAll("https://authserver.mojang.com/authenticate", apiYggdrasilAuthenticate);
 		str = str.replaceAll("https://authserver.mojang.com/refresh", apiYggdrasilRefresh);
 		str = str.replaceAll("https://authserver.mojang.com/validate", apiYggdrasilValidate);

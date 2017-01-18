@@ -17,18 +17,18 @@ public class SkinWhitelistDomainTransformUnit extends NamedTransformUnit {
 	abstract class AbstractSkinWhitelistDomainTransformer extends ClassVisitor {
 
 		AbstractSkinWhitelistDomainTransformer() {
-			super(Opcodes.ASM4);
+			super(Opcodes.ASM5);
 		}
 
 		AbstractSkinWhitelistDomainTransformer(ClassVisitor cv) {
-			super(Opcodes.ASM4, cv);
+			super(Opcodes.ASM5, cv);
 		}
 
 		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 			MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 			if ("<clinit>".equals(name)) {
-				return new MethodVisitor(Opcodes.ASM4, mv) {
+				return new MethodVisitor(Opcodes.ASM5, mv) {
 
 					int status = 0;
 

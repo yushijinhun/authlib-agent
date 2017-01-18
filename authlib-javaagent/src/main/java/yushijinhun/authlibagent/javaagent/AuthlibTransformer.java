@@ -13,8 +13,9 @@ public class AuthlibTransformer extends Transformer {
 	protected String apiProfilesLookup;
 	protected String[] skinWhitelist;
 	protected byte[] yggdrasilPublickey;
+	protected String apiUsername2Profile;
 
-	public AuthlibTransformer(String apiYggdrasilAuthenticate, String apiYggdrasilRefresh, String apiYggdrasilValidate, String apiYgggdrasilInvalidate, String apiYggdarsilSignout, String apiFillGameProfile, String apiJoinServer, String apiHasJoinServer, String apiProfilesLookup, String[] skinWhitelist, byte[] yggdrasilPublickey) {
+	public AuthlibTransformer(String apiYggdrasilAuthenticate, String apiYggdrasilRefresh, String apiYggdrasilValidate, String apiYgggdrasilInvalidate, String apiYggdarsilSignout, String apiFillGameProfile, String apiJoinServer, String apiHasJoinServer, String apiProfilesLookup, String[] skinWhitelist, byte[] yggdrasilPublickey, String apiUsername2Profile) {
 		this.apiYggdrasilAuthenticate = apiYggdrasilAuthenticate;
 		this.apiYggdrasilRefresh = apiYggdrasilRefresh;
 		this.apiYggdrasilValidate = apiYggdrasilValidate;
@@ -26,6 +27,7 @@ public class AuthlibTransformer extends Transformer {
 		this.apiProfilesLookup = apiProfilesLookup;
 		this.skinWhitelist = skinWhitelist;
 		this.yggdrasilPublickey = yggdrasilPublickey;
+		this.apiUsername2Profile=apiUsername2Profile;
 
 		setup();
 	}

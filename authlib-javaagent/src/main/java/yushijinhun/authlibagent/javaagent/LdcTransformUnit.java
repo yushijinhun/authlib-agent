@@ -11,18 +11,18 @@ public class LdcTransformUnit extends NamedTransformUnit {
 	abstract class LdcClassVisitor extends ClassVisitor {
 
 		LdcClassVisitor() {
-			super(Opcodes.ASM4);
+			super(Opcodes.ASM5);
 		}
 
 		LdcClassVisitor(ClassVisitor cv) {
-			super(Opcodes.ASM4, cv);
+			super(Opcodes.ASM5, cv);
 		}
 
 		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 			MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 			if (method.equals(name)) {
-				return new MethodVisitor(Opcodes.ASM4, mv) {
+				return new MethodVisitor(Opcodes.ASM5, mv) {
 
 					@Override
 					public void visitLdcInsn(Object cst) {

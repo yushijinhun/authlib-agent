@@ -16,6 +16,7 @@ echo 'transform.session.fillgameprofile='$AGENT_API_ROOT'profiles/minecraft/' >>
 echo 'transform.session.joinserver='$AGENT_API_ROOT'joinserver' >> $AGENT_CONF
 echo 'transform.session.hasjoinserver='$AGENT_API_ROOT'hasjoinserver' >> $AGENT_CONF
 echo 'transform.api.profiles='$AGENT_API_ROOT'profilerepo/' >> $AGENT_CONF
+echo 'transform.api.apiUsername2Profile='$AGENT_API_ROOT'username2profile/' >> $AGENT_CONF
 echo 'transform.skin.whitelistdomains='$AGENT_SKIN_DOMAINS >> $AGENT_CONF
 echo 'debug='$AGENT_DEBUG >> $AGENT_CONF
 
