@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import yushijinhun.authlibagent.model.GameProfile;
 
-@WebServlet("/yggdrasil/profiles/minecraft/*")
+@WebServlet("/yggdrasil/username2profile/*")
 public class Username2ProfileServlet extends YggdrasilGetServlet {
 
 	private static final long serialVersionUID = 1L;
