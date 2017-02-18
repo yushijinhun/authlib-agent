@@ -1,12 +1,17 @@
 package yushijinhun.authlibagent.web.manager;
 
+import static com.google.common.base.Strings.nullToEmpty;
+import static java.util.stream.Collectors.toSet;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import yushijinhun.authlibagent.model.Account;
+import yushijinhun.authlibagent.model.GameProfile;
 
 @XmlRootElement(name = "account")
 public class AccountInfo implements Serializable {
@@ -34,6 +39,21 @@ public class AccountInfo implements Serializable {
 	 * Only exists in the request to the client
 	 */
 	private Set<UUID> profiles;
+
+	public AccountInfo() {}
+
+	public AccountInfo(Account account) {
+		setId(account.getId());
+		setBanned(account.isBanned());
+		setTwitchToken(nullToEmpty(account.getTwitchToken()));
+		setProfiles(getAccountProfiles(account));
+	}
+
+	public static Set<UUID> getAccountProfiles(Account account) {
+		Set<GameProfile> profiles = account.getProfiles();
+		// profiles will be null if the account is in transient status
+		return profiles == null ? Collections.emptySet() : profiles.stream().map(p -> UUID.fromString(p.getUuid())).collect(toSet());
+	}
 
 	@XmlElement
 	public String getId() {

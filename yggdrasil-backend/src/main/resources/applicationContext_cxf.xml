@@ -20,6 +20,7 @@
 			<ref bean="profileResource" />
 			<ref bean="ruleResource" />
 			<ref bean="keyResource" />
+			<ref bean="loginResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />

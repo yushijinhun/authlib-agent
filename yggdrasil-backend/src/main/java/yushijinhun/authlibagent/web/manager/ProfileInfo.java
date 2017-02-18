@@ -1,9 +1,11 @@
 package yushijinhun.authlibagent.web.manager;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.TextureModel;
 
 @XmlRootElement(name = "profile")
@@ -32,6 +34,19 @@ public class ProfileInfo implements Serializable {
 	private String elytra;
 
 	private TextureModel model;
+
+	public ProfileInfo() {}
+
+	public ProfileInfo(GameProfile profile) {
+		setUuid(UUID.fromString(profile.getUuid()));
+		setName(profile.getName());
+		setOwner(profile.getOwner().getId());
+		setBanned(profile.isBanned());
+		setSkin(nullToEmpty(profile.getSkin()));
+		setCape(nullToEmpty(profile.getCape()));
+		setElytra(nullToEmpty(profile.getElytra()));
+		setModel(profile.getTextureModel());
+	}
 
 	@XmlElement
 	public UUID getUuid() {

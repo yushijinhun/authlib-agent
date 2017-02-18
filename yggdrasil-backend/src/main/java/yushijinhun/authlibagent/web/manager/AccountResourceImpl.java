@@ -11,14 +11,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import yushijinhun.authlibagent.dao.TokenRepository;
 import yushijinhun.authlibagent.model.Account;
-import yushijinhun.authlibagent.model.GameProfile;
 import yushijinhun.authlibagent.model.Token;
 import yushijinhun.authlibagent.service.PasswordAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import static java.util.stream.Collectors.toSet;
@@ -28,8 +26,8 @@ import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
-import static com.google.common.base.Strings.nullToEmpty;
 import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
+import static yushijinhun.authlibagent.web.manager.AccountInfo.getAccountProfiles;
 
 @Component("accountResource")
 public class AccountResourceImpl implements AccountResource {
@@ -159,13 +157,13 @@ public class AccountResourceImpl implements AccountResource {
 		Account account = new Account();
 		fillAccountInfo(account, info);
 		session.save(account);
-		return createAccountInfo(account);
+		return new AccountInfo(account);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AccountInfo getAccountInfo(String id) {
-		return createAccountInfo(lookupAccount(id));
+		return new AccountInfo(lookupAccount(id));
 	}
 
 	@Transactional
@@ -189,7 +187,7 @@ public class AccountResourceImpl implements AccountResource {
 		fillAccountInfo(account, info);
 		session.saveOrUpdate(account);
 
-		return createAccountInfo(account);
+		return new AccountInfo(account);
 	}
 
 	@Transactional
@@ -201,7 +199,7 @@ public class AccountResourceImpl implements AccountResource {
 		fillAccountInfo(account, info);
 		sessionFactory.getCurrentSession().update(account);
 
-		return createAccountInfo(account);
+		return new AccountInfo(account);
 	}
 
 	private void fillAccountInfo(Account account, AccountInfo info) {
@@ -233,21 +231,6 @@ public class AccountResourceImpl implements AccountResource {
 			// changing the profiles is not allowed
 			throw new ConflictException("profiles conflict");
 		}
-	}
-
-	private Set<UUID> getAccountProfiles(Account account) {
-		Set<GameProfile> profiles = account.getProfiles();
-		// profiles will be null if the account is in transient status
-		return profiles == null ? Collections.emptySet() : profiles.stream().map(p -> UUID.fromString(p.getUuid())).collect(toSet());
-	}
-
-	private AccountInfo createAccountInfo(Account account) {
-		AccountInfo info = new AccountInfo();
-		info.setId(account.getId());
-		info.setBanned(account.isBanned());
-		info.setTwitchToken(nullToEmpty(account.getTwitchToken()));
-		info.setProfiles(getAccountProfiles(account));
-		return info;
 	}
 
 	private Account lookupAccount(String id) {

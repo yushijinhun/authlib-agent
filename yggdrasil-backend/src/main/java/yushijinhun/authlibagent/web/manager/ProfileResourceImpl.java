@@ -23,7 +23,6 @@ import static org.hibernate.criterion.Restrictions.eq;
 import static org.hibernate.criterion.Restrictions.eqOrIsNull;
 import static org.hibernate.criterion.Projections.property;
 import static com.google.common.base.Strings.emptyToNull;
-import static com.google.common.base.Strings.nullToEmpty;
 import static yushijinhun.authlibagent.util.ResourceUtils.requireNonNullBody;
 import static yushijinhun.authlibagent.util.RandomUtils.randomUUID;
 
@@ -125,13 +124,13 @@ public class ProfileResourceImpl implements ProfileResource {
 		account.getProfiles().add(profile);
 		session.update(account);
 
-		return createProfileInfo(profile);
+		return new ProfileInfo(profile);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public ProfileInfo getProfileInfo(UUID uuid) {
-		return createProfileInfo(lookupProfile(uuid));
+		return new ProfileInfo(lookupProfile(uuid));
 	}
 
 	@Transactional
@@ -161,7 +160,7 @@ public class ProfileResourceImpl implements ProfileResource {
 		fillProfileInfo(profile, info);
 		session.saveOrUpdate(profile);
 
-		return createProfileInfo(profile);
+		return new ProfileInfo(profile);
 	}
 
 	@Transactional
@@ -173,20 +172,7 @@ public class ProfileResourceImpl implements ProfileResource {
 		fillProfileInfo(profile, info);
 		sessionFactory.getCurrentSession().update(profile);
 
-		return createProfileInfo(profile);
-	}
-
-	private ProfileInfo createProfileInfo(GameProfile profile) {
-		ProfileInfo info = new ProfileInfo();
-		info.setUuid(UUID.fromString(profile.getUuid()));
-		info.setName(profile.getName());
-		info.setOwner(profile.getOwner().getId());
-		info.setBanned(profile.isBanned());
-		info.setSkin(nullToEmpty(profile.getSkin()));
-		info.setCape(nullToEmpty(profile.getCape()));
-		info.setElytra(nullToEmpty(profile.getElytra()));
-		info.setModel(profile.getTextureModel());
-		return info;
+		return new ProfileInfo(profile);
 	}
 
 	private void fillProfileInfo(GameProfile profile, ProfileInfo info) {
