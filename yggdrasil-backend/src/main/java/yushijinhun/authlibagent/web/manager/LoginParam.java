@@ -11,6 +11,7 @@ public class LoginParam implements Serializable {
 
 	private String username;
 	private String password;
+	private boolean ignoreBanned = false;
 
 	@XmlElement
 	public String getUsername() {
@@ -28,6 +29,15 @@ public class LoginParam implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@XmlElement
+	public boolean isIgnoreBanned() {
+		return ignoreBanned;
+	}
+
+	public void setIgnoreBanned(boolean ignoreBanned) {
+		this.ignoreBanned = ignoreBanned;
 	}
 
 }

@@ -12,10 +12,15 @@ public interface LoginService {
 	 * 
 	 * @param username 用户名
 	 * @param password 密码
+	 * @param ignoreBanned 即使被ban，也执行登入
 	 * @return 账号
 	 * @throws ForbiddenOperationException 如果用户名或密码有误，或者该用户被禁止登录
 	 */
-	Account loginWithPassword(String username, String password) throws ForbiddenOperationException;
+	Account loginWithPassword(String username, String password, boolean ignoreBanned) throws ForbiddenOperationException;
+
+	default Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
+		return loginWithPassword(username, password, false);
+	}
 
 	/**
 	 * 通过token登录。

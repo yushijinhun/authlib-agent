@@ -15,7 +15,7 @@ public class LoginResourceImpl implements LoginResource {
 	@Override
 	public AccountInfo login(LoginParam param) {
 		try {
-			return new AccountInfo(loginService.loginWithPassword(param.getUsername(), param.getPassword()));
+			return new AccountInfo(loginService.loginWithPassword(param.getUsername(), param.getPassword(), param.isIgnoreBanned()));
 		} catch (ForbiddenOperationException e) {
 			throw new ForbiddenException(e.getMessage(), e);
 		}

@@ -38,7 +38,7 @@ public class LoginServiceImpl implements LoginService {
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
-	public Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
+	public Account loginWithPassword(String username, String password, boolean ignoreBanned) throws ForbiddenOperationException {
 		if (username == null || password == null) {
 			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
 		}
@@ -48,7 +48,7 @@ public class LoginServiceImpl implements LoginService {
 		if (account == null || account.getPassword() == null || !passwordAlgorithm.verify(password, account.getPassword())) {
 			throw new ForbiddenOperationException(MSG_INVALID_USERNAME_OR_PASSWORD);
 		}
-		if (account.isBanned()) {
+		if (!ignoreBanned && account.isBanned()) {
 			throw new ForbiddenOperationException(MSG_ACCOUNT_BANNED);
 		}
 
