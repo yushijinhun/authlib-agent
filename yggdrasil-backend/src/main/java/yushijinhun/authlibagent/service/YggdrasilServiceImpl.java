@@ -54,7 +54,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Override
 	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
-		Account account = loginService.loginWithPassword(username, password);
+		Account account = loginService.loginWithPassword(username, password, false);
 		UUID selectedProfileUUID = null;
 		GameProfile selectedProfile = null;
 
@@ -128,7 +128,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 	@Override
 	public void signout(String username, String password) throws ForbiddenOperationException {
-		loginService.loginWithPassword(username, password);
+		loginService.loginWithPassword(username, password, false);
 		loginService.revokeAllTokens(username);
 	}
 

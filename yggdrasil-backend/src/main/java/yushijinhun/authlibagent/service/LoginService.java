@@ -18,10 +18,6 @@ public interface LoginService {
 	 */
 	Account loginWithPassword(String username, String password, boolean ignoreBanned) throws ForbiddenOperationException;
 
-	default Account loginWithPassword(String username, String password) throws ForbiddenOperationException {
-		return loginWithPassword(username, password, false);
-	}
-
 	/**
 	 * 通过token登录。
 	 * 
