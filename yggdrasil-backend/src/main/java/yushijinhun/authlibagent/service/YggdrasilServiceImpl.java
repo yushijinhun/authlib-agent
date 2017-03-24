@@ -81,6 +81,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Override
 	public AuthenticateResponse selectProfile(String accessToken, String clientToken, UUID profileUUID) throws ForbiddenOperationException {
 		TokenAuthResult result = loginService.loginWithToken(accessToken, clientToken);
+		Account account = result.getAccount();
 
 		UUID selectedProfileUUID = result.getToken().getSelectedProfile();
 
@@ -97,7 +98,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 			// check if the selected profile is banned
 			Session session = sessionFactory.getCurrentSession();
 			selectedProfile = session.get(GameProfile.class, selectedProfileUUID.toString());
-			if (selectedProfile == null) {
+			if (selectedProfile == null || !selectedProfile.getOwner().equals(account)) {
 				throw new ForbiddenOperationException(MSG_INVALID_PROFILE);
 			}
 			if (selectedProfile.isBanned()) {
@@ -107,7 +108,6 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 
 		tokenRepo.delete(accessToken);
 
-		Account account = result.getAccount();
 		Token token = loginService.createToken(account.getId(), selectedProfileUUID, clientToken, result.getToken().getCreateTime());
 		return createAuthenticateResponse(account, token, selectedProfile);
 	}
