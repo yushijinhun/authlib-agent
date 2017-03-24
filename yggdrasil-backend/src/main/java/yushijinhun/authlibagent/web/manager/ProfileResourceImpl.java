@@ -79,7 +79,7 @@ public class ProfileResourceImpl implements ProfileResource {
 			}
 
 			@SuppressWarnings("unchecked")
-			List<String> uuids = session.createCriteria(GameProfile.class).add(conjunction).setProjection(property("uuid")).setCacheable(true).list();
+			List<String> uuids = session.createCriteria(GameProfile.class).add(conjunction).setProjection(property("uuid")).list();
 			return uuids;
 		} else if (serverId.isEmpty()) {
 			throw new BadRequestException("serverId is empty");
@@ -119,11 +119,6 @@ public class ProfileResourceImpl implements ProfileResource {
 		fillProfileInfo(profile, info);
 		session.save(profile);
 
-		// expire the account cache
-		Account account = profile.getOwner();
-		account.getProfiles().add(profile);
-		session.update(account);
-
 		return new ProfileInfo(profile);
 	}
 
@@ -136,14 +131,7 @@ public class ProfileResourceImpl implements ProfileResource {
 	@Transactional
 	@Override
 	public void deleteProfile(UUID uuid) {
-		Session session = sessionFactory.getCurrentSession();
-
-		GameProfile profile = lookupProfile(uuid);
-		Account account = profile.getOwner();
-		account.getProfiles().remove(profile);
-		// expire the account cache
-		session.update(account);
-		session.delete(profile);
+		sessionFactory.getCurrentSession().delete(lookupProfile(uuid));;
 	}
 
 	@Transactional
@@ -197,7 +185,7 @@ public class ProfileResourceImpl implements ProfileResource {
 
 				// check name conflict
 				Session session = sessionFactory.getCurrentSession();
-				GameProfile conflictProfile = (GameProfile) session.createCriteria(GameProfile.class).add(eq("name", name)).setCacheable(true).uniqueResult();
+				GameProfile conflictProfile = (GameProfile) session.createCriteria(GameProfile.class).add(eq("name", name)).uniqueResult();
 				if (conflictProfile != null) {
 					throw new ConflictException("name conflict with profile " + conflictProfile.getUuid());
 				}

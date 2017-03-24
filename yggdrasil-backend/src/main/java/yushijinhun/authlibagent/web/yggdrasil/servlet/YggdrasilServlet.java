@@ -2,6 +2,7 @@ package yushijinhun.authlibagent.web.yggdrasil.servlet;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import yushijinhun.authlibagent.service.YggdrasilService;
 import yushijinhun.authlibagent.web.yggdrasil.ResponseSerializer;
@@ -26,6 +28,9 @@ abstract public class YggdrasilServlet extends HttpServlet {
 
 	@Autowired
 	protected ResponseSerializer serializer;
+
+	@Autowired
+	private TransactionTemplate transactionTemplate;
 
 	@Value("#{errorNames}")
 	private Map<String, String> errorNames;
@@ -45,7 +50,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 		int respCode;
 		Object jsonResp;
 		try {
-			jsonResp = process(req);
+			jsonResp = wrapProcess(req);
 			if (jsonResp == null) {
 				respCode = 204;
 			} else {
@@ -53,7 +58,7 @@ abstract public class YggdrasilServlet extends HttpServlet {
 			}
 		} catch (IOException | ServletException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log("exception during process request", e);
 
 			respCode = getConfiguredErrorCode(e.getClass());
@@ -79,6 +84,20 @@ abstract public class YggdrasilServlet extends HttpServlet {
 		if (jsonResp != null) {
 			resp.setContentType("application/json; charset=utf-8");
 			resp.getWriter().print(jsonResp);
+		}
+	}
+
+	private Object wrapProcess(HttpServletRequest req) throws Throwable {
+		try {
+			return transactionTemplate.execute(dummy -> {
+				try {
+					return process(req);
+				} catch (Throwable e) {
+					throw new CompletionException(e);
+				}
+			});
+		} catch (CompletionException e) {
+			throw e.getCause();
 		}
 	}
 

@@ -52,6 +52,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	@Value("#{config['access.policy.default']}")
 	private String defaultPolicy;
 
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AuthenticateResponse authenticate(String username, String password, String clientToken) throws ForbiddenOperationException {
 		Account account = loginService.loginWithPassword(username, password, false);
@@ -179,7 +180,7 @@ public class YggdrasilServiceImpl implements YggdrasilService {
 	public GameProfile lookupProfile(String name) {
 		Session session = sessionFactory.getCurrentSession();
 		@SuppressWarnings("unchecked")
-		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).setCacheable(true).list();
+		List<GameProfile> profiles = session.createCriteria(GameProfile.class).add(eq("name", name)).list();
 		if (profiles.isEmpty()) {
 			return null;
 		} else {

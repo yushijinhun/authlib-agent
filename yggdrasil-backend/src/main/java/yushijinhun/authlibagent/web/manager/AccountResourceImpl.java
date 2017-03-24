@@ -119,7 +119,7 @@ public class AccountResourceImpl implements AccountResource {
 	 */
 	private Collection<String> queryAccountsByCriterion(Criterion criterion) {
 		@SuppressWarnings("unchecked")
-		List<String> ids = sessionFactory.getCurrentSession().createCriteria(Account.class).add(criterion).setProjection(property("id")).setCacheable(true).list();
+		List<String> ids = sessionFactory.getCurrentSession().createCriteria(Account.class).add(criterion).setProjection(property("id")).list();
 		return ids;
 	}
 
