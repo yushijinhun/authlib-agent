@@ -12,6 +12,7 @@ public class LoginResourceImpl implements LoginResource {
 	@Autowired
 	private LoginService loginService;
 
+	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	@Override
 	public AccountInfo login(LoginParam param) {
 		try {
