@@ -14,9 +14,13 @@ public class AuthlibAgent {
 	private static final Logger LOGGER = Logger.getLogger(AuthlibAgent.class.getCanonicalName());
 	private static final int MAX_KEY_LENGTH = Short.MAX_VALUE;
 
+	public static Logger getLogger() {
+		return LOGGER;
+	}
+
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
-			init(arg, instrumentation);
+			instrumentation.addTransformer(getTransformer(arg, readProperties()));
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
 			LOGGER.info("failed to initialize transformer: " + e);
@@ -24,8 +28,7 @@ public class AuthlibAgent {
 		}
 	}
 
-	private static void init(String arg, Instrumentation instrumentation) {
-		Properties properties = readProperties();
+	public static AuthlibTransformer getTransformer(String arg, Properties properties) {
 		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		byte[] yggdrasilPublickey = readPublicKey();
 		String apiYggdrasilAuthenticate = properties.getProperty("transform.yggdrasil.authenticate");
@@ -64,7 +67,7 @@ public class AuthlibAgent {
 			transformer.debugOn();
 		}
 
-		instrumentation.addTransformer(transformer);
+		return transformer;
 	}
 
 	private static Properties readProperties() {
