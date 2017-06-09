@@ -54,6 +54,3 @@ target/
 # keys
 *.der
 *.pem
-
-# minecraft launchwrapper
-launchwrapper-1.12.jar

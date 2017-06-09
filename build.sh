@@ -14,14 +14,6 @@ export BACKEND_CONF=./yggdrasil-backend/config.properties
 ./scripts/backup-config.sh
 ./scripts/write-config.sh
 
-echo Downloading LaunchWrapper...
-url="https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"
-
-if [ ! -e "./authlib-javaagent/launchwrapper-1.12.jar" ]
-then
-    wget $url -O ./authlib-javaagent/launchwrapper-1.12.jar
-fi
-
 echo Building...
 mvn clean package
 
