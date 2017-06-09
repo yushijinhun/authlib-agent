@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -14,13 +15,9 @@ public class AuthlibAgent {
 	private static final Logger LOGGER = Logger.getLogger(AuthlibAgent.class.getCanonicalName());
 	private static final int MAX_KEY_LENGTH = Short.MAX_VALUE;
 
-	public static Logger getLogger() {
-		return LOGGER;
-	}
-
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
-			instrumentation.addTransformer(getTransformer(arg, readProperties()));
+			instrumentation.addTransformer(createTransformer(arg));
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
 			LOGGER.info("failed to initialize transformer: " + e);
@@ -28,7 +25,12 @@ public class AuthlibAgent {
 		}
 	}
 
-	public static AuthlibTransformer getTransformer(String arg, Properties properties) {
+	public static ClassFileTransformer createTransformer() {
+		return createTransformer(null);
+	}
+
+	public static ClassFileTransformer createTransformer(String arg) {
+		Properties properties = readProperties();
 		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		byte[] yggdrasilPublickey = readPublicKey();
 		String apiYggdrasilAuthenticate = properties.getProperty("transform.yggdrasil.authenticate");
