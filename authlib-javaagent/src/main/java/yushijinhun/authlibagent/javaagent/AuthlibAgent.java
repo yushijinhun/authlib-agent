@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -16,7 +17,7 @@ public class AuthlibAgent {
 
 	public static void premain(String arg, Instrumentation instrumentation) {
 		try {
-			init(arg, instrumentation);
+			instrumentation.addTransformer(createTransformer(arg));
 			LOGGER.info("initialized transformer");
 		} catch (Throwable e) {
 			LOGGER.info("failed to initialize transformer: " + e);
@@ -24,7 +25,11 @@ public class AuthlibAgent {
 		}
 	}
 
-	private static void init(String arg, Instrumentation instrumentation) {
+	public static ClassFileTransformer createTransformer() {
+		return createTransformer(null);
+	}
+
+	public static ClassFileTransformer createTransformer(String arg) {
 		Properties properties = readProperties();
 		boolean debugMode = Boolean.parseBoolean(properties.getProperty("debug"));
 		byte[] yggdrasilPublickey = readPublicKey();
@@ -64,7 +69,7 @@ public class AuthlibAgent {
 			transformer.debugOn();
 		}
 
-		instrumentation.addTransformer(transformer);
+		return transformer;
 	}
 
 	private static Properties readProperties() {

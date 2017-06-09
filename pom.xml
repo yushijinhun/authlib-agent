@@ -1,4 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>yushijinhun.authlibagent</groupId>
 	<artifactId>authlib-agent-parent</artifactId>
@@ -58,4 +61,33 @@
 		<module>authlib-javaagent</module>
 		<module>yggdrasil-backend</module>
 	</modules>
+	<properties>
+		<launchwrapper.version>1.12</launchwrapper.version>
+	</properties>
+
+	<!-- minecraft launchwrapper -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>download-launchwrapper</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>download-single</goal>
+						</goals>
+						<configuration>
+							<url>https://libraries.minecraft.net</url>
+							<fromFile>net/minecraft/launchwrapper/${launchwrapper.version}/launchwrapper-${launchwrapper.version}.jar</fromFile>
+							<toDir>${project.basedir}/libs</toDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

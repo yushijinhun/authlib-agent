@@ -1,4 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>yushijinhun.authlibagent</groupId>
@@ -12,6 +15,7 @@
 		<jar.source>1.7</jar.source>
 		<jar.target>1.7</jar.target>
 		<manifest.premainClass>yushijinhun.authlibagent.javaagent.AuthlibAgent</manifest.premainClass>
+		<manifest.tweakerClass>yushijinhun.authlibagent.javaagent.tweaker.AuthlibTweaker</manifest.tweakerClass>
 	</properties>
 	<build>
 		<plugins>
@@ -32,6 +36,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
+							<TweakClass>${manifest.tweakerClass}</TweakClass>
 							<Premain-Class>${manifest.premainClass}</Premain-Class>
 						</manifestEntries>
 					</archive>
@@ -47,6 +52,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifestEntries>
+							<TweakClass>${manifest.tweakerClass}</TweakClass>
 							<Premain-Class>${manifest.premainClass}</Premain-Class>
 						</manifestEntries>
 					</archive>
@@ -87,6 +93,17 @@
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 			<version>5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.minecraft</groupId>
+			<artifactId>launchwrapper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.minecraft</groupId>
+			<artifactId>launchwrapper</artifactId>
+			<version>${launchwrapper.version}</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/../libs/launchwrapper-${launchwrapper.version}.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
