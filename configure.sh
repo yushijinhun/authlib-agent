@@ -98,6 +98,9 @@ export BACKEND_MAX_TOKENS_PER_ACCOUNT=10
 # 每次用户token达到限制时, 要多吊销的token个数
 export BACKEND_EXTRA_TOKENS_TO_DELETE=3
 
+# 是否允许正版用户进入
+export BACKEND_ALLOW_MOJANG_USERS=false
+
 
 ## 其它设置
 

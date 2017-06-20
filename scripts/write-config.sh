@@ -27,6 +27,7 @@ echo 'feature.allowSelectingProfile='$BACKEND_ALLOW_SELECTING_PROFILES >> $BACKE
 echo 'feature.includeProfilesInRefresh='$BACKEND_INCLUDE_PROFILES_IN_REFRESH >> $BACKEND_CONF
 echo 'feature.autoSelectedUniqueProfile='$BACKEND_AUTO_SELECTED_UNIQUE_PROFILE >> $BACKEND_CONF
 echo 'feature.optionalSignature='$BACKEND_OPTIONAL_SIGNATURE >> $BACKEND_CONF
+echo 'feature.allowMojangUsers='$BACKEND_ALLOW_MOJANG_USERS >> $BACKEND_CONF
 echo 'access.policy.default='$BACKEND_DEFAULT_ACCESS_POLICY >> $BACKEND_CONF
 echo 'expire.token.time='$BACKEND_TOKEN_EXPIRE_TIME >> $BACKEND_CONF
 echo 'expire.token.pre='$BACKEND_TOKEN_EXPIRE_PRE >> $BACKEND_CONF
